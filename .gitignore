@@ -1,0 +1,4 @@
+aslstatus
+components/.*.c
+*.swp
+*.o
