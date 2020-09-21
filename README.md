@@ -1,3 +1,6 @@
+![demo](imgs/demo.gif)
+
+---
 # compile
 
 it is sucssefuly compiling with
