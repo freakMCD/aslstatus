@@ -50,7 +50,7 @@ with:
 #include "../util.h"  /* you can find some usefull functiuns in `util.c` */
 
 void
-function_name(char *out, const char *arg, unsined int interval)
+function_name(char *out, const char *arg, unsigned int interval)
 {
 	bptintf(out, "%s", "Hello, World!");
 }
