@@ -172,8 +172,10 @@ main(int argc, char *argv[])
 		if (tid[i])
 			pthread_kill(tid[i], SIGKILL);
 
-	XStoreName(dpy, root, NULL);
-	XFlush(dpy);
+	if (!sflag) {
+		XStoreName(dpy, root, NULL);
+		XFlush(dpy);
+	}
 
 	return 0;
 }
