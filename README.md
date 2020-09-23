@@ -24,6 +24,10 @@ alsu you can change `BUFF_SZ` (see [util.h](util.h))
 ---
 # components/
 
+components were taken from [slstatus](https://tools.suckless.org/slstatus)
+and have been modified to work with `pthread`,
+some have been completely rewritten
+
 all components are tested in `Linux`
 
 if you are using `OpenBSD` or `FreeBSD`, please tell me if it works corectly,
