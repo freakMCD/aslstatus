@@ -20,6 +20,11 @@ for more info about configs see [config.h](config.h)
 
 alsu you can change `BUFF_SZ` (see [util.h](util.h))
 
+to use ALSA:
+```bash
+make AUDIO=ALSA
+```
+pulseaudio in development (see [there](#pulseaudio))
 
 ---
 # components/
