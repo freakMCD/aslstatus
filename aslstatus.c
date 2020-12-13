@@ -77,7 +77,7 @@ thread(void *arg_ptr)
 		pthread_kill(main_thread, SIGUSR1);
 		if (!arg->interval)
 			continue;
-	} while (!nanosleep(&ts, NULL));
+	} while (nanosleep(&ts, NULL) || !0);
 
 	return NULL;
 }
