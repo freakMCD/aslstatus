@@ -14,6 +14,15 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 #endif
 
 #if defined(USE_ALSA)
+	static const size_t CTL_NAME_MAX = 3 + 10 + 1;
+	/*
+		3  - "hw:"
+		10 - len(str(UINT_MAX))
+		1  - zero byte
+	*/
+	static const char CARD[] = "default";
+	static const char MIXER_NAME[] = "Master";
+
 	#include <math.h>
 	#include <stdbool.h>
 
@@ -21,26 +30,53 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 	#include <alsa/control.h>
 	/* header file inclusion order is important */
 
-	static inline void
-	get_volume_range(long *min, long *max)
+
+	static inline snd_mixer_t *
+	get_mixer_elem(snd_mixer_elem_t **ret)
+	/*
+		after using `mixer_elem`
+		to free memory returned `mixer` must be closed with:
+		`snd_mixer_close`
+
+		(see `is_muted` function)
+	*/
 	{
+		int err;
 		snd_mixer_t *handle;
-		snd_mixer_elem_t *elem;
-		snd_mixer_selem_id_t *sid;
+		static snd_mixer_selem_id_t *sid;
 
-		snd_mixer_selem_id_alloca(&sid);
+		if (!sid) {
+			if ((err = snd_mixer_selem_id_malloc(&sid)) < 0) {
+				warn("failed to allocate memory for: %s",
+						snd_strerror(err));
+				return NULL;
+			}
+			snd_mixer_selem_id_set_name(sid, MIXER_NAME);
+		}
 
-		snd_mixer_open(&handle, 0);
-		snd_mixer_attach(handle, "default");
-		snd_mixer_selem_register(handle, NULL, NULL);
-		snd_mixer_load(handle);
+		if ((err = snd_mixer_open(&handle, 0)) < 0) {
+			warn("cannot open mixer: %s", snd_strerror(err));
+			return NULL;
+		}
+		if ((err = snd_mixer_attach(handle, CARD)) < 0) {
+			warn("cannot attach mixer: %s", snd_strerror(err));
+			snd_mixer_close(handle);
+			return NULL;
+		}
+		if ((err = snd_mixer_selem_register(handle, NULL, NULL)) < 0) {
+			warn("cannot register mixer: %s", snd_strerror(err));
+			snd_mixer_close(handle);
+			return NULL;
+		}
+		if ((err = snd_mixer_load(handle)) < 0) {
+			warn("failed to load mixer: %s", snd_strerror(err));
+			snd_mixer_close(handle);
+			return NULL;
+		}
 
-		snd_mixer_selem_id_set_index(sid, 0);
-		snd_mixer_selem_id_set_name(sid, "Master");
-		elem = snd_mixer_find_selem(handle, sid);
+		*ret = snd_mixer_find_selem(handle, sid);
 
-		snd_mixer_selem_get_playback_volume_range(elem, min, max);
-		snd_mixer_close(handle);
+		return handle;
 	}
 
 
@@ -49,75 +85,107 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 	{
 		int psw;
 		snd_mixer_t *handle;
-		snd_mixer_selem_id_t *sid;
+		snd_mixer_elem_t *elem;
 
-		snd_mixer_selem_id_alloca(&sid);
-
-		snd_mixer_open(&handle, 0);
-		snd_mixer_attach(handle, "default");
-		snd_mixer_selem_register(handle, NULL, NULL);
-		snd_mixer_load(handle);
-
-		snd_mixer_selem_id_set_index(sid, 0);
-		snd_mixer_selem_id_set_name(sid, "Master");
-		snd_mixer_elem_t *elem = snd_mixer_find_selem(handle, sid);
+		if (!(handle = get_mixer_elem(&elem)))
+			return 0;
 
 		snd_mixer_selem_get_playback_switch(elem,
 				SND_MIXER_SCHN_MONO, &psw);
-
 		snd_mixer_close(handle);
 
 		return !psw;
 	}
 
 
-	void
-	vol_perc(char *volume, const char *unused)
+	static inline unsigned short int
+	get_percentage(void)
 	{
-		long int
+		int err;
+		long int vol;
+		static long int
 			min = 0,
 			max = 0;
-		unsigned char vol;
+		snd_mixer_t *handle;
+		snd_mixer_elem_t *elem;
 
-		static long int range = 0;
+		if (!(handle = get_mixer_elem(&elem)))
+			return 0;
+
+		if (!max)
+			snd_mixer_selem_get_playback_volume_range(
+				elem,
+				&min,
+				&max
+			);
+
+		err = snd_mixer_selem_get_playback_volume(elem, 0, &vol);
+		snd_mixer_close(handle);
+		if (err < 0) {
+			warn("cannot get playback volume: %s",
+					snd_strerror(err));
+			return 0;
+		}
+		return (unsigned short int)((vol - min) * 100 / (max - min));
+	}
+
+
+	static inline char *
+	get_ctl_name(void)
+	/* after using return must be freed */
+	{
+		char *ctl_name;
+		unsigned int index;
+		snd_mixer_t *handle;
+		snd_mixer_elem_t *elem;
+
+		if (!(handle = get_mixer_elem(&elem))) {
+			index = 0;
+		} else {
+			index = snd_mixer_selem_get_index(elem);
+			snd_mixer_close(handle);
+		}
+		if (!(ctl_name = calloc(CTL_NAME_MAX, 1))) {
+			warn("failed to allocate memory for ctl_name");
+			return NULL;
+		}
+		snprintf(ctl_name, CTL_NAME_MAX, "hw:%u", index);
+		return ctl_name;
+	}
+
+
+	void
+	vol_perc(char *volume)
+	{
+		int err;
+		char *ctl_name;
 		static snd_ctl_event_t *e;
 		static snd_ctl_t *ctl = NULL;
-		static snd_ctl_elem_id_t *id;
-		static snd_ctl_elem_value_t *control;
 
 		if (!ctl) {
-			snd_ctl_open(&ctl, "hw:0", SND_CTL_READONLY);
-			if (snd_ctl_subscribe_events(ctl, 1) < 0) {
+			if (!(ctl_name = get_ctl_name()))
+				ERRRET(volume);
+
+			snd_ctl_open(&ctl, ctl_name, SND_CTL_READONLY);
+			free(ctl_name);
+
+			if ((err = snd_ctl_subscribe_events(ctl, 1)) < 0) {
 				snd_ctl_close(ctl);
+				ctl = NULL;
+				warn("cannot subscribe to alsa events: %s",
+						snd_strerror(err));
 				ERRRET(volume);
 			}
-
 			snd_ctl_event_malloc(&e);
-			snd_ctl_elem_id_alloca(&id);
-			snd_ctl_elem_value_malloc(&control);
-
-			snd_ctl_elem_id_set_interface(id,
-					SND_CTL_ELEM_IFACE_MIXER);
-			snd_ctl_elem_id_set_name(id, "Master Playback Volume");
-			snd_ctl_elem_value_set_id(control, id);
-
-			get_volume_range(&min, &max);
-			range = max - min;
 		} else {
 			snd_ctl_read(ctl, e);
 		}
 
-		if (is_muted()) {
+		if (is_muted())
 			bprintf(volume, "%s", MUTED);
-		} else {
-			snd_ctl_elem_read(ctl, control);
-			vol = snd_ctl_elem_value_get_integer(control, 0);
-			vol = rint((double)vol / (double)range * 100);
-			bprintf(volume, "%s%3hhu%s",
-					SYM,
-					vol * (range > 0),
-					PERCENT);
-		}
+		else
+			bprintf(volume, "%s%3hu%s",
+					SYM, get_percentage(), PERCENT);
 	}
 
 #elif defined(USE_PULSE)
