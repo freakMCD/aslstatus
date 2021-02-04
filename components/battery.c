@@ -14,9 +14,6 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	#include <stdint.h>
 	#include <unistd.h>
 
-	#define STR_AUX(x) #x
-	#define STR(x) STR_AUX(x)
-
 	#define MAX_STATE 13
 	#define STATE_PATTERN "%" STR(MAX_STATE) "[^\n]s"
 
@@ -100,7 +97,7 @@ static const char DISCHARGING[] = "-"; /* "-" */
 		              "/sys/class/power_supply/%s/status", bat) < 0) {
 			ERRRET(out);
 		}
-		if (pscanf(path, "%*s", state, MAX_STATE) != 1) {
+		if (pscanf(path, STATE_PATTERN, state) != 1) {
 			ERRRET(out);
 		}
 

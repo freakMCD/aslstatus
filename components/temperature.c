@@ -10,15 +10,16 @@
 	#include <dirent.h>
 	#include <limits.h>
 
+	#define MAX_NAME 16
 	static const char HWMON[] = "/sys/class/hwmon";
 
 	void
 	temp(char *out, const char *unused)
 	{
 		DIR *d;
-		char name[16];
 		uintmax_t temp;
 		struct dirent *dp;
+		char name[MAX_NAME];
 		static char file[PATH_MAX] = {0};
 
 		if (file[0])
@@ -37,7 +38,7 @@
 			esnprintf(file, sizeof(file), "%s/%s/%s",
 					HWMON, dp->d_name, "name");
 
-			if (pscanf(file, "%s", name) != 1) {
+			if (pscanf(file, "%"STR(MAX_NAME)"s", name) != 1) {
 				warn("scanf '%s':", file);
 				file[0] = '\0';
 				continue;

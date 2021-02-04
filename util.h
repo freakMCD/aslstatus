@@ -11,6 +11,9 @@
 #define LEN(S) (sizeof(S) / sizeof *(S))
 #define ERRRET(B) do { (B)[0] = '\0'; return; } while (0)
 
+#define STRINGIFY_AUX(X) #X
+#define STR(X) STRINGIFY_AUX(X)
+
 void warn(const char *, ...);
 void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
