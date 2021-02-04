@@ -3,14 +3,14 @@
 ---
 # compile
 
-it is sucssefuly compiling with
+it is successfully compiling with
 * `clang`
 * `tcc`
 * `gcc`
 
 you can find out more in [config.mk](config.mk)
 
-and add some optimization with uncomenting `LTO` and `OPT`
+and add some optimization with uncommenting `LTO` and `OPT`
 
 
 ---
@@ -18,10 +18,10 @@ and add some optimization with uncomenting `LTO` and `OPT`
 
 for more info about configs see [config.h](config.h)
 
-alsu you can change `BUFF_SZ` (see [util.h](util.h))
+also you can change `BUFF_SZ` (see [util.h](util.h))
 
 to use ALSA:
-```bash
+```sh
 make AUDIO=ALSA
 ```
 pulseaudio in development (see [there](#pulseaudio))
@@ -35,7 +35,7 @@ some have been completely rewritten
 
 all components are tested in `Linux`
 
-if you are using `OpenBSD` or `FreeBSD`, please tell me if it works corectly,
+if you are using `OpenBSD` or `FreeBSD`, please tell me if it works correctly,
 or if you have any problems
 
 
@@ -52,7 +52,7 @@ create file with `.c` extension in [components/](components/)
 
 with:
 ```c
-#include "../util.h"  /* you can find some usefull functiuns in `util.c` */
+#include "../util.h"  /* you can find some useful functions in `util.c` */
 
 void
 function_name(char *out, const char *arg, unsigned int interval)
