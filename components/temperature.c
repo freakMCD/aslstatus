@@ -14,7 +14,7 @@
 	static const char HWMON[] = "/sys/class/hwmon";
 
 	void
-	temp(char *out, const char *unused)
+	temp(char *out, const char *device)
 	{
 		DIR *d;
 		uintmax_t temp;
@@ -24,6 +24,12 @@
 
 		if (file[0])
 			goto get_temp;
+
+		if (!!device) {
+			esnprintf(file, sizeof(file),
+					"%s/%s/temp1_input", HWMON, device);
+			goto get_temp;
+		}
 
 		if (!(d = opendir(HWMON))) {
 			warn("opendir '%s':", HWMON);

@@ -49,7 +49,10 @@ static const char unknown_str[] = "n/a";
  * swap_perc           swap usage in percent           NULL
  * swap_total          total swap size in GB           NULL
  * swap_used           used swap in GB                 NULL
- * temp                temperature in degree celsius   NULL on OpenBSD and Linux
+ * temp                temperature in degree celsius   NULL on OpenBSD
+ *                                                     NULL or thermal zone
+ *                                                     on Linux
+ *                                                     (hwmon0, hwmon1, etc.)
  *                                                     thermal zone on FreeBSD
  *                                                     (tz0, tz1, etc.)
  * uid                 UID of current user             NULL
