@@ -32,7 +32,9 @@ void cpu_freq FUNC_ARGS;
 #define cpu_freq {cpu_freq, "cpu_freq", 0}
 
 void cpu_perc FUNC_ARGS;
-#if !ISBSD
+#if ISBSD
+# include <sys/param.h>  /* CPUSTATES */
+#else
 # define CPUSTATES 1
 #endif
 #define cpu_perc {cpu_perc, "cpu_percentage", 0		\
