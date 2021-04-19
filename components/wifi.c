@@ -18,7 +18,8 @@
 	#include <linux/wireless.h>
 
 	void
-	wifi_perc(char *out, const char *interface)
+	wifi_perc(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int cur;
 		FILE *fp;
@@ -67,7 +68,8 @@
 	}
 
 	void
-	wifi_essid(char *out, const char *interface)
+	wifi_essid(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int sockfd;
 		struct iwreq wreq;
@@ -144,7 +146,8 @@
 	}
 
 	void
-	wifi_perc(char *out, const char *interface)
+	wifi_perc(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct ieee80211_nodereq nr;
 		int q;
@@ -161,7 +164,8 @@
 	}
 
 	void
-	wifi_essid(char *out, const char *interface)
+	wifi_essid(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct ieee80211_nodereq nr;
 
@@ -200,7 +204,8 @@
 	}
 
 	void
-	wifi_perc(char *out, const char *interface)
+	wifi_perc(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		union {
 			struct ieee80211req_sta_req sta;
@@ -238,7 +243,8 @@
 	}
 
 	void
-	wifi_essid(char *out, const char *interface)
+	wifi_essid(char *out, const char *interface,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		size_t len;
 		int sockfd;
