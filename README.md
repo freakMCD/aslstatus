@@ -59,30 +59,68 @@ just send `USR1` signal to thread which you want to update
 
 create file with `.c` extension in [components/](components/)
 
-with:
+#### basic example
+
+`components/simple_module.c`:
 ```c
 #include "../util.h"  /* you can find some useful functions in `util.c` */
 
 void
-function_name(char *out, const char *arg, unsigned int interval)
+function_name(char *out, const char __unused *arg,
+		unsigned int __unused interval, void __unused *static_ptr)
 {
-	bptintf(out, "%s", "Hello, World!");
+	bprintf(out, "%s", "Hello, World!");
 }
-
 ```
 
-`interval` and `arg` is optional argument
+`arg`, `interval` and `static_ptr` is optional argument
+and if it is unused add `__unused` attribute
 
 
 then put:
 ```c
-void function_name(char *, const char *, unsigned int);
-#define function_name {function_name, "thread name"}
-
+void function_name FUNC_ARGS;
+#define function_name {function_name, "thread name", 0}
 ```
 
 at the end of [aslstatus.h](aslstatus.h)
 
+(`FUNC_ARGS` is already predefined)
+
+#### complex example
+
+`components/my_module.c`:
+```c
+#include "../util.h"
+
+void
+my_module(char *out, const char *arg, unsigned int interval, void *static_ptr)
+{
+	float *static_data = static_ptr;
+	if (!static_data)
+		static_data = interval * 20.21;
+	
+	bprintf(
+		out,
+		"'%s' module with '%s' arg and '%u' interval, "
+		"pointer to static_data is %p with '%f'",
+		__FUNCTION__, arg, interval, static_ptr, static_data
+	);
+}
+```
+
+`aslstatus.h`:
+```c
+/* ... */
+
+void my_module FUNC_ARGS;
+#define my_module {my_module, "My Module", sizeof(float)}
+```
+
+in `define` third field is size of static data to which point `static_ptr`
+
+also in [os.h](os.h) defined 4 variables which can be used to set
+os specific data sizes in branchless way (see: [this lines](https://notabug.org/dm9pZCAq/aslstatus/src/384b798760f5bc333505a5f10cd2ed4b34a91647/aslstatus.h#L40) in [aslstatus.h](aslstatus.h))
 
 ---
 ### pulseaudio
