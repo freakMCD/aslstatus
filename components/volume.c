@@ -5,15 +5,19 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include "volume.h"
 #include "../util.h"
 
-#if defined(USE_ALSA) || defined(USE_PULSE)
-static const char SYM[] = "";         /* you can specify volume sym there */
-static const char PERCENT[] = " %";   /* percent sign */
-static const char MUTED[] = "muted";  /* string to be displayed if muted */
-#endif
 
 #if defined(USE_ALSA)
+	#include <math.h>
+	#include <stdbool.h>
+
+	#include <alsa/asoundlib.h>
+	#include <alsa/control.h>
+	/* header file inclusion order is important */
+
+
 	static const size_t CTL_NAME_MAX = 3 + 10 + 1;
 	/*
 		3  - "hw:"
@@ -23,16 +27,10 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 	static const char CARD[] = "default";
 	static const char MIXER_NAME[] = "Master";
 
-	#include <math.h>
-	#include <stdbool.h>
-
-	#include <alsa/asoundlib.h>
-	#include <alsa/control.h>
-	/* header file inclusion order is important */
-
+	typedef struct volume_static_data static_data;
 
 	static inline snd_mixer_t *
-	get_mixer_elem(snd_mixer_elem_t **ret)
+	get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
 	/*
 		after using `mixer_elem`
 		to free memory returned `mixer` must be closed with:
@@ -43,15 +41,14 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 	{
 		int err;
 		snd_mixer_t *handle;
-		static snd_mixer_selem_id_t *sid;
 
-		if (!sid) {
-			if ((err = snd_mixer_selem_id_malloc(&sid)) < 0) {
+		if (!*sid) {
+			if ((err = snd_mixer_selem_id_malloc(sid)) < 0) {
 				warn("failed to allocate memory for: %s",
 						snd_strerror(err));
 				return NULL;
 			}
-			snd_mixer_selem_id_set_name(sid, MIXER_NAME);
+			snd_mixer_selem_id_set_name(*sid, MIXER_NAME);
 		}
 
 		if ((err = snd_mixer_open(&handle, 0)) < 0) {
@@ -74,20 +71,20 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 			return NULL;
 		}
 
-		*ret = snd_mixer_find_selem(handle, sid);
+		*ret = snd_mixer_find_selem(handle, *sid);
 
 		return handle;
 	}
 
 
 	static inline bool
-	is_muted(void)
+	is_muted(snd_mixer_selem_id_t **sid)
 	{
 		int psw;
 		snd_mixer_t *handle;
 		snd_mixer_elem_t *elem;
 
-		if (!(handle = get_mixer_elem(&elem)))
+		if (!(handle = get_mixer_elem(&elem, sid)))
 			return 0;
 
 		snd_mixer_selem_get_playback_switch(elem,
@@ -99,24 +96,22 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 
 
 	static inline unsigned short int
-	get_percentage(void)
+	get_percentage(__typeof__(((static_data*)0)->volume) *v,
+			snd_mixer_selem_id_t **sid)
 	{
 		int err;
 		long int vol;
-		static long int
-			min = 0,
-			max = 0;
 		snd_mixer_t *handle;
 		snd_mixer_elem_t *elem;
 
-		if (!(handle = get_mixer_elem(&elem)))
+		if (!(handle = get_mixer_elem(&elem, sid)))
 			return 0;
 
-		if (!max)
+		if (!v->max)
 			snd_mixer_selem_get_playback_volume_range(
 				elem,
-				&min,
-				&max
+				&v->min,
+				&v->max
 			);
 
 		err = snd_mixer_selem_get_playback_volume(elem, 0, &vol);
@@ -126,12 +121,14 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 					snd_strerror(err));
 			return 0;
 		}
-		return (unsigned short int)((vol - min) * 100 / (max - min));
+
+		return (unsigned short int)
+			((vol - v->min) * 100 / (v->max - v->min));
 	}
 
 
 	static inline char *
-	get_ctl_name(void)
+	get_ctl_name(snd_mixer_selem_id_t **sid)
 	/* after using return must be freed */
 	{
 		char *ctl_name;
@@ -139,7 +136,7 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 		snd_mixer_t *handle;
 		snd_mixer_elem_t *elem;
 
-		if (!(handle = get_mixer_elem(&elem))) {
+		if (!(handle = get_mixer_elem(&elem, sid))) {
 			index = 0;
 		} else {
 			index = snd_mixer_selem_get_index(elem);
@@ -155,37 +152,41 @@ static const char MUTED[] = "muted";  /* string to be displayed if muted */
 
 
 	void
-	vol_perc(char *volume)
+	vol_perc(char *volume, const char __unused *_a,
+		unsigned int __unused _i, void *static_ptr)
 	{
 		int err;
 		char *ctl_name;
-		static snd_ctl_event_t *e;
-		static snd_ctl_t *ctl = NULL;
+		static_data *data = static_ptr;
 
-		if (!ctl) {
-			if (!(ctl_name = get_ctl_name()))
+		if (!data->ctl) {
+			if (!(ctl_name = get_ctl_name(&data->sid)))
 				ERRRET(volume);
 
-			snd_ctl_open(&ctl, ctl_name, SND_CTL_READONLY);
+			snd_ctl_open(&data->ctl, ctl_name, SND_CTL_READONLY);
 			free(ctl_name);
 
-			if ((err = snd_ctl_subscribe_events(ctl, 1)) < 0) {
-				snd_ctl_close(ctl);
-				ctl = NULL;
+			err = snd_ctl_subscribe_events(data->ctl, 1);
+			if (err < 0) {
+				snd_ctl_close(data->ctl);
+				data->ctl = NULL;
 				warn("cannot subscribe to alsa events: %s",
 						snd_strerror(err));
 				ERRRET(volume);
 			}
-			snd_ctl_event_malloc(&e);
+			snd_ctl_event_malloc(&data->e);
 		} else {
-			snd_ctl_read(ctl, e);
+			snd_ctl_read(data->ctl, data->e);
 		}
 
-		if (is_muted())
+		if (is_muted(&data->sid))
 			bprintf(volume, "%s", MUTED);
 		else
-			bprintf(volume, "%s%3hu%s",
-					SYM, get_percentage(), PERCENT);
+			bprintf(
+				volume, "%s%3hu%s", SYM,
+				get_percentage(&data->volume, &data->sid),
+				PERCENT
+			);
 	}
 
 #elif defined(USE_PULSE)

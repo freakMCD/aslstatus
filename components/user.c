@@ -7,15 +7,18 @@
 #include "../util.h"
 
 void
-gid(char *out)
+gid(char *out, const char __unused *_a,
+	unsigned int __unused _i, void __unused *_p)
 { bprintf(out, "%d", getgid()); }
 
 void
-uid(char *out)
+uid(char *out, const char __unused *_a,
+	unsigned int __unused _i, void __unused *_p)
 { bprintf(out, "%d", geteuid()); }
 
 void
-username(char *out)
+username(char *out, const char __unused *_a,
+	unsigned int __unused _i, void __unused *_p)
 {
 	struct passwd *pw;
 

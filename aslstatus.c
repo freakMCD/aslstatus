@@ -48,8 +48,8 @@ static pthread_t main_thread;
 
 
 static inline void
-update_status(int s)
-{ (void) s; }
+update_status(int __unused _)
+{ return; }
 
 
 static void *
@@ -58,15 +58,26 @@ thread(void *arg_ptr)
 	struct arg_t *arg;
 	struct timespec ts;
 	char buf[BUFF_SZ] = {0};
+	void *static_ptr = NULL;
 
 	arg = arg_ptr;
 	ts.tv_sec = arg->interval / 1000;
 	ts.tv_nsec = (arg->interval % 1000) * 1E6;
 
+	if (!!arg->f.static_size) {
+		if (!(static_ptr = calloc(arg->f.static_size, 1))) {
+			warn("failed to allocate %u bytes for %15s",
+				arg->f.static_size,
+				arg->f.name
+			);
+			return NULL;
+		}
+	}
+
 	signal(SIGUSR1, update_status);
 
 	do {
-		arg->f.func(buf, arg->args, arg->interval);
+		arg->f.func(buf, arg->args, arg->interval, static_ptr);
 		if (!buf[0])
 			strncpy(buf, unknown_str, BUFF_SZ);
 		MUTEX_WRAP(
@@ -75,9 +86,7 @@ thread(void *arg_ptr)
 		);
 
 		pthread_kill(main_thread, SIGUSR1);
-		if (!arg->interval)
-			continue;
-	} while (nanosleep(&ts, NULL) || !0);
+	} while (!arg->interval || (nanosleep(&ts, NULL) || !0));
 
 	return NULL;
 }
@@ -126,7 +135,8 @@ main(int argc, char *argv[])
 			free(tofree);
 			tofree = strptr = strdup(args[i].args);
 			token = strtok(strptr, " ");
-			snprintf(thread_name, 16, "cmd:%.11s", basename(token));
+			snprintf(thread_name, 16, "cmd:%.11s",
+				basename(token));
 			strptr = thread_name;
 		}
 #if defined(__linux__)

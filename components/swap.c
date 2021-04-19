@@ -7,6 +7,8 @@
 #include "../util.h"
 
 #if defined(__linux__)
+	#define STRSIZE(STR) (STR), (sizeof(STR) -1)
+
 	static inline int
 	get_swap_info(long int *s_total, long int *s_free, long int *s_cached)
 	{
@@ -15,9 +17,9 @@
 			const size_t len;
 			long int *var;
 		} ent[] = {
-			{ "SwapTotal",  sizeof("SwapTotal")  -1, s_total  },
-			{ "SwapFree",   sizeof("SwapFree")   -1, s_free   },
-			{ "SwapCached", sizeof("SwapCached") -1, s_cached },
+			{ STRSIZE("SwapTotal") , s_total  },
+			{ STRSIZE("SwapFree")  , s_free   },
+			{ STRSIZE("SwapCached"), s_cached },
 		};
 		FILE *fp;
 		char *line = NULL;
@@ -59,7 +61,8 @@
 	}
 
 	void
-	swap_free(char *out)
+	swap_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int free;
 
@@ -70,7 +73,8 @@
 	}
 
 	void
-	swap_perc(char *out)
+	swap_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int
 			free,
@@ -84,7 +88,8 @@
 	}
 
 	void
-	swap_total(char *out)
+	swap_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int total;
 
@@ -95,7 +100,8 @@
 	}
 
 	void
-	swap_used(char *out)
+	swap_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int
 			free,
@@ -155,7 +161,8 @@
 	}
 
 	void
-	swap_free(char *out)
+	swap_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int
 			used,
@@ -168,7 +175,8 @@
 	}
 
 	void
-	swap_perc(char *out)
+	swap_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int
 			used,
@@ -185,7 +193,8 @@
 	}
 
 	void
-	swap_total(char *out)
+	swap_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int
 			used,
@@ -198,7 +207,8 @@
 	}
 
 	void
-	swap_used(char *out)
+	swap_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int
 			used,
@@ -238,7 +248,8 @@
 	}
 
 	void
-	swap_free(char *out)
+	swap_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int
 			used,
@@ -255,7 +266,8 @@
 	}
 
 	void
-	swap_perc(char *out)
+	swap_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int
 			used,
@@ -272,7 +284,8 @@
 	}
 
 	void
-	swap_total(char *out)
+	swap_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int total;
 		struct kvm_swap swap_info[1];
@@ -286,7 +299,8 @@
 	}
 
 	void
-	swap_used(char *out)
+	swap_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		long int used;
 		struct kvm_swap swap_info[1];

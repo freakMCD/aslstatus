@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
-#include <stdint.h>
-#include <stdio.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdint.h>
 
 #include "../util.h"
 
@@ -14,7 +14,8 @@
 #endif
 
 void
-uptime(char *out)
+uptime(char *out, const char __unused *_a,
+	unsigned int __unused _i, void __unused *_p)
 {
 	uintmax_t h, m;
 	char warn_buf[256];

@@ -5,7 +5,8 @@
 #include "../util.h"
 
 void
-run_command(char *buf, const char *cmd)
+run_command(char *buf, const char *cmd,
+	unsigned int __unused _i, void __unused *_p)
 {
 	char *p;
 	FILE *fp;

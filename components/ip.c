@@ -14,7 +14,7 @@
 #include "../util.h"
 
 static inline void
-ip(char *out, const char *interface, unsigned short int sa_family)
+ip(char *out, const char *interface, sa_family_t sa_family)
 {
 	int s;
 	struct ifaddrs
@@ -49,9 +49,11 @@ ip(char *out, const char *interface, unsigned short int sa_family)
 }
 
 void
-ipv4(char *out, const char *interface)
+ipv4(char *out, const char *interface,
+	unsigned int __unused _i, void __unused *_p)
 { ip(out, interface, AF_INET); }
 
 void
-ipv6(char *out, const char *interface)
+ipv6(char *out, const char *interface,
+	unsigned int __unused _i, void __unused *_p)
 { ip(out, interface, AF_INET6); }

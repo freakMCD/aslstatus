@@ -15,7 +15,8 @@
  * included, lowercase when off and uppercase when on.
  */
 void
-keyboard_indicators(char *out, const char *fmt)
+keyboard_indicators(char *out, const char *fmt,
+	unsigned int __unused _i, void *static_ptr)
 {
 	size_t
 		i, n,
@@ -27,21 +28,21 @@ keyboard_indicators(char *out, const char *fmt)
 	XEvent e;
 	char key;
 	XKeyboardState state;
-	static Display *dpy = NULL;
+	Display **dpy = static_ptr;
 
-	if (!dpy) {
-		if (!(dpy = XOpenDisplay(NULL))) {
+	if (!*dpy) {
+		if (!(*dpy = XOpenDisplay(NULL))) {
 			warn("XOpenDisplay: Failed to open display");
 			ERRRET(out);
 		}
-		XkbSelectEventDetails(dpy, XkbUseCoreKbd,
+		XkbSelectEventDetails(*dpy, XkbUseCoreKbd,
 				XkbIndicatorStateNotify, XkbAllEventsMask,
 				XkbAllEventsMask);
 	} else {
-		XNextEvent(dpy, &e);
+		XNextEvent(*dpy, &e);
 	}
 
-	XGetKeyboardControl(dpy, &state);
+	XGetKeyboardControl(*dpy, &state);
 
 	fmtlen = strnlen(fmt, 4);
 	for (i = n = 0; i < fmtlen; i++) {

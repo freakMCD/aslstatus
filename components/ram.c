@@ -7,7 +7,8 @@
 	#include <stdint.h>
 
 	void
-	ram_free(char *out)
+	ram_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		uintmax_t free;
 
@@ -23,7 +24,8 @@
 	}
 
 	void
-	ram_perc(char *out)
+	ram_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		uintmax_t
 			free,
@@ -48,7 +50,8 @@
 	}
 
 	void
-	ram_total(char *out)
+	ram_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		uintmax_t total;
 
@@ -59,7 +62,8 @@
 	}
 
 	void
-	ram_used(char *out)
+	ram_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		uintmax_t
 			free,
@@ -87,7 +91,7 @@
 	#define LOG1024 10
 	#define pagetok(size, pageshift) (size_t)(size << (pageshift - LOG1024))
 
-	inline int
+	static inline int
 	load_uvmexp(struct uvmexp *uvmexp)
 	{
 		size_t size;
@@ -102,7 +106,8 @@
 	}
 
 	void
-	ram_free(char *out)
+	ram_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int free_pages;
 		struct uvmexp uvmexp;
@@ -117,7 +122,8 @@
 	}
 
 	void
-	ram_perc(char *out)
+	ram_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct uvmexp uvmexp;
 		int percent;
@@ -131,7 +137,8 @@
 	}
 
 	void
-	ram_total(char *out)
+	ram_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct uvmexp uvmexp;
 
@@ -143,7 +150,8 @@
 	}
 
 	void
-	ram_used(char *out)
+	ram_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct uvmexp uvmexp;
 
@@ -160,7 +168,9 @@
 	#include <vm/vm_param.h>
 
 	void
-	ram_free(char *out) {
+	ram_free(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
+	{
 		size_t len;
 		struct vmtotal vm_stats;
 		int mib[] = {CTL_VM, VM_TOTAL};
@@ -173,7 +183,9 @@
 	}
 
 	void
-	ram_total(char *out) {
+	ram_total(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
+	{
 		size_t len;
 		long int npages;
 
@@ -186,7 +198,9 @@
 	}
 
 	void
-	ram_perc(char *out) {
+	ram_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
+	{
 		size_t len;
 		long int npages;
 		long int active;
@@ -204,7 +218,9 @@
 	}
 
 	void
-	ram_used(char *out) {
+	ram_used(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
+	{
 		size_t len;
 		long int active;
 

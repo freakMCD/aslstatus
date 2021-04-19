@@ -5,7 +5,8 @@
 #include "../util.h"
 
 void
-disk_free(char *out, const char *path)
+disk_free(char *out, const char *path,
+	unsigned int __unused _i, void __unused *_p)
 {
 	struct statvfs fs;
 
@@ -18,7 +19,8 @@ disk_free(char *out, const char *path)
 }
 
 void
-disk_perc(char *out, const char *path)
+disk_perc(char *out, const char *path,
+	unsigned int __unused _i, void __unused *_p)
 {
 	struct statvfs fs;
 
@@ -32,7 +34,8 @@ disk_perc(char *out, const char *path)
 }
 
 void
-disk_total(char *out, const char *path)
+disk_total(char *out, const char *path,
+	unsigned int __unused _i, void __unused *_p)
 {
 	struct statvfs fs;
 
@@ -45,7 +48,8 @@ disk_total(char *out, const char *path)
 }
 
 void
-disk_used(char *out, const char *path)
+disk_used(char *out, const char *path,
+	unsigned int __unused _i, void __unused *_p)
 {
 	struct statvfs fs;
 

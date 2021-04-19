@@ -19,7 +19,7 @@ static const char DISCHARGING[] = "-"; /* "-" */
 
 	static inline const char *
 	pick(const char *bat, const char *f1, const char *f2, char *path,
-	     size_t length)
+		size_t length)
 	{
 		if (esnprintf(path, length, f1, bat) > 0 &&
 		    access(path, R_OK) == 0) {
@@ -35,16 +35,15 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_perc(char *out, const char *bat)
+	battery_perc(char *out, const char *bat,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int perc;
 		char path[PATH_MAX];
-
-		if (esnprintf(path, sizeof(path),
-		              "/sys/class/power_supply/%s/capacity", bat) < 0) {
-			ERRRET(out);
-		}
-		if (pscanf(path, "%d", &perc) != 1) {
+		
+		perc = esnprintf(path, sizeof(path),
+				"/sys/class/power_supply/%s/capacity", bat);
+		if (perc < 0 || pscanf(path, "%d", &perc) != 1) {
 			ERRRET(out);
 		}
 
@@ -52,7 +51,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_state(char *out, const char *bat)
+	battery_state(char *out, const char *bat,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		size_t i;
 		char
@@ -81,7 +81,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_remaining(char *out, const char *bat)
+	battery_remaining(char *out, const char *bat,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		uintmax_t
 			m, h,
@@ -157,7 +158,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_perc(char *out, const char *unused)
+	battery_perc(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct apm_power_info apm_info;
 
@@ -169,7 +171,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_state(char *out, const char *unused)
+	battery_state(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct {
 			unsigned int state;
@@ -192,7 +195,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_remaining(char *out, const char *unused)
+	battery_remaining(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		struct apm_power_info apm_info;
 
@@ -223,7 +227,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_state(char *out, const char *unused)
+	battery_state(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int state;
 		size_t len;
@@ -245,7 +250,8 @@ static const char DISCHARGING[] = "-"; /* "-" */
 	}
 
 	void
-	battery_remaining(char *out, const char *unused)
+	battery_remaining(char *out, const char __unused *f,
+		unsigned int __unused i, void __unused *p)
 	{
 		int rem;
 		size_t len;

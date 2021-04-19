@@ -7,7 +7,8 @@
 
 #if defined(__linux__)
 	void
-	cpu_freq(char *out)
+	cpu_freq(char *out, const char __unused *_a, unsigned int __unused _i,
+		void __unused *_p)
 	{
 		uintmax_t freq;
 
@@ -21,10 +22,11 @@
 	}
 
 	void
-	cpu_perc(char *out)
+	cpu_perc(char *out, const char __unused *_a, unsigned int __unused _i,
+		void *static_ptr)
 	{
 		long double b[7], sum;
-		static long double a[7];
+		long double *a =  static_ptr;
 
 		memcpy(b, a, sizeof(b));
 		/* cpu user nice system idle iowait irq softirq */
@@ -53,7 +55,8 @@
 	#include <sys/sysctl.h>
 
 	void
-	cpu_freq(char *out)
+	cpu_freq(char *out, const char __unused *_a, unsigned int __unused _i,
+		void __unused *_p)
 	{
 		int freq, mib[2];
 		size_t size;
@@ -73,21 +76,22 @@
 	}
 
 	void
-	cpu_perc(char *out)
+	cpu_perc(char *out, const char __unused *_a, unsigned int __unused _i,
+		void *static_ptr)
 	{
 		int mib[2];
 		size_t size;
 		uintmax_t
 			sum,
 			b[CPUSTATES];
-		static uintmax_t a[CPUSTATES];
+		uintmax_t *a = static_ptr;
 
 		mib[0] = CTL_KERN;
 		mib[1] = KERN_CPTIME;
 
-		size = sizeof(a);
+		size = sizeof(b);
 
-		memcpy(b, a, sizeof(b));
+		memcpy(b, a, size);
 		if (sysctl(mib, 2, &a, &size, NULL, 0) < 0) {
 			warn("sysctl 'KERN_CPTIME':");
 			ERRRET(out);
@@ -113,7 +117,8 @@
 	#include <devstat.h>
 
 	void
-	cpu_freq(char *out)
+	cpu_freq(char *out, const char __unused *_a, unsigned int __unused _i,
+		void __unused *_p)
 	{
 		int freq;
 		size_t size;
@@ -130,16 +135,17 @@
 	}
 
 	void
-	cpu_perc(char *out)
+	cpu_perc(char *out, const char __unused *_a, unsigned int __unused _i,
+		void *static_ptr)
 	{
 		size_t size;
 		long
 			sum,
 			b[CPUSTATES];
-		static long a[CPUSTATES];
+		long *a = static_ptr;
 
-		size = sizeof(a);
-		memcpy(b, a, sizeof(b));
+		size = sizeof(b);
+		memcpy(b, a, size);
 		if (sysctlbyname("kern.cp_time", &a, &size, NULL, 0) == -1
 				|| !size) {
 			warn("sysctlbyname 'kern.cp_time':");

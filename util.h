@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -7,6 +8,7 @@
  * if you are using `wifi.c` it must be at least 78 bytes
  */
 
+#define __unused __attribute__((__unused__))
 #define ONCE ((unsigned int) -1)  /* for config.h */
 #define LEN(S) (sizeof(S) / sizeof *(S))
 #define ERRRET(B) do { (B)[0] = '\0'; return; } while (0)

@@ -14,19 +14,20 @@
 	static const char HWMON[] = "/sys/class/hwmon";
 
 	void
-	temp(char *out, const char *device)
+	temp(char *out, const char *device, unsigned int __unused _i,
+		void *static_ptr)
 	{
 		DIR *d;
 		uintmax_t temp;
 		struct dirent *dp;
 		char name[MAX_NAME];
-		static char file[PATH_MAX] = {0};
+		char *file = static_ptr;
 
 		if (file[0])
 			goto get_temp;
 
 		if (!!device) {
-			esnprintf(file, sizeof(file),
+			esnprintf(file, PATH_MAX,
 					"%s/%s/temp1_input", HWMON, device);
 			goto get_temp;
 		}
@@ -41,7 +42,7 @@
 					!strcmp(dp->d_name, ".."))
 				continue;
 
-			esnprintf(file, sizeof(file), "%s/%s/%s",
+			esnprintf(file, PATH_MAX, "%s/%s/%s",
 					HWMON, dp->d_name, "name");
 
 			if (pscanf(file, "%"STR(MAX_NAME)"s", name) != 1) {
@@ -54,7 +55,7 @@
 					!strcmp(name, "acpitz") ||
 					!strcmp(name, "k10temp") ||
 					!strcmp(name, "fam15h_power")) {
-				esnprintf(file, sizeof(file),
+				esnprintf(file, PATH_MAX,
 						"%s/%s/%s", HWMON,
 						dp->d_name, "temp1_input");
 				break;
@@ -73,7 +74,8 @@ get_temp:
 	#include <sys/sensors.h>
 
 	void
-	temp(char *out, const char *unused)
+	temp(char *out, const char __unused *_a,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int mib[5];
 		size_t size;
@@ -101,7 +103,8 @@ get_temp:
 	#include <sys/sysctl.h>
 
 	void
-	temp(char *out, const char *zone)
+	temp(char *out, const char *zone,
+		unsigned int __unused _i, void __unused *_p)
 	{
 		int temp;
 		size_t len;

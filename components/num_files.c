@@ -6,7 +6,8 @@
 #include "../util.h"
 
 void
-num_files(char *out, const char *path)
+num_files(char *out, const char *path,
+	unsigned int __unused _i, void __unused *_p)
 {
 	DIR *fd;
 	unsigned int num;

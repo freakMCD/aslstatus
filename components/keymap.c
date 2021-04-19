@@ -1,15 +1,16 @@
 /* See LICENSE file for copyright and license details. */
 #include <stdio.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #include <X11/Xlib.h>
 #include <X11/XKBlib.h>
 
 #include "../util.h"
 
-static inline int
+static inline bool
 valid_layout_or_variant(char *sym)
 {
 	size_t i;
@@ -17,10 +18,10 @@ valid_layout_or_variant(char *sym)
 	static const char *invalid[] = { "evdev", "inet", "pc", "base" };
 
 	for (i = 0; i < LEN(invalid); i++)
-		if (!strncmp(sym, invalid[i], strlen(invalid[i])))
-			return 0;
+		if (!strcmp(sym, invalid[i]))
+			return false;
 
-	return 1;
+	return true;
 }
 
 static inline char *
@@ -46,38 +47,39 @@ get_layout(char *syms, int grp_num)
 }
 
 void
-keymap(char *layout)
+keymap(char *layout, const char __unused *_a, unsigned int __unused _i,
+	void *static_ptr)
 {
 	XEvent e;
 	char *symbols;
 	XkbDescRec *desc;
 	XkbStateRec state;
-	static Display *dpy = NULL;
+	Display **dpy = static_ptr;
 
-	if (!dpy) {
-		if (!(dpy = XOpenDisplay(NULL))) {
+	if (!*dpy) {
+		if (!(*dpy = XOpenDisplay(NULL))) {
 			warn("XOpenDisplay: Failed to open display");
 			ERRRET(layout);
 		}
-		XkbSelectEventDetails(dpy, XkbUseCoreKbd, XkbStateNotify,
+		XkbSelectEventDetails(*dpy, XkbUseCoreKbd, XkbStateNotify,
 				XkbGroupStateMask, XkbGroupStateMask);
 	} else {
-		XNextEvent(dpy, &e);
+		XNextEvent(*dpy, &e);
 	}
 
 	if (!(desc = XkbAllocKeyboard())) {
 		warn("XkbAllocKeyboard: Failed to allocate keyboard");
 		goto end;
 	}
-	if (XkbGetNames(dpy, XkbSymbolsNameMask, desc)) {
+	if (XkbGetNames(*dpy, XkbSymbolsNameMask, desc)) {
 		warn("XkbGetNames: Failed to retrieve key symbols");
 		goto end;
 	}
-	if (XkbGetState(dpy, XkbUseCoreKbd, &state)) {
+	if (XkbGetState(*dpy, XkbUseCoreKbd, &state)) {
 		warn("XkbGetState: Failed to retrieve keyboard state");
 		goto end;
 	}
-	if (!(symbols = XGetAtomName(dpy, desc->names->symbols))) {
+	if (!(symbols = XGetAtomName(*dpy, desc->names->symbols))) {
 		warn("XGetAtomName: Failed to get atom name");
 		goto end;
 	}
