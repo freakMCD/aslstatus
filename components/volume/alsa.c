@@ -1,3 +1,4 @@
+#include <err.h>
 #include <math.h>
 #include <stdbool.h>
 
@@ -9,15 +10,14 @@
 #include "volume.h"
 #include "../../util.h"
 
-
 static const size_t CTL_NAME_MAX = 3 + 10 + 1;
 /*
 	3  - "hw:"
 	10 - len(str(UINT_MAX))
 	1  - zero byte
 */
-static const char CARD[] = "default";
-static const char MIXER_NAME[] = "Master";
+static const char   CARD[]	 = "default";
+static const char   MIXER_NAME[] = "Master";
 
 typedef struct volume_static_data static_data;
 
@@ -31,34 +31,34 @@ get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
 	(see `is_muted` function)
 */
 {
-	int err;
+	int	     err;
 	snd_mixer_t *handle;
 
 	if (!*sid) {
 		if ((err = snd_mixer_selem_id_malloc(sid)) < 0) {
-			warn("failed to allocate memory for: %s",
-					snd_strerror(err));
+			warnx("failed to allocate memory for: %s",
+			      snd_strerror(err));
 			return NULL;
 		}
 		snd_mixer_selem_id_set_name(*sid, MIXER_NAME);
 	}
 
 	if ((err = snd_mixer_open(&handle, 0)) < 0) {
-		warn("cannot open mixer: %s", snd_strerror(err));
+		warnx("cannot open mixer: %s", snd_strerror(err));
 		return NULL;
 	}
 	if ((err = snd_mixer_attach(handle, CARD)) < 0) {
-		warn("cannot attach mixer: %s", snd_strerror(err));
+		warnx("cannot attach mixer: %s", snd_strerror(err));
 		snd_mixer_close(handle);
 		return NULL;
 	}
 	if ((err = snd_mixer_selem_register(handle, NULL, NULL)) < 0) {
-		warn("cannot register mixer: %s", snd_strerror(err));
+		warnx("cannot register mixer: %s", snd_strerror(err));
 		snd_mixer_close(handle);
 		return NULL;
 	}
 	if ((err = snd_mixer_load(handle)) < 0) {
-		warn("failed to load mixer: %s", snd_strerror(err));
+		warnx("failed to load mixer: %s", snd_strerror(err));
 		snd_mixer_close(handle);
 		return NULL;
 	}
@@ -68,64 +68,54 @@ get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
 	return handle;
 }
 
-
 static inline bool
 is_muted(snd_mixer_selem_id_t **sid)
 {
-	int psw;
-	snd_mixer_t *handle;
+	int		  psw;
+	snd_mixer_t *	  handle;
 	snd_mixer_elem_t *elem;
 
-	if (!(handle = get_mixer_elem(&elem, sid)))
-		return 0;
+	if (!(handle = get_mixer_elem(&elem, sid))) return 0;
 
-	snd_mixer_selem_get_playback_switch(elem,
-			SND_MIXER_SCHN_MONO, &psw);
+	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_MONO, &psw);
 	snd_mixer_close(handle);
 
 	return !psw;
 }
 
-
 static inline unsigned short int
-get_percentage(__typeof__(((static_data*)0)->volume) *v,
-		snd_mixer_selem_id_t **sid)
+get_percentage(__typeof__(((static_data *)0)->volume) *v,
+	       snd_mixer_selem_id_t **		       sid)
 {
-	int err;
-	long int vol;
-	snd_mixer_t *handle;
+	int		  err;
+	long int	  vol;
+	snd_mixer_t *	  handle;
 	snd_mixer_elem_t *elem;
 
-	if (!(handle = get_mixer_elem(&elem, sid)))
-		return 0;
+	if (!(handle = get_mixer_elem(&elem, sid))) return 0;
 
 	if (!v->max)
-		snd_mixer_selem_get_playback_volume_range(
-			elem,
-			&v->min,
-			&v->max
-		);
+		snd_mixer_selem_get_playback_volume_range(elem,
+							  &v->min,
+							  &v->max);
 
 	err = snd_mixer_selem_get_playback_volume(elem, 0, &vol);
 	snd_mixer_close(handle);
 	if (err < 0) {
-		warn("cannot get playback volume: %s",
-				snd_strerror(err));
+		warnx("cannot get playback volume: %s", snd_strerror(err));
 		return 0;
 	}
 
-	return (unsigned short int)
-		((vol - v->min) * 100 / (v->max - v->min));
+	return (unsigned short int)((vol - v->min) * 100 / (v->max - v->min));
 }
-
 
 static inline char *
 get_ctl_name(snd_mixer_selem_id_t **sid)
 /* after using return must be freed */
 {
-	char *ctl_name;
-	unsigned int index;
-	snd_mixer_t *handle;
+	char *		  ctl_name;
+	unsigned int	  index;
+	snd_mixer_t *	  handle;
 	snd_mixer_elem_t *elem;
 
 	if (!(handle = get_mixer_elem(&elem, sid))) {
@@ -135,25 +125,25 @@ get_ctl_name(snd_mixer_selem_id_t **sid)
 		snd_mixer_close(handle);
 	}
 	if (!(ctl_name = calloc(CTL_NAME_MAX, 1))) {
-		warn("failed to allocate memory for ctl_name");
+		warnx("failed to allocate memory for ctl_name");
 		return NULL;
 	}
 	snprintf(ctl_name, CTL_NAME_MAX, "hw:%u", index);
 	return ctl_name;
 }
 
-
 void
-vol_perc(char *volume, const char __unused *_a,
-	unsigned int __unused _i, void *static_ptr)
+vol_perc(char *	    volume,
+	 const char __unused * _a,
+	 unsigned int __unused _i,
+	 void *		       static_ptr)
 {
-	int err;
-	char *ctl_name;
+	int	     err;
+	char *	     ctl_name;
 	static_data *data = static_ptr;
 
 	if (!data->ctl) {
-		if (!(ctl_name = get_ctl_name(&data->sid)))
-			ERRRET(volume);
+		if (!(ctl_name = get_ctl_name(&data->sid))) ERRRET(volume);
 
 		snd_ctl_open(&data->ctl, ctl_name, SND_CTL_READONLY);
 		free(ctl_name);
@@ -162,8 +152,8 @@ vol_perc(char *volume, const char __unused *_a,
 		if (err < 0) {
 			snd_ctl_close(data->ctl);
 			data->ctl = NULL;
-			warn("cannot subscribe to alsa events: %s",
-					snd_strerror(err));
+			warnx("cannot subscribe to alsa events: %s",
+			      snd_strerror(err));
 			ERRRET(volume);
 		}
 		snd_ctl_event_malloc(&data->e);
@@ -174,9 +164,9 @@ vol_perc(char *volume, const char __unused *_a,
 	if (is_muted(&data->sid))
 		bprintf(volume, "%s", MUTED);
 	else
-		bprintf(
-			volume, "%s%3hu%s", SYM,
+		bprintf(volume,
+			"%s%3hu%s",
+			SYM,
 			get_percentage(&data->volume, &data->sid),
-			PERCENT
-		);
+			PERCENT);
 }

@@ -1,17 +1,20 @@
 /* See LICENSE file for copyright and license details. */
+#include <err.h>
 #include <stdio.h>
 #include <sys/statvfs.h>
 
 #include "../util.h"
 
 void
-disk_free(char *out, const char *path,
-	unsigned int __unused _i, void __unused *_p)
+disk_free(char *		out,
+	  const char *		path,
+	  unsigned int __unused _i,
+	  void __unused *_p)
 {
 	struct statvfs fs;
 
 	if (statvfs(path, &fs) < 0) {
-		warn("statvfs '%s':", path);
+		warn("statvfs '%s'", path);
 		ERRRET(out);
 	}
 
@@ -19,28 +22,34 @@ disk_free(char *out, const char *path,
 }
 
 void
-disk_perc(char *out, const char *path,
-	unsigned int __unused _i, void __unused *_p)
+disk_perc(char *		out,
+	  const char *		path,
+	  unsigned int __unused _i,
+	  void __unused *_p)
 {
 	struct statvfs fs;
 
 	if (statvfs(path, &fs) < 0) {
-		warn("statvfs '%s':", path);
+		warn("statvfs '%s'", path);
 		ERRRET(out);
 	}
 
-	bprintf(out, "%d", (int)(100 *
-	               (1.0f - ((float)fs.f_bavail / (float)fs.f_blocks))));
+	bprintf(
+	    out,
+	    "%d",
+	    (int)(100 * (1.0f - ((float)fs.f_bavail / (float)fs.f_blocks))));
 }
 
 void
-disk_total(char *out, const char *path,
-	unsigned int __unused _i, void __unused *_p)
+disk_total(char *		 out,
+	   const char *		 path,
+	   unsigned int __unused _i,
+	   void __unused *_p)
 {
 	struct statvfs fs;
 
 	if (statvfs(path, &fs) < 0) {
-		warn("statvfs '%s':", path);
+		warn("statvfs '%s'", path);
 		ERRRET(out);
 	}
 
@@ -48,13 +57,15 @@ disk_total(char *out, const char *path,
 }
 
 void
-disk_used(char *out, const char *path,
-	unsigned int __unused _i, void __unused *_p)
+disk_used(char *		out,
+	  const char *		path,
+	  unsigned int __unused _i,
+	  void __unused *_p)
 {
 	struct statvfs fs;
 
 	if (statvfs(path, &fs) < 0) {
-		warn("statvfs '%s':", path);
+		warn("statvfs '%s'", path);
 		ERRRET(out);
 	}
 

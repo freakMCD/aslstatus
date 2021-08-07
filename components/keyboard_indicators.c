@@ -1,4 +1,5 @@
 /* See LICENSE file for copyright and license details. */
+#include <err.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,29 +16,29 @@
  * included, lowercase when off and uppercase when on.
  */
 void
-keyboard_indicators(char *out, const char *fmt,
-	unsigned int __unused _i, void *static_ptr)
+keyboard_indicators(char *		  out,
+		    const char *	  fmt,
+		    unsigned int __unused _i,
+		    void *		  static_ptr)
 {
-	size_t
-		i, n,
-		fmtlen;
-	int
-		isset,
-		togglecase;
+	size_t i, n, fmtlen;
+	int    isset, togglecase;
 
-	XEvent e;
-	char key;
+	XEvent	       e;
+	char	       key;
 	XKeyboardState state;
-	Display **dpy = static_ptr;
+	Display **     dpy = static_ptr;
 
 	if (!*dpy) {
 		if (!(*dpy = XOpenDisplay(NULL))) {
-			warn("XOpenDisplay: Failed to open display");
+			warnx("XOpenDisplay: Failed to open display");
 			ERRRET(out);
 		}
-		XkbSelectEventDetails(*dpy, XkbUseCoreKbd,
-				XkbIndicatorStateNotify, XkbAllEventsMask,
-				XkbAllEventsMask);
+		XkbSelectEventDetails(*dpy,
+				      XkbUseCoreKbd,
+				      XkbIndicatorStateNotify,
+				      XkbAllEventsMask,
+				      XkbAllEventsMask);
 	} else {
 		XNextEvent(*dpy, &e);
 	}
@@ -47,11 +48,9 @@ keyboard_indicators(char *out, const char *fmt,
 	fmtlen = strnlen(fmt, 4);
 	for (i = n = 0; i < fmtlen; i++) {
 		key = tolower(fmt[i]);
-		if (key != 'c' && key != 'n') {
-			continue;
-		}
+		if (key != 'c' && key != 'n') { continue; }
 		togglecase = (i + 1 >= fmtlen || fmt[i + 1] != '?');
-		isset = (state.led_mask & (1 << (key == 'n')));
+		isset	   = (state.led_mask & (1 << (key == 'n')));
 		if (togglecase) {
 			out[n++] = isset ? toupper(key) : key;
 		} else if (isset) {

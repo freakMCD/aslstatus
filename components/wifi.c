@@ -1,10 +1,12 @@
 /* See LICENSE file for copyright and license details. */
-#include <ifaddrs.h>
+#include <err.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <ifaddrs.h>
+
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 #include "../util.h"
 
@@ -35,7 +37,7 @@
 			ERRRET(out);
 
 		if (!(fp = fopen(path, "r"))) {
-			warn("fopen '%s':", path);
+			warn("fopen '%s'", path);
 			ERRRET(out);
 		}
 		p = fgets(status, 5, fp);
@@ -44,7 +46,7 @@
 			ERRRET(out);
 
 		if (!(fp = fopen("/proc/net/wireless", "r"))) {
-			warn("fopen '/proc/net/wireless':");
+			warn("fopen '/proc/net/wireless'");
 			ERRRET(out);
 		}
 
@@ -82,12 +84,12 @@
 			ERRRET(out);
 
 		if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-			warn("socket 'AF_INET':");
+			warn("socket 'AF_INET'");
 			ERRRET(out);
 		}
 		wreq.u.essid.pointer = id;
 		if (ioctl(sockfd,SIOCGIWESSID, &wreq) < 0) {
-			warn("ioctl 'SIOCGIWESSID':");
+			warn("ioctl 'SIOCGIWESSID'");
 			close(sockfd);
 			ERRRET(out);
 		}
@@ -119,12 +121,12 @@
 		memset(&bssid, 0, sizeof(bssid));
 		memset(nr, 0, sizeof(struct ieee80211_nodereq));
 		if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-			warn("socket 'AF_INET':");
+			warn("socket 'AF_INET'");
 			return 0;
 		}
 		strlcpy(bssid.i_name, interface, sizeof(bssid.i_name));
 		if ((ioctl(sockfd, SIOCG80211BSSID, &bssid)) < 0) {
-			warn("ioctl 'SIOCG80211BSSID':");
+			warn("ioctl 'SIOCG80211BSSID'");
 			close(sockfd);
 			return 0;
 		}
@@ -137,7 +139,7 @@
 		strlcpy(nr->nr_ifname, interface, sizeof(nr->nr_ifname));
 		memcpy(&nr->nr_macaddr, bssid.i_bssid, sizeof(nr->nr_macaddr));
 		if ((ioctl(sockfd, SIOCG80211NODE, nr)) < 0 && nr->nr_rssi) {
-			warn("ioctl 'SIOCG80211NODE':");
+			warn("ioctl 'SIOCG80211NODE'");
 			close(sockfd);
 			return 0;
 		}
@@ -184,7 +186,6 @@
 	load_ieee80211req(int sock, const char *interface,
 			void *data, int type, size_t *len)
 	{
-		char warn_buf[256];
 		struct ieee80211req ireq;
 		memset(&ireq, 0, sizeof(ireq));
 		ireq.i_type = type;
@@ -193,9 +194,7 @@
 
 		strlcpy(ireq.i_name, interface, sizeof(ireq.i_name));
 		if (ioctl(sock, SIOCG80211, &ireq) < 0) {
-			snprintf(warn_buf,  sizeof(warn_buf),
-					"ioctl: 'SIOCG80211': %d", type);
-			warn(warn_buf);
+			warn("ioctl: 'SIOCG80211': %d", type);
 			return 0;
 		}
 
@@ -217,7 +216,7 @@
 		uint8_t bssid[IEEE80211_ADDR_LEN];
 
 		if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-			warn("socket 'AF_INET':");
+			warn("socket 'AF_INET'");
 			ERRRET(out);
 		}
 
@@ -251,7 +250,7 @@
 		char ssid[IEEE80211_NWID_LEN + 1];
 
 		if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-			warn("socket 'AF_INET':");
+			warn("socket 'AF_INET'");
 			ERRRET(out);
 		}
 

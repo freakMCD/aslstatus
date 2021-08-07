@@ -27,14 +27,14 @@ struct volume_static_data {
 #	include <pulse/pulseaudio.h>
 
 struct volume_static_data {
-	char *		  out;
-	pthread_t	  volume_thread;
-	uint8_t		  pulse_thread_started;
+	char*	  out;
+	pthread_t volume_thread;
+	uint8_t	  pulse_thread_started;
 };
 #	define VOLUME_STATIC_SIZE sizeof(struct volume_static_data)
 
 #else
 #	define VOLUME_STATIC_SIZE 0
-#endif /* USE_ALSA */
+#endif
 
 #endif /* _COMPONENTS_VOLUME_H */

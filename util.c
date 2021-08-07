@@ -1,22 +1,10 @@
+#include <err.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
 
 #include "util.h"
-
-static inline void
-verr(const char *fmt, va_list ap)
-{
-	vfprintf(stderr, fmt, ap);
-
-	if (fmt[0] && fmt[strlen(fmt) - 1] == ':') {
-		fputc(' ', stderr);
-		perror(NULL);
-	} else {
-		fputc('\n', stderr);
-	}
-}
 
 static inline int
 evsnprintf(char *str, size_t size, const char *fmt, va_list ap)
@@ -26,10 +14,10 @@ evsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 	ret = vsnprintf(str, size, fmt, ap);
 
 	if (ret < 0) {
-		warn("vsnprintf:");
+		warn("vsnprintf");
 		return -1;
 	} else if ((size_t)ret >= size) {
-		warn("vsnprintf: Output truncated");
+		warnx("vsnprintf: Output truncated");
 		return -1;
 	}
 
@@ -37,35 +25,24 @@ evsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 }
 
 void
-warn(const char *fmt, ...)
-{
-	va_list ap;
-
-	va_start(ap, fmt);
-	verr(fmt, ap);
-	va_end(ap);
-}
-
-void
 bprintf(char *buf, const char *fmt, ...)
-{  /* buffer printf */
+{ /* buffer printf */
 	va_list ap;
 
 	va_start(ap, fmt);
-	if (evsnprintf(buf, BUFF_SZ, fmt, ap) < 0)
-		buf[0] = '\0';
+	if (evsnprintf(buf, BUFF_SZ, fmt, ap) < 0) buf[0] = '\0';
 	va_end(ap);
 }
 
 int
 pscanf(const char *path, const char *fmt, ...)
-{  /* path scansf */
-	int n;
-	FILE *fp;
+{ /* path scansf */
+	int	n;
+	FILE *	fp;
 	va_list ap;
 
 	if (!(fp = fopen(path, "r"))) {
-		warn("fopen '%s':", path);
+		warn("fopen '%s'", path);
 		return -1;
 	}
 
@@ -79,9 +56,9 @@ pscanf(const char *path, const char *fmt, ...)
 
 int
 esnprintf(char *str, size_t size, const char *fmt, ...)
-{  /* snprintf with warn about truncating */
+{ /* snprintf with warn about truncating */
 	va_list ap;
-	int ret;
+	int	ret;
 
 	va_start(ap, fmt);
 	ret = evsnprintf(str, size, fmt, ap);
@@ -93,14 +70,14 @@ esnprintf(char *str, size_t size, const char *fmt, ...)
 void
 fmt_human(char *out, uintmax_t num, unsigned short int base)
 {
-	double scaled;
-	unsigned int i;
-	const char **prefix;
-	const unsigned int prefixlen = 9;
-	const char *prefix_1000[] = { "", "k", "M", "G", "T", "P", "E", "Z",
-	                              "Y" };
-	const char *prefix_1024[] = { "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei",
-	                              "Zi", "Yi" };
+	double		   scaled;
+	unsigned int	   i;
+	const char **	   prefix;
+	const unsigned int prefixlen	 = 9;
+	const char *	   prefix_1000[] = { "",  "k", "M", "G", "T",
+					     "P", "E", "Z", "Y" };
+	const char *	   prefix_1024[] = { "",   "Ki", "Mi", "Gi", "Ti",
+					     "Pi", "Ei", "Zi", "Yi" };
 
 	switch (base) {
 	case 1000:

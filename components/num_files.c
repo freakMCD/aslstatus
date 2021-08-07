@@ -1,20 +1,23 @@
 /* See LICENSE file for copyright and license details. */
-#include <dirent.h>
+#include <err.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <string.h>
 
 #include "../util.h"
 
 void
-num_files(char *out, const char *path,
-	unsigned int __unused _i, void __unused *_p)
+num_files(char *		out,
+	  const char *		path,
+	  unsigned int __unused _i,
+	  void __unused *_p)
 {
-	DIR *fd;
-	unsigned int num;
+	DIR *	       fd;
+	unsigned int   num;
 	struct dirent *dp;
 
 	if (!(fd = opendir(path))) {
-		warn("opendir '%s':", path);
+		warn("opendir '%s'", path);
 		ERRRET(out);
 	}
 

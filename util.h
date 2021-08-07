@@ -16,7 +16,6 @@
 #define STRINGIFY_AUX(X) #X
 #define STR(X) STRINGIFY_AUX(X)
 
-void warn(const char *, ...);
 void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
 int  esnprintf(char *, size_t, const char *, ...);
