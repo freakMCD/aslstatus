@@ -19,8 +19,6 @@ it is successfully compiling with
 
 you can find out more in [config.mk](config.mk)
 
-and add some optimization with uncommenting `LTO` and `OPT`
-
 
 ---
 # config
