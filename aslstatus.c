@@ -49,7 +49,6 @@ struct arg_t {
 
 static Window	       root;
 static Display *       dpy;
-static volatile bool   done;
 static bool	       sflag = false;
 static pthread_t       tid[ARGC];
 static pthread_t       main_thread;
