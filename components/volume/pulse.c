@@ -173,8 +173,6 @@ quit:
 		pa_mainloop_free(m);
 	}
 
-	pthread_kill(data->volume_thread, SIGUSR2);
-
 	return NULL;
 }
 
