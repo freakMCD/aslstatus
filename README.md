@@ -29,11 +29,11 @@ for more info about configs see [config.h](config.h)
 
 also you can change `BUFF_SZ` (see [util.h](util.h))
 
-to use ALSA:
-```sh
-make AUDIO=ALSA
-```
-pulseaudio in development (see [there](#pulseaudio))
+**AUDIO**
+
+| ALSA (default)    | PulseAudio         | `sys/soundcard.h` & `sys/audioio.h` |
+| ----------------- | ------------------ | ----------------------------------- |
+| `make AUDIO=ALSA` | `make AUDIO=PULSE` | `make AUDIO=`                       |
 
 ---
 # components/
@@ -122,20 +122,7 @@ in `define` third field is size of static data to which point `static_ptr`
 also in [os.h](os.h) defined 4 variables which can be used to set
 os specific data sizes in branchless way (see: [this lines](https://notabug.org/dm9pZCAq/aslstatus/src/384b798760f5bc333505a5f10cd2ed4b34a91647/aslstatus.h#L40) in [aslstatus.h](aslstatus.h))
 
----
-### pulseaudio
-not yet implemented at all with `C` (see [components/volume.c](components/volume.c)),
-but you can temporary use `run_command` with `pulse_volume` (see [config.h](config.h))
-
-if anyone can help me with it, then i will gladly accept yours pull requests
-(if they don't **suck** to much)
-
-you can find some demo code in [TODO/pulse.c](TODO/pulse.c)
-
-but it has problems using with threads as [component](components/volume.c)
-
 
 ---
 # TODO
-* rewrite `run_command` to redirect *stderr* to `/dev/null`
-* add pulseaudio support
+* ~~add pulseaudio support~~

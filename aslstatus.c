@@ -1,3 +1,5 @@
+#include "thread_helper.h"
+
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -7,8 +9,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define _GNU_SOURCE  /* for pthread_setname_np */
-#include <pthread.h>
 #include <X11/Xlib.h>
 
 #include "util.h"  /* you can change there segment buffer size (BUFF_SZ) */
@@ -37,20 +37,65 @@ struct arg_t {
 	struct segment_t segment;
 };
 
-
+#undef MIN
 #include "config.h"
 #define ARGC LEN(args)
 
 static Window root;
 static Display *dpy;
 static volatile bool done;
+static bool sflag = false;
+static pthread_t tid[ARGC];
 static pthread_t main_thread;
+static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 static inline void
 update_status(int __unused _)
-{ return; }
+{
+	unsigned int i			 = 0;
+	char	     status[MAXLEN]	 = { 0 };
+	static char  status_prev[MAXLEN] = { 0 };
 
+	for (i = 0; i < ARGC; i++)
+		MUTEX_WRAP(args[i].segment.mutex, {
+			if (args[i].segment.data[0])
+				strcat(status, args[i].segment.data);
+		});
+
+	MUTEX_WRAP(status_mutex, {
+		if (strncmp(status, status_prev, MAXLEN)) {
+			/* with this `if`, CPU usage for dwm and xorg decreases
+			 */
+			if (sflag) {
+				fprintf(stderr, "%s\n", status);
+				fflush(stdout);
+			} else {
+				XStoreName(dpy, root, status);
+				XFlush(dpy);
+			}
+
+			strncpy(status_prev, status, MAXLEN);
+		}
+	});
+}
+
+_Noreturn static void
+terminate(int __unused _)
+{
+	signal(SIGUSR1, SIG_IGN);
+
+	if (!!dpy) {
+		if (!sflag)
+			XStoreName(dpy, root, NULL);
+
+		XFlush(dpy);
+		XCloseDisplay(dpy);
+	}
+
+
+	exit(0);
+}
 
 static void *
 thread(void *arg_ptr)
@@ -74,8 +119,6 @@ thread(void *arg_ptr)
 		}
 	}
 
-	signal(SIGUSR1, update_status);
-
 	do {
 		arg->f.func(buf, arg->args, arg->interval, static_ptr);
 		if (!buf[0])
@@ -92,13 +135,6 @@ thread(void *arg_ptr)
 }
 
 
-static void
-terminate(int s)
-{
-	(void) s;
-	done = true;
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -106,11 +142,7 @@ main(int argc, char *argv[])
 	char *strptr;
 	char *tofree;
 	unsigned int i;
-	bool sflag = false;
-	pthread_t tid[ARGC];
-	char status[MAXLEN];
 	char thread_name[16];
-	char status_prev[MAXLEN] = {0};
 
 	if (!(dpy = XOpenDisplay(NULL))) {
 		warn("Failed to open display");
@@ -122,6 +154,8 @@ main(int argc, char *argv[])
 	root = DefaultRootWindow(dpy);
 	main_thread = pthread_self();
 
+	signal(SIGINT, terminate);
+	signal(SIGTERM, terminate);
 	signal(SIGUSR1, update_status);
 	for (i = 0; i < ARGC; i -= (~0L)) {
 		pthread_create(&tid[i], NULL, thread, &args[i]);
@@ -139,53 +173,12 @@ main(int argc, char *argv[])
 				basename(token));
 			strptr = thread_name;
 		}
-#if defined(__linux__)
-		pthread_setname_np(tid[i], strptr);
-#elif defined(__OpenBSD__ || __FreeBSD)
-		pthread_set_name_np(tid[i], strptr);
-#endif
+		pthread_setname(tid[i], strptr);
 		free(tofree);
 	}
 
-	signal(SIGINT, terminate);
-	signal(SIGTERM, terminate);
-
-	while (!done) {
-		status[0] = '\0';
-
-		for (i = 0; i < ARGC; i++)
-			MUTEX_WRAP(args[i].segment.mutex,
-				if (args[i].segment.data[0])
-					strcat(status, args[i].segment.data);
-			);
-
-		if (strncmp(status, status_prev, MAXLEN)) {
-		/* with this `if`, CPU usage for dwm and xorg decreases */
-			if (sflag) {
-				printf("%s\n", status);
-				fflush(stdout);
-			} else {
-				XStoreName(dpy, root, status);
-				XFlush(dpy);
-			}
-
-			strncpy(status_prev, status, MAXLEN);
-		}
-
+	for (;;)
 		pause();
-	}
-	for (i = 0; i < ARGC; i -= (~0L))
-		if (!pthread_cancel(tid[i]))
-			tid[i] = 0;
 
-	for (i = 0; i < ARGC; i -=- 1)
-		if (tid[i])
-			pthread_kill(tid[i], SIGKILL);
-
-	if (!sflag) {
-		XStoreName(dpy, root, NULL);
-		XFlush(dpy);
-	}
-
-	return 0;
+	terminate(0);
 }

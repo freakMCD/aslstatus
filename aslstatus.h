@@ -172,7 +172,7 @@ void username FUNC_ARGS;
 
 
 /* volume */
-#include "components/volume.h"
+#include "components/volume/volume.h"
 void vol_perc FUNC_ARGS;
 #define vol_perc {vol_perc, "volume", VOLUME_STATIC_SIZE}
 
