@@ -31,10 +31,7 @@ static const char unknown_str[] = "n/a";
  * ipv4                IPv4 address                    interface name (eth0)
  * ipv6                IPv6 address                    interface name (eth0)
  * kernel_release      `uname -r`                      NULL
- * keyboard_indicators caps/num lock indicators        format string (c?n?)
- *                                                     see keyboard_indicators.c
- * keymap              layout (variant) of current     NULL
- *                     keymap                          (interval must be 1)
+ * keymap              layout of current keymap        NULL
  * load_avg            load average                    NULL
  * netspeed_rx         receive network speed           interface name (wlan0)
  * netspeed_tx         transfer network speed          interface name (wlan0)
@@ -70,8 +67,7 @@ static const char unknown_str[] = "n/a";
  *   then set interval to `ONCE`
  *
  * EXTRA CONFIGS IN:
- *   - battery.c
- *   - volume.c
+ *   - components_config.h
  */
 
 
@@ -82,11 +78,6 @@ static const char unknown_str[] = "n/a";
 #define ONCE ((unsigned int) -1)  /* to run */
 static const char IFC[] = "wlan0";  /* wifi interface */
 
-/* temporarily to get sound percentage for pulseaudio */
-static const char pulse_volume[] = "pactl subscribe | "
-	"stdbuf -oL grep \"Event 'change' on sink #0\" | "
-	"(read line && pamixer --get-volume-human; ps --ppid $$ -o pid= |"
-	" xargs kill -9)";
 
 static struct arg_t args[] = {
 
@@ -96,16 +87,12 @@ static struct arg_t args[] = {
 { cpu_perc,		"-[ %s%%]",	NULL,		 1 SEC,	END },
 { load_avg,		"-[%s]",	NULL,		 3 SEC,	END },
 { ram_used,		"-[﬙ %s]", 	NULL,		 3 SEC,	END },
-
 { vol_perc,		"-[墳 %s]",	NULL,		 0,	END },
-/* { run_command,		"-[墳 %s]",	pulse_volume,	 1,	END }, */
-
 { wifi_essid,		"-[直 \"%s\"",	IFC,		 2 SEC,	END },
 { wifi_perc,		" %s%%]",	IFC,		 2 SEC,	END },
 { battery_state,	"-[%s",		"BAT0",		 2 SEC,	END },
 { battery_perc,		" %s%%]",	"BAT0",		 1 MIN,	END },
 { datetime,		"-[ %s]",	"%H:%M:%S",	 1 SEC,	END },
-{ keymap,		"-[ %s^",	NULL,		 0,	END },
-{ keyboard_indicators,	"%s] ",		"c",		 0,	END },
+{ keymap,		"-[ %s] ",	NULL,		 0,	END },
 
 };

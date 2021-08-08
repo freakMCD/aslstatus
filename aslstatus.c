@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <X11/Xlib.h>
+#include <xcb/xcb.h>
 
 #include "util.h"      /* you can change there segment buffer size (BUFF_SZ) */
 #include "aslstatus.h" /* you can change there threads names */
@@ -47,12 +47,26 @@ struct arg_t {
 #include "config.h"
 #define ARGC LEN(args)
 
-static Window	       root;
-static Display *       dpy;
-static bool	       sflag = false;
+static xcb_connection_t *c;
+static xcb_window_t	 root;
+
 static pthread_t       tid[ARGC];
 static pthread_t       main_thread;
+static bool	       sflag	    = false;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static inline void
+store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
+{
+	xcb_change_property(c,
+			    XCB_PROP_MODE_REPLACE,
+			    win,
+			    XCB_ATOM_WM_NAME,
+			    XCB_ATOM_STRING,
+			    8, /* format: 8-bit char array */
+			    name ? strnlen(name, MAXLEN) : 0,
+			    name);
+}
 
 static inline void
 update_status(int __unused _)
@@ -75,8 +89,8 @@ update_status(int __unused _)
 				fprintf(stderr, "%s\n", status);
 				fflush(stdout);
 			} else {
-				XStoreName(dpy, root, status);
-				XFlush(dpy);
+				store_name(c, root, status);
+				xcb_flush(c);
 			}
 
 			strncpy(status_prev, status, MAXLEN);
@@ -89,11 +103,11 @@ terminate(int __unused _)
 {
 	signal(SIGUSR1, SIG_IGN);
 
-	if (!!dpy) {
-		if (!sflag) XStoreName(dpy, root, NULL);
+	if (!!c) {
+		if (!sflag) store_name(c, root, NULL);
 
-		XFlush(dpy);
-		XCloseDisplay(dpy);
+		xcb_flush(c);
+		xcb_disconnect(c);
 	}
 
 	exit(0);
@@ -141,15 +155,23 @@ main(int argc, char *argv[])
 	char *	     token;
 	char *	     strptr;
 	char *	     tofree;
+	int	     screen_num;
 	char	     thread_name[16];
 
-	if (!(dpy = XOpenDisplay(NULL))) {
-		warnx("Failed to open display");
-		return -1;
-	}
+	const xcb_setup_t *   setup;
+	xcb_screen_iterator_t iter;
+
+	c = xcb_connect(NULL, &screen_num);
+	if (xcb_connection_has_error(c)) errx(!0, "Failed to open display");
+
 	if (argc > 1 && !strncmp(argv[1], "-s", 3)) sflag = true;
 
-	root	    = DefaultRootWindow(dpy);
+	setup = xcb_get_setup(c);
+	iter  = xcb_setup_roots_iterator(setup);
+	for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
+		xcb_screen_next(&iter);
+	root	    = iter.data->root;
+
 	main_thread = pthread_self();
 
 	signal(SIGINT, terminate);

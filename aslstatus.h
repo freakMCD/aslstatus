@@ -85,15 +85,9 @@ void kernel_release FUNC_ARGS;
 #define kernel_release {kernel_release, "kernel_release", 0}
 
 
-/* keyboard_indicators */
-void keyboard_indicators FUNC_ARGS;
-#define keyboard_indicators {keyboard_indicators, "kbd_indicators", \
-	sizeof(Display *)}
-
-
 /* keymap */
 void keymap FUNC_ARGS;
-#define keymap {keymap, "keymap", sizeof(Display *)}
+#define keymap {keymap, "keymap", sizeof(xcb_connection_t *)}
 
 
 /* load_avg */

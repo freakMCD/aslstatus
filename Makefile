@@ -43,7 +43,7 @@ endif  # ALSA
 ${NEED_VOLUME}: components/volume/volume.h
 
 
-${OBJ}: util.h
+${OBJ}: util.h components_config.h
 aslstatus.o: aslstatus.c aslstatus.h config.h util.h os.h
 
 ${OBJ} util.o: %.o: %.c
