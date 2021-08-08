@@ -2,7 +2,7 @@
 
 #include <limits.h>  /* PATH_MAX */
 
-#include <X11/Xlib.h>
+#include <xcb/xcb.h>
 
 #include "os.h"
 
@@ -25,6 +25,11 @@ void battery_state FUNC_ARGS;
 
 void battery_remaining FUNC_ARGS;
 #define battery_remaining {battery_remaining, "batt_remaining", 0}
+
+
+/* bspwm */
+void bspwm_ws FUNC_ARGS;
+#define bspwm_ws {bspwm_ws, "bspwm", sizeof(int)}
 
 
 /* cpu */

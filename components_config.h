@@ -17,6 +17,14 @@
 #define BATTERY_CHARGING    "+" /* "+" */
 #define BATTERY_DISCHARGING "-" /* "-" */
 
+/* BSPWM */
+#define BSPWM_FOCUSED_RESET "%{F-}%{B-}"
+#define BSPWM_FOCUSED_FG    "#0ff"
+#define BSPWM_FOCUSED_BG    "-"
+#define BSPWM_DELIM	    ' ' /* must be CHAR */
+/* define to show vacant tags */
+/* #define BSPWM_SHOW_VACANT_TAGS */
+
 /* VOLUME */
 #define VOLUME_SYM	       "墳 "   /* you can specify volume sym there */
 #define VOLUME_PERCENT	       " %"    /* percent sign */

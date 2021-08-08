@@ -18,6 +18,7 @@ static const char unknown_str[] = "n/a";
  *                                                     NULL on OpenBSD/FreeBSD
  * battery_remaining   battery remaining HH:MM         battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
+ * bspwm_ws            bspwm workspaces for lemonbar   NULL
  * cpu_perc            cpu usage in percent            NULL
  * cpu_freq            cpu frequency in MHz            NULL
  * datetime            date and time                   format string (%F %T)
@@ -82,6 +83,8 @@ static const char IFC[] = "wlan0";  /* wifi interface */
 static struct arg_t args[] = {
 
 /* function		format		argument	interval (in ms) */
+
+/* { bspwm_ws,		" [ %s ]%%{r}",	NULL,		0,	END }, */
 { disk_perc,		" [# %s%%",	"/",		25 SEC,	END },
 { disk_free,		" %s]",		"/",		25 SEC,	END },
 { cpu_perc,		"-[ %s%%]",	NULL,		 1 SEC,	END },
