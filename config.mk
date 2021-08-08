@@ -14,7 +14,8 @@ CPPFLAGS += -D_DEFAULT_SOURCE
 CFLAGS   += -std=c99 -pedantic -Wall -Wextra
 
 #- linker -#
-LDFLAGS  += -L${X11LIB} -s
-LDLIBS   := -lpthread -lxcb -lxcb-xkb
-LDALSA   := -lasound
-LDPULSE  := -lpulse -L${PULSELIB}
+pkgconf   = $(shell pkg-config --static --libs --cflags-only-I $1)
+
+LDLIBS   := $(call pkgconf,xcb xcb-xkb) -lpthread -pthread
+LDALSA   := $(call pkgconf,alsa)
+LDPULSE  := $(call pkgconf,libpulse)

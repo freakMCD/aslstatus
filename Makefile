@@ -50,7 +50,7 @@ ${OBJ} util.o: %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
 aslstatus: aslstatus.o util.o ${OBJ}
-	$(CC) -o $@ ${LDFLAGS} ${CFLAGS} ${CPPFLAGS} ${LDLIBS} $^
+	$(CC) -o $@ ${LDFLAGS} ${LDLIBS} ${CFLAGS} ${CPPFLAGS} $^
 
 .PHONY: install
 install: all

@@ -86,7 +86,7 @@ update_status(int __unused _)
 			/* with this `if`, CPU usage for dwm and xorg decreases
 			 */
 			if (sflag) {
-				fprintf(stderr, "%s\n", status);
+				printf("%s\n", status);
 				fflush(stdout);
 			} else {
 				store_name(c, root, status);
