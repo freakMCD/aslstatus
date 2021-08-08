@@ -12,7 +12,7 @@
 #include "../components_config.h"
 
 #ifndef KEYMAP_NUMLOCK
-#define KEYMAP_NUMLOCK ""
+#	define KEYMAP_NUMLOCK ""
 #endif
 
 struct layout {

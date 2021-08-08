@@ -6,6 +6,15 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include "../../util.h"
+#include "../../components_config.h"
+
+#ifndef VOLUME_SYM
+#	define VOLUME_SYM ""
+#endif
+
+#ifndef VOLUME_PERCENT
+#	define VOLUME_PERCENT " %"
+#endif
 
 #ifdef __OpenBSD__
 #	include <sys/audioio.h>
@@ -75,7 +84,11 @@ vol_perc(char *out, const char *card)
 
 	close(afd);
 
-	bprintf(out, "%3d", m ? 0 : v * 100 / 255);
+	bprintf(out,
+		"%s%3d%s",
+		VOLUME_SYM,
+		m ? 0 : v * 100 / 255,
+		VOLUME_PERCENT);
 }
 #else
 #	include <sys/soundcard.h>
@@ -112,6 +125,6 @@ vol_perc(char *		       out,
 
 	close(afd);
 
-	bprintf(out, "%3d", v & 0xff);
+	bprintf(out, "%s%3d%s", VOLUME_SYM, v & 0xff, VOLUME_PERCENT);
 }
 #endif

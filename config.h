@@ -87,7 +87,7 @@ static struct arg_t args[] = {
 { cpu_perc,		"-[ %s%%]",	NULL,		 1 SEC,	END },
 { load_avg,		"-[%s]",	NULL,		 3 SEC,	END },
 { ram_used,		"-[﬙ %s]", 	NULL,		 3 SEC,	END },
-{ vol_perc,		"-[墳 %s]",	NULL,		 0,	END },
+{ vol_perc,		"-[%s]",	NULL,		 0,	END },
 { wifi_essid,		"-[直 \"%s\"",	IFC,		 2 SEC,	END },
 { wifi_perc,		" %s%%]",	IFC,		 2 SEC,	END },
 { battery_state,	"-[%s",		"BAT0",		 2 SEC,	END },

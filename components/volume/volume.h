@@ -1,12 +1,6 @@
 #ifndef _COMPONENTS_VOLUME_H
 #define _COMPONENTS_VOLUME_H
 
-#if defined(USE_ALSA) || defined(USE_PULSE)
-static const char SYM[]	    = "";      /* you can specify volume sym there */
-static const char PERCENT[] = " %";    /* percent sign */
-static const char MUTED[]   = "muted"; /* string to be displayed if muted */
-#endif
-
 #if defined(USE_ALSA)
 #	include <alsa/asoundlib.h>
 #	include <alsa/control.h>

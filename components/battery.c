@@ -4,11 +4,23 @@
 #include <string.h>
 
 #include "../util.h"
+#include "../components_config.h"
 
-static const char FULL[]	= "";	/* "f" */
-static const char UNCNOWN[]	= "";	/* "?" */
-static const char CHARGING[]	= "+"; /* "+" */
-static const char DISCHARGING[] = "-"; /* "-" */
+#ifndef BATTERY_FULL
+#	define BATTERY_FULL "" /* "f" */
+#endif
+
+#ifndef BATTERY_UNKNOWN
+#	define BATTERY_UNKNOWN "" /* "?" */
+#endif
+
+#ifndef BATTERY_CHARGING
+#	define BATTERY_CHARGING "+" /* "+" */
+#endif
+
+#ifndef BATTERY_DISCHARGING
+#	define BATTERY_DISCHARGING "-" /* "-" */
+#endif
 
 #if defined(__linux__)
 #	include <limits.h>
@@ -63,9 +75,9 @@ battery_state(char *		    out,
 		const char *state;
 		const char *symbol;
 	} map[] = {
-		{ "Charging", CHARGING },
-		{ "Discharging", DISCHARGING },
-		{ "Not charging", FULL },
+		{ "Charging", BATTERY_CHARGING },
+		{ "Discharging", BATTERY_DISCHARGING },
+		{ "Not charging", BATTERY_FULL },
 	};
 
 	if (esnprintf(path,
@@ -79,7 +91,7 @@ battery_state(char *		    out,
 
 	for (i = 0; i < LEN(map); i++)
 		if (!strcmp(map[i].state, state)) break;
-	bprintf(out, "%s", (i == LEN(map)) ? UNCNOWN : map[i].symbol);
+	bprintf(out, "%s", (i == LEN(map)) ? BATTERY_UNKNOWN : map[i].symbol);
 }
 
 void
@@ -184,17 +196,21 @@ battery_state(char *	 out,
 		unsigned int state;
 		char *	     symbol;
 	} map[] = {
-		{ APM_AC_ON, CHARGING },
-		{ APM_AC_OFF, DISCHARGING },
+		{ APM_AC_ON, BATTERY_CHARGING },
+		{ APM_AC_OFF, BATTERY_DISCHARGING },
 	};
+
+	size_t i;
+
 	struct apm_power_info apm_info;
-	size_t		      i;
 
 	if (!load_apm_power_info(&apm_info)) ERRRET(out);
+
 	for (i = 0; i < LEN(map); i++) {
-		if (map[i].state == apm_info.ac_state) { break; }
+		if (map[i].state == apm_info.ac_state) break;
 	}
-	strncpy(out, (i == LEN(map)) ? UNCNOWN : map[i].symbol, BUFF_SZ);
+
+	bprintf(out, (i == LEN(map)) ? BATTERY_UNKNOWN : map[i].symbol);
 }
 
 void
@@ -249,11 +265,11 @@ battery_state(char *	 out,
 	switch (state) {
 	case 0:
 	case 2:
-		strncpy(out, CHARGING, BUFF_SZ);
+		bprintf(out, BATTERY_CHARGING);
 	case 1:
-		strncpy(out, DISCHARGING, BUFF_SZ);
+		bprintf(out, BATTERY_DISCHARGING);
 	default:
-		strncpy(out, UNCNOWN, BUFF_SZ);
+		bprintf(out, BATTERY_UNKNOWN);
 	}
 }
 

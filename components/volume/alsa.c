@@ -9,6 +9,27 @@
 #define USE_ALSA
 #include "volume.h"
 #include "../../util.h"
+#include "../../components_config.h"
+
+#ifndef VOLUME_SYM
+#	define VOLUME_SYM ""
+#endif
+
+#ifndef VOLUME_PERCENT
+#	define VOLUME_PERCENT " %"
+#endif
+
+#ifndef VOLUME_MUTED
+#	define VOLUME_MUTED "muted"
+#endif
+
+#ifndef VOLUME_ALSA_CARD
+#	define VOLUME_ALSA_CARD "default"
+#endif
+
+#ifndef VOLUME_ALSA_MIXER_NAME
+#	define VOLUME_ALSA_MIXER_NAME "Master"
+#endif
 
 static const size_t CTL_NAME_MAX = 3 + 10 + 1;
 /*
@@ -16,8 +37,6 @@ static const size_t CTL_NAME_MAX = 3 + 10 + 1;
 	10 - len(str(UINT_MAX))
 	1  - zero byte
 */
-static const char   CARD[]	 = "default";
-static const char   MIXER_NAME[] = "Master";
 
 typedef struct volume_static_data static_data;
 
@@ -40,14 +59,14 @@ get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
 			      snd_strerror(err));
 			return NULL;
 		}
-		snd_mixer_selem_id_set_name(*sid, MIXER_NAME);
+		snd_mixer_selem_id_set_name(*sid, VOLUME_ALSA_MIXER_NAME);
 	}
 
 	if ((err = snd_mixer_open(&handle, 0)) < 0) {
 		warnx("cannot open mixer: %s", snd_strerror(err));
 		return NULL;
 	}
-	if ((err = snd_mixer_attach(handle, CARD)) < 0) {
+	if ((err = snd_mixer_attach(handle, VOLUME_ALSA_CARD)) < 0) {
 		warnx("cannot attach mixer: %s", snd_strerror(err));
 		snd_mixer_close(handle);
 		return NULL;
@@ -162,11 +181,11 @@ vol_perc(char *	    volume,
 	}
 
 	if (is_muted(&data->sid))
-		bprintf(volume, "%s", MUTED);
+		bprintf(volume, "%s", VOLUME_MUTED);
 	else
 		bprintf(volume,
 			"%s%3hu%s",
-			SYM,
+			VOLUME_SYM,
 			get_percentage(&data->volume, &data->sid),
-			PERCENT);
+			VOLUME_PERCENT);
 }

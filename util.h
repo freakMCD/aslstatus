@@ -8,7 +8,7 @@
  * if you are using `wifi.c` it must be at least 78 bytes
  */
 
-#define LEN(S)	(sizeof(S) / sizeof *(S))
+#define LEN(S) (sizeof(S) / sizeof *(S))
 #define ERRRET(B)                                                             \
 	do {                                                                  \
 		(B)[0] = '\0';                                                \
@@ -19,8 +19,8 @@
 #define typeof_field(S, F) __typeof__(((S *)0)->F)
 #define TWICE(V)	   V, V
 
-#define STRINGIFY_AUX(X)   #X
-#define STR(X)		   STRINGIFY_AUX(X)
+#define STRINGIFY_AUX(X) #X
+#define STR(X)		 STRINGIFY_AUX(X)
 
 void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);

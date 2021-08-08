@@ -12,8 +12,23 @@
 #define USE_PULSE
 #include "volume.h"
 #include "../../util.h"
+#include "../../components_config.h"
 
-#define PROC_NAME "volume:pulse"
+#ifndef VOLUME_SYM
+#	define VOLUME_SYM ""
+#endif
+
+#ifndef VOLUME_PERCENT
+#	define VOLUME_PERCENT " %"
+#endif
+
+#ifndef VOLUME_MUTED
+#	define VOLUME_MUTED "muted"
+#endif
+
+#ifndef VOLUME_PULSE_PROC_NAME
+#	define VOLUME_PULSE_PROC_NAME "volume:pulse"
+#endif
 
 struct pulse_data {
 	pa_mainloop_api *	   mainloop;
@@ -36,7 +51,7 @@ vol_perc(char *	    volume,
 		data->out		   = volume;
 		data->volume_thread	   = pthread_self();
 		pthread_create(&pulse, NULL, mainloop_thread, data);
-		pthread_setname(pulse, PROC_NAME);
+		pthread_setname(pulse, VOLUME_PULSE_PROC_NAME);
 	}
 
 	pause();
@@ -61,13 +76,15 @@ sink_info_callback(pa_context __unused *_c,
 	if (!i) return;
 
 	if (i->mute)
-		bprintf(data->out, "%s", MUTED);
+		bprintf(data->out, "%s", VOLUME_MUTED);
 	else
 		bprintf(data->out,
-			"%hhu",
+			"%s%3hhu%s",
+			VOLUME_SYM,
 			(pa_volume_t)((pa_cvolume_avg(&(i->volume)) * 100
 				       + (pa_volume_t)PA_VOLUME_NORM / 2)
-				      / (pa_volume_t)PA_VOLUME_NORM));
+				      / (pa_volume_t)PA_VOLUME_NORM),
+			VOLUME_PERCENT);
 
 	pthread_kill(data->volume_thread, SIGUSR1);
 }
