@@ -73,6 +73,12 @@ ${OBJ} util.o: %.o: %.c
 aslstatus: aslstatus.o util.o ${OBJ}
 	$(CC) -o $@ ${LDFLAGS} ${LDLIBS} ${CFLAGS} ${CPPFLAGS} $^
 
+aslstatus.1: aslstatus.1.md
+	pandoc --standalone --from=markdown $< --to=man -o $@
+
+.PHONY: man
+man: aslstatus.1
+
 .PHONY: install
 install: all
 	mkdir -p "${DESTDIR}${PREFIX}/bin"
