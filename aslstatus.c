@@ -184,11 +184,11 @@ main(int argc, char *argv[])
 	static const char usage[] =
 	    "[options]\n"
 #if USE_X
-	    "Write status to `WM_NAME`\n"
+	    "Write status to `WM_NAME`"
 #else
-	    "Write status to `stdout`\n"
+	    "Write status to `stdout`"
 #endif
-	    "options:\n"
+	    "\n\noptions:\n"
 	    "\t-h\tShow this help\n"
 	    "\t-v\tShow version\n"
 #if USE_X
