@@ -10,6 +10,19 @@ for all other questions, feel free to ask in matrix
 ![demo](imgs/demo.gif)
 
 ---
+# instalation
+### Gentoo
+avaliable in [my overlay](https://notabug.org/dm9pZCAq/dm9pZCAq-overlay):
+```sh
+eselect repository enable dm9pZCAq
+emerge --sync dm9pZCAq
+emerge app-admin/aslstatus::dm9pZCAq
+```
+
+if you wanna pack `aslstatus` for you distro,
+please do so and submit PR to add it here
+
+---
 # compile
 
 it is successfully compiling with
