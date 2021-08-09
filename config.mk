@@ -8,7 +8,7 @@ PREFIX    := /usr
 MANPREFIX := ${PREFIX}/share/man
 
 #- flags -#
-CPPFLAGS += -D_DEFAULT_SOURCE
+CPPFLAGS += -D_DEFAULT_SOURCE '-DVERSION="${VERSION}"'
 CFLAGS   += -std=c99 -pedantic -Wall -Wextra
 
 #- linker -#

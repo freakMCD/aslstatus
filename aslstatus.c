@@ -15,6 +15,11 @@
 #	include "X.h"
 #endif
 
+#ifndef VERSION
+#	define VERSION "unknown"
+#endif
+
+#include "arg.h"
 #include "util.h"      /* you can change there segment buffer size (BUFF_SZ) */
 #include "aslstatus.h" /* you can change there threads names */
 
@@ -48,9 +53,11 @@ struct arg_t {
 
 #undef MIN
 #include "config.h"
-#define ARGC LEN(args)
+#define ARGS_LEN LEN(args)
 
-static pthread_t       tid[ARGC];
+char *argv0; /* for arg.h */
+
+static pthread_t       tid[ARGS_LEN];
 static pthread_t       main_thread;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -96,7 +103,7 @@ update_status(int __unused _)
 	char	     status[MAXLEN]	 = { 0 };
 	static char  status_prev[MAXLEN] = { 0 };
 
-	for (i = 0; i < ARGC; i++)
+	for (i = 0; i < ARGS_LEN; i++)
 		MUTEX_WRAP(args[i].segment.mutex, {
 			if (args[i].segment.data[0])
 				strcat(status, args[i].segment.data);
@@ -165,19 +172,29 @@ thread(void *arg_ptr)
 }
 
 int
-main(
-#if USE_X
-    int argc, char *argv[]
-#else
-    void
-#endif
-)
+main(int argc, char *argv[])
 {
-	unsigned int i;
-	char *	     token;
-	char *	     strptr;
-	char *	     tofree;
-	char	     thread_name[16];
+	uint32_t i;
+
+	char *token;
+	char *strptr;
+	char *tofree;
+	char  thread_name[16];
+
+	static const char usage[] =
+	    "[options]\n"
+#if USE_X
+	    "Write status to `WM_NAME`\n"
+#else
+	    "Write status to `stdout`\n"
+#endif
+	    "options:\n"
+	    "\t-h\tShow this help\n"
+	    "\t-v\tShow version\n"
+#if USE_X
+	    "\t-s\tWrite to `stdout` instead of `WM_NAME`\n"
+#endif
+	    ;
 
 #if USE_X
 	int		      screen_num;
@@ -187,8 +204,6 @@ main(
 	c = xcb_connect(NULL, &screen_num);
 	if (xcb_connection_has_error(c)) errx(!0, "Failed to open display");
 
-	if (argc > 1 && !strncmp(argv[1], "-s", 3)) sflag = !0;
-
 	setup = xcb_get_setup(c);
 	iter  = xcb_setup_roots_iterator(setup);
 	for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
@@ -196,13 +211,29 @@ main(
 	root = iter.data->root;
 #endif
 
+	ARGBEGIN
+	{
+	case 'h':
+		errx(0, "%s", usage);
+	case 'v':
+		errx(0, "%s", VERSION);
+#if USE_X
+	case 's':
+		sflag = !0;
+		break;
+#endif
+	default:
+		errx(!0, "%s", usage);
+	}
+	ARGEND;
+
 	main_thread = pthread_self();
 
 	signal(SIGINT, terminate);
 	signal(SIGTERM, terminate);
 	signal(SIGUSR1, update_status);
 
-	for (i = 0; i < ARGC; i -= (~0L)) {
+	for (i = 0; i < ARGS_LEN; i -= (~0L)) {
 		pthread_create(&tid[i], NULL, thread, &args[i]);
 
 		tofree = strptr = strdup(args[i].f.name);
