@@ -9,6 +9,7 @@
 
 #if USE_X
 #	include <xcb/xkb.h>
+#	include "../X.h"
 #endif
 
 #include "../util.h"
@@ -39,32 +40,29 @@ keymap(char *	  layout,
        unsigned int __unused _i,
        void *		     static_ptr)
 {
-
 	void *ev = NULL;
 
 	struct layout state;
 
-	xcb_connection_t **c = static_ptr;
+	uint8_t *event_initialized = static_ptr;
 
-	if (!*c) {
-		*c = xcb_connect(NULL, NULL);
-		if (xcb_connection_has_error(*c))
-			warnx("Failed to open display");
-
-		if (!init_xkb_extension(*c)) {
+	if (!*event_initialized) {
+		if (!init_xkb_extension(c)) {
 			warnx("xcb: failed to initialize xkb extension");
 			ERRRET(layout);
 		}
-		init_events(*c);
+		init_events(c);
+
+		*event_initialized = !0;
 	} else {
-		if (!(ev = xcb_wait_for_event(*c))) {
+		if (!(ev = xcb_wait_for_event(c))) {
 			warnx("xcb: failed to get xkb event");
 			ERRRET(layout);
 		}
 		free(ev);
 	}
 
-	if (!!get_layout_struct(*c, &state)) ERRRET(layout);
+	if (!!get_layout_struct(c, &state)) ERRRET(layout);
 
 	if (state.lock_mask & CAPS) {
 		state.group[0] = toupper(state.group[0]);

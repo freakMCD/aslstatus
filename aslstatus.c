@@ -12,6 +12,7 @@
 
 #if USE_X
 #	include <xcb/xcb.h>
+#	include "X.h"
 #endif
 
 #include "util.h"      /* you can change there segment buffer size (BUFF_SZ) */
@@ -54,9 +55,9 @@ static pthread_t       main_thread;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #if USE_X
-static xcb_connection_t *c;
-static xcb_window_t	 root;
-static bool		 sflag = false;
+xcb_connection_t *  c;
+static xcb_window_t root;
+static bool	    sflag = false;
 
 static inline void
 store_name(xcb_connection_t *c, xcb_window_t win, const char *name)

@@ -97,7 +97,7 @@ void kernel_release FUNC_ARGS;
 #if USE_X && USE_XKB
 /* keymap */
 void keymap FUNC_ARGS;
-#define keymap {keymap, "keymap", sizeof(xcb_connection_t *)}
+#define keymap {keymap, "keymap", sizeof(char)}
 #endif
 
 
