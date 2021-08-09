@@ -2,7 +2,9 @@
 
 #include <limits.h>  /* PATH_MAX */
 
+#if USE_X
 #include <xcb/xcb.h>
+#endif
 
 #include "os.h"
 
@@ -27,9 +29,11 @@ void battery_remaining FUNC_ARGS;
 #define battery_remaining {battery_remaining, "batt_remaining", 0}
 
 
+#if USE_X
 /* bspwm */
 void bspwm_ws FUNC_ARGS;
 #define bspwm_ws {bspwm_ws, "bspwm", sizeof(int)}
+#endif
 
 
 /* cpu */
@@ -90,9 +94,11 @@ void kernel_release FUNC_ARGS;
 #define kernel_release {kernel_release, "kernel_release", 0}
 
 
+#if USE_X && USE_XKB
 /* keymap */
 void keymap FUNC_ARGS;
 #define keymap {keymap, "keymap", sizeof(xcb_connection_t *)}
+#endif
 
 
 /* load_avg */

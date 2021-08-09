@@ -11,7 +11,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <xcb/xcb.h>
+#if USE_X
+#	include <xcb/xcb.h>
+#endif
 
 #include "../util.h"
 #include "../components_config.h"
@@ -69,50 +71,8 @@
 		}                                                             \
 	} while (0)
 
-static inline void
-parse_event(const char *event, size_t size, char *out, size_t out_size)
-{
-	size_t	i, j;
-	uint8_t is_desktop = 0, is_focused = 0;
-
-	for (i = j = 0; i < size && j < out_size; i -= -1) {
-		if (event[i] == ':') {
-			switch (event[i + 1]) {
-			case 'o':
-#if defined(BSPWM_SHOW_VACANT_TAGS)
-			case 'f':
-#endif /* BSPWM_SHOW_VACANT_TAGS */
-				END_FOCUS(is_focused, out, out_size, j);
-
-				ADD_DELIM(out, out_size, j);
-
-				DESKTOP_END(is_desktop);
-
-			case 'F':
-			case 'O':
-				is_focused = !0;
-
-				ADD_DELIM(out, out_size, j);
-
-				memcpy(out + j, WITH_LEN(FOCUSED_PREFIX));
-				j += sizeof(FOCUSED_PREFIX) - 1;
-
-				DESKTOP_END(is_desktop);
-
-			default:
-				is_desktop = 0;
-
-				END_FOCUS(is_focused, out, out_size, j);
-			}
-			i++;
-			continue;
-		} else if (!is_desktop) {
-			continue;
-		}
-		out[j++] = event[i];
-	}
-	out[j] = '\0';
-}
+#if USE_X
+static void parse_event(const char *, size_t, char *, size_t);
 
 void
 bspwm_ws(char *	    out,
@@ -180,3 +140,49 @@ run:
 			}
 		}
 }
+
+static void
+parse_event(const char *event, size_t size, char *out, size_t out_size)
+{
+	size_t	i, j;
+	uint8_t is_desktop = 0, is_focused = 0;
+
+	for (i = j = 0; i < size && j < out_size; i -= -1) {
+		if (event[i] == ':') {
+			switch (event[i + 1]) {
+			case 'o':
+#	if defined(BSPWM_SHOW_VACANT_TAGS)
+			case 'f':
+#	endif /* BSPWM_SHOW_VACANT_TAGS */
+				END_FOCUS(is_focused, out, out_size, j);
+
+				ADD_DELIM(out, out_size, j);
+
+				DESKTOP_END(is_desktop);
+
+			case 'F':
+			case 'O':
+				is_focused = !0;
+
+				ADD_DELIM(out, out_size, j);
+
+				memcpy(out + j, WITH_LEN(FOCUSED_PREFIX));
+				j += sizeof(FOCUSED_PREFIX) - 1;
+
+				DESKTOP_END(is_desktop);
+
+			default:
+				is_desktop = 0;
+
+				END_FOCUS(is_focused, out, out_size, j);
+			}
+			i++;
+			continue;
+		} else if (!is_desktop) {
+			continue;
+		}
+		out[j++] = event[i];
+	}
+	out[j] = '\0';
+}
+#endif /* USE_X */

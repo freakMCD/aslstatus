@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <xcb/xcb.h>
+#if USE_X
+#	include <xcb/xcb.h>
+#endif
 
 #include "util.h"      /* you can change there segment buffer size (BUFF_SZ) */
 #include "aslstatus.h" /* you can change there threads names */
@@ -47,13 +49,14 @@ struct arg_t {
 #include "config.h"
 #define ARGC LEN(args)
 
-static xcb_connection_t *c;
-static xcb_window_t	 root;
-
 static pthread_t       tid[ARGC];
 static pthread_t       main_thread;
-static bool	       sflag	    = false;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+#if USE_X
+static xcb_connection_t *c;
+static xcb_window_t	 root;
+static bool		 sflag = false;
 
 static inline void
 store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
@@ -66,6 +69,23 @@ store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
 			    8, /* format: 8-bit char array */
 			    name ? strnlen(name, MAXLEN) : 0,
 			    name);
+}
+#endif
+
+static inline void
+set_status(const char *status)
+{
+#if USE_X
+	if (sflag) {
+#endif
+		puts(status);
+		fflush(stdout);
+#if USE_X
+	} else {
+		store_name(c, root, status);
+		xcb_flush(c);
+	}
+#endif
 }
 
 static inline void
@@ -82,33 +102,28 @@ update_status(int __unused _)
 		});
 
 	MUTEX_WRAP(status_mutex, {
+		/* don't update status if it's not changed */
 		if (strncmp(status, status_prev, MAXLEN)) {
-			/* with this `if`, CPU usage for dwm and xorg decreases
-			 */
-			if (sflag) {
-				printf("%s\n", status);
-				fflush(stdout);
-			} else {
-				store_name(c, root, status);
-				xcb_flush(c);
-			}
+			set_status(status);
 
 			strncpy(status_prev, status, MAXLEN);
 		}
 	});
 }
 
-_Noreturn static void
+static void
 terminate(int __unused _)
 {
 	signal(SIGUSR1, SIG_IGN);
 
+#if USE_X
 	if (!!c) {
 		if (!sflag) store_name(c, root, NULL);
 
 		xcb_flush(c);
 		xcb_disconnect(c);
 	}
+#endif
 
 	exit(0);
 }
@@ -149,15 +164,22 @@ thread(void *arg_ptr)
 }
 
 int
-main(int argc, char *argv[])
+main(
+#if USE_X
+    int argc, char *argv[]
+#else
+    void
+#endif
+)
 {
 	unsigned int i;
 	char *	     token;
 	char *	     strptr;
 	char *	     tofree;
-	int	     screen_num;
 	char	     thread_name[16];
 
+#if USE_X
+	int		      screen_num;
 	const xcb_setup_t *   setup;
 	xcb_screen_iterator_t iter;
 
@@ -170,7 +192,8 @@ main(int argc, char *argv[])
 	iter  = xcb_setup_roots_iterator(setup);
 	for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
 		xcb_screen_next(&iter);
-	root	    = iter.data->root;
+	root = iter.data->root;
+#endif
 
 	main_thread = pthread_self();
 

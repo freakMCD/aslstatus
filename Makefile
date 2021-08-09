@@ -8,6 +8,8 @@ OBJ          = ${COMPONENTS:.c=.o}
 
 NEED_VOLUME := aslstatus.o
 
+X         ?= 1
+XKB       ?= 1
 AUDIO     ?= ALSA
 A_ALSA_O  := components/volume/alsa.o
 A_DEF_O   := components/volume/default.o
@@ -18,8 +20,27 @@ A_PULSE_O := components/volume/pulse.o
 all: aslstatus
 
 
+
+
+ifeq (${X},1)
+LDLIBS   += ${LDXCB}
+CPPFLAGS += -DUSE_X=1
+
+ifeq (${XKB},1)
+LDLIBS   += ${LDXCB_XKB}
+CPPFLAGS += -DUSE_XKB=1
+else
+CPPFLAGS += -DUSE_XKB=0
+endif  # XKB
+
+else
+CPPFLAGS += -DUSE_X=0
+CPPFLAGS += -DUSE_XKB=0
+endif  # X
+
+
 ifeq (${AUDIO},ALSA)
-LDFLAGS += ${LDALSA}
+LDLIBS     += ${LDALSA}
 COMPONENTS += ${A_ALSA_O:.o=.c}
 
 ${NEED_VOLUME}: CPPFLAGS += -DUSE_ALSA
@@ -27,7 +48,7 @@ endif  # ALSA
 
 
 ifeq (${AUDIO},PULSE)
-LDFLAGS += ${LDPULSE}
+LDLIBS     += ${LDPULSE}
 COMPONENTS += ${A_PULSE_O:.o=.c}
 
 ${NEED_VOLUME}: CPPFLAGS += -DUSE_PULSE

@@ -84,7 +84,9 @@ static struct arg_t args[] = {
 
 /* function		format		argument	interval (in ms) */
 
+#if USE_X
 /* { bspwm_ws,		" [ %s ]%%{r}",	NULL,		0,	END }, */
+#endif
 { disk_perc,		" [# %s%%",	"/",		25 SEC,	END },
 { disk_free,		" %s]",		"/",		25 SEC,	END },
 { cpu_perc,		"-[ %s%%]",	NULL,		 1 SEC,	END },
@@ -96,6 +98,8 @@ static struct arg_t args[] = {
 { battery_state,	"-[%s",		"BAT0",		 2 SEC,	END },
 { battery_perc,		" %s%%]",	"BAT0",		 1 MIN,	END },
 { datetime,		"-[ %s]",	"%H:%M:%S",	 1 SEC,	END },
+#if USE_X && USE_XKB
 { keymap,		"-[ %s] ",	NULL,		 0,	END },
+#endif
 
 };

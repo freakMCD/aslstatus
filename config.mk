@@ -7,15 +7,16 @@ CC ?= cc
 PREFIX    := /usr
 MANPREFIX := ${PREFIX}/share/man
 
-PULSELIB  := /usr/lib/pulseaudio
-
 #- flags -#
 CPPFLAGS += -D_DEFAULT_SOURCE
 CFLAGS   += -std=c99 -pedantic -Wall -Wextra
 
 #- linker -#
-pkgconf   = $(shell pkg-config --static --libs --cflags-only-I $1)
+pkgconf   = $(shell pkg-config --libs $1)
 
-LDLIBS   := $(call pkgconf,xcb xcb-xkb) -lpthread -pthread
-LDALSA   := $(call pkgconf,alsa)
-LDPULSE  := $(call pkgconf,libpulse)
+LDLIBS  := -lpthread -pthread
+LDALSA   = $(call pkgconf,alsa)  # -lasound
+LDPULSE  = $(call pkgconf,--static libpulse)  # -lpulse -L/usr/lib/pulseaudio
+
+LDXCB     = $(call pkgconf,xcb)  # -lxcb
+LDXCB_XKB = $(call pkgconf,xcb-xkb)  # -lxcb-xkb

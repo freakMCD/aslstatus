@@ -4,9 +4,12 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <inttypes.h>
 
-#include <xcb/xkb.h>
+#if USE_X
+#	include <xcb/xkb.h>
+#endif
 
 #include "../util.h"
 #include "../components_config.h"
@@ -15,6 +18,7 @@
 #	define KEYMAP_NUMLOCK ""
 #endif
 
+#if USE_X && USE_XKB
 struct layout {
 	char	group[3];
 	uint8_t lock_mask;
@@ -95,7 +99,7 @@ init_xkb_extension(xcb_connection_t *c)
 static void
 init_events(xcb_connection_t *c)
 {
-#define clone_field(S, F) typeof_field(S, F) F
+#	define clone_field(S, F) typeof_field(S, F) F
 	struct {
 		clone_field(xcb_xkb_select_events_details_t, affectState);
 		clone_field(xcb_xkb_select_events_details_t, stateDetails);
@@ -158,20 +162,20 @@ get_layout(char *syms, uint8_t grp_num)
 static uint8_t
 get_layout_struct(xcb_connection_t *c, struct layout *ret)
 {
-#define test_reply(R, F, C, COOKIE, CODE, END)                                \
-	do {                                                                  \
-		xcb_generic_error_t *_err = NULL;                             \
+#	define test_reply(R, F, C, COOKIE, CODE, END)                        \
+		do {                                                          \
+			xcb_generic_error_t *_err = NULL;                     \
                                                                               \
-		R			  = F((C), (COOKIE), &_err);          \
+			R			  = F((C), (COOKIE), &_err);  \
                                                                               \
-		if (_err) {                                                   \
-			warnx("xcb: %s: error %" PRIu8,                       \
-			      #F,                                             \
-			      _err->error_code);                              \
-			CODE = !0;                                            \
-			goto END;                                             \
-		}                                                             \
-	} while (0)
+			if (_err) {                                           \
+				warnx("xcb: %s: error %" PRIu8,               \
+				      #F,                                     \
+				      _err->error_code);                      \
+				CODE = !0;                                    \
+				goto END;                                     \
+			}                                                     \
+		} while (0)
 
 	char *	layout;
 	uint8_t error = 0;
@@ -242,3 +246,4 @@ end:
 
 	return error;
 }
+#endif /* USE_X && USE_XKB */
