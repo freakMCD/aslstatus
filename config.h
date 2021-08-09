@@ -1,14 +1,3 @@
-/* text to show if no value can be retrieved */
-static const char unknown_str[] = "n/a";
-
-/* maximum output string length */
-#define MAXLEN 256
-/*
- * if you want to change buffer size for each segment,
- * then change `BUFF_SZ` in util.h
- */
-
-
 /*
  * function            description                     argument (example)
  *
@@ -77,6 +66,17 @@ static const char unknown_str[] = "n/a";
 #define MIN * 60 SEC
 
 #define ONCE ((unsigned int) -1)  /* to run */
+
+/* text to show if no value can be retrieved */
+static const char unknown_str[] = "n/a";
+
+/* maximum output string length */
+#define MAXLEN 256
+/*
+ * if you want to change buffer size for each segment,
+ * then change `BUFF_SZ` in util.h
+ */
+
 static const char IFC[] = "wlan0";  /* wifi interface */
 
 
