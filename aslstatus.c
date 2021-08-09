@@ -8,7 +8,7 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <inttypes.h>
 
 #if USE_X
 #	include <xcb/xcb.h>
@@ -20,7 +20,7 @@
 
 #define MUTEX_WRAP(MUTEX, BLOCK)                                              \
 	do {                                                                  \
-		bool __lock_ret;                                              \
+		uint8_t __lock_ret;                                           \
 		do {                                                          \
 			if (!(__lock_ret = pthread_mutex_trylock(&(MUTEX))))  \
 				BLOCK                                         \
@@ -57,7 +57,7 @@ static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 #if USE_X
 xcb_connection_t *  c;
 static xcb_window_t root;
-static bool	    sflag = false;
+static uint8_t	    sflag = 0;
 
 static inline void
 store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
@@ -187,7 +187,7 @@ main(
 	c = xcb_connect(NULL, &screen_num);
 	if (xcb_connection_has_error(c)) errx(!0, "Failed to open display");
 
-	if (argc > 1 && !strncmp(argv[1], "-s", 3)) sflag = true;
+	if (argc > 1 && !strncmp(argv[1], "-s", 3)) sflag = !0;
 
 	setup = xcb_get_setup(c);
 	iter  = xcb_setup_roots_iterator(setup);

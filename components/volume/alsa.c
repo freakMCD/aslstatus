@@ -1,6 +1,6 @@
 #include <err.h>
 #include <math.h>
-#include <stdbool.h>
+#include <inttypes.h>
 
 #include <alsa/asoundlib.h>
 #include <alsa/control.h>
@@ -87,7 +87,7 @@ get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
 	return handle;
 }
 
-static inline bool
+static inline uint8_t
 is_muted(snd_mixer_selem_id_t **sid)
 {
 	int		  psw;

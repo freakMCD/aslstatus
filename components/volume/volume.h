@@ -16,7 +16,6 @@ struct volume_static_data {
 
 #elif defined(USE_PULSE)
 #	include <stdint.h>
-#	include <stdbool.h>
 #	include <pthread.h>
 #	include <pulse/pulseaudio.h>
 
