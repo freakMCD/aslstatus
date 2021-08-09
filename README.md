@@ -17,21 +17,49 @@ it is successfully compiling with
 * `tcc`
 * `gcc`
 
+needs `pkg-config` for `LDLIBS`
+
 you can find out more in [config.mk](config.mk)
+
+## make options
+#### X
+add support for `X` (needed for `dwm` `WM_NAME`)
+
+you may want to set it to `0` if you use aslstatus in [dvtm](https://www.brain-dump.org/projects/dvtm/)
+
+* default: `1`
+* dependencies:
+  + `libxcb-dev`
+
+#### XKB
+add support for keyboard (needed for `keymap` component)
+
+works only if `X=1`
+
+* default: `1`
+* dependencies:
+  + `libxcb-xkb-dev`
+
+#### AUDIO
+select audio library
+
+* default: `ALSA`
+* possible values:
+  - `ALSA`
+  - `PULSE`
+  - `''` (empty) to use `sys/soundcard.h` or `sys/audioio.h` on OpenBSD
+* dependencies:
+  + `libasound-dev` (if `AUDIO=ALSA`)
+  + `libpulse-dev` (if `AUDIO=PULSE`)
 
 
 ---
 # config
 
-for more info about configs see [config.h](config.h)
+for more info about configs see [config.h](config.h) and [components_config.h](components_config.h)
 
 also you can change `BUFF_SZ` (see [util.h](util.h))
 
-**AUDIO**
-
-| ALSA (default)    | PulseAudio         | `sys/soundcard.h` & `sys/audioio.h` |
-| ----------------- | ------------------ | ----------------------------------- |
-| `make AUDIO=ALSA` | `make AUDIO=PULSE` | `make AUDIO=`                       |
 
 ---
 # components/
