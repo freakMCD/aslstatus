@@ -55,7 +55,8 @@ struct arg_t {
 #include "config.h"
 #define ARGS_LEN LEN(args)
 
-char *argv0; /* for arg.h */
+char *	   argv0; /* for arg.h */
+static int exit_status = 0;
 
 static pthread_t       tid[ARGS_LEN];
 static pthread_t       main_thread;
@@ -96,29 +97,6 @@ set_status(const char *status)
 #endif
 }
 
-static inline void
-update_status(int __unused _)
-{
-	unsigned int i			 = 0;
-	char	     status[MAXLEN]	 = { 0 };
-	static char  status_prev[MAXLEN] = { 0 };
-
-	for (i = 0; i < ARGS_LEN; i++)
-		MUTEX_WRAP(args[i].segment.mutex, {
-			if (args[i].segment.data[0])
-				strcat(status, args[i].segment.data);
-		});
-
-	MUTEX_WRAP(status_mutex, {
-		/* don't update status if it's not changed */
-		if (strncmp(status, status_prev, MAXLEN)) {
-			set_status(status);
-
-			strncpy(status_prev, status, MAXLEN);
-		}
-	});
-}
-
 static void
 terminate(int __unused _)
 {
@@ -133,7 +111,41 @@ terminate(int __unused _)
 	}
 #endif
 
-	exit(0);
+	exit(exit_status);
+}
+
+static inline void
+update_status(int __unused _)
+{
+	size_t status_size = 0, i = 0;
+
+	char	    status[MAXLEN]	= { 0 };
+	static char status_prev[MAXLEN] = { 0 };
+
+	for (i = 0; i < ARGS_LEN; i++)
+		MUTEX_WRAP(args[i].segment.mutex, {
+			if (args[i].segment.data[0]) {
+
+				if ((status_size +=
+				     strnlen(args[i].segment.data, BUFF_SZ))
+				    >= MAXLEN) {
+					warnx(
+					    "total status length are too "
+					    "big and exceed `MAXLEN`");
+					terminate((exit_status = !0));
+				}
+				strcat(status, args[i].segment.data);
+			}
+		});
+
+	MUTEX_WRAP(status_mutex, {
+		/* don't update status if it's not changed */
+		if (strncmp(status, status_prev, MAXLEN)) {
+			set_status(status);
+
+			strncpy(status_prev, status, MAXLEN);
+		}
+	});
 }
 
 static void *
