@@ -89,14 +89,14 @@ static struct arg_t args[] = {
 #endif
 { disk_perc,		" [# %s%%",	"/",		25 SEC,	END },
 { disk_free,		" %s]",		"/",		25 SEC,	END },
-{ cpu_perc,		"-[ %s%%]",	NULL,		 1 SEC,	END },
+{ cpu_perc,		"-[ %3s%%]",	NULL,		 1 SEC,	END },
 { load_avg,		"-[%s]",	NULL,		 3 SEC,	END },
 { ram_used,		"-[﬙ %s]", 	NULL,		 3 SEC,	END },
 { vol_perc,		"-[%s]",	NULL,		 0,	END },
 { wifi_essid,		"-[直 \"%s\"",	IFC,		 2 SEC,	END },
-{ wifi_perc,		" %s%%]",	IFC,		 2 SEC,	END },
+{ wifi_perc,		" %3s%%]",	IFC,		 2 SEC,	END },
 { battery_state,	"-[%s",		"BAT0",		 2 SEC,	END },
-{ battery_perc,		" %s%%]",	"BAT0",		 1 MIN,	END },
+{ battery_perc,		" %3s%%]",	"BAT0",		 1 MIN,	END },
 { datetime,		"-[ %s]",	"%H:%M:%S",	 1 SEC,	END },
 #if USE_X && USE_XKB
 { keymap,		"-[ %s] ",	NULL,		 0,	END },

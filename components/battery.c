@@ -60,7 +60,7 @@ battery_perc(char *		   out,
 			 bat);
 	if (perc < 0 || pscanf(path, "%d", &perc) != 1) { ERRRET(out); }
 
-	bprintf(out, "%3d", perc);
+	bprintf(out, "%d", perc);
 }
 
 void
@@ -180,7 +180,7 @@ battery_perc(char *	out,
 	struct apm_power_info apm_info;
 
 	if (load_apm_power_info(&apm_info)) {
-		bptintf(out, "%3d", apm_info.battery_life);
+		bptintf(out, "%d", apm_info.battery_life);
 	}
 
 	ERRRET(out);
@@ -245,7 +245,7 @@ battery_perc(char *out, const char *unused)
 	    || !len)
 		ERRRET(out);
 
-	bptintf(out, "%3d", cap);
+	bptintf(out, "%d", cap);
 }
 
 void
