@@ -7,7 +7,7 @@ for all other questions, feel free to ask in matrix
 [#aslstatus:matrix.org](https://matrix.to/#/#aslstatus:matrix.org)
 
 ---
-![demo](imgs/demo.gif)
+![demo](https://i.ibb.co/r5PYRj8/Demo.gif)
 
 ---
 # instalation
