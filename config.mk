@@ -1,5 +1,5 @@
 #- aslstatus version -#
-VERSION := 0.1
+VERSION := 0.1.2
 
 CC ?= cc
 
@@ -8,7 +8,7 @@ PREFIX    := /usr
 MANPREFIX := ${PREFIX}/share/man
 
 #- flags -#
-CPPFLAGS += -D_DEFAULT_SOURCE '-DVERSION="${VERSION}"'
+CPPFLAGS += -D_DEFAULT_SOURCE -DVERSION='"${VERSION}"'
 CFLAGS   += -std=c99 -pedantic -Wall -Wextra
 
 #- linker -#
