@@ -71,7 +71,7 @@ ${OBJ} util.o: %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
 aslstatus: aslstatus.o util.o ${OBJ}
-	$(CC) -o $@ ${LDFLAGS} ${LDLIBS} ${CFLAGS} ${CPPFLAGS} $^
+	$(CC) -o $@  $^ ${LDFLAGS} ${LDLIBS} ${CFLAGS}
 
 aslstatus.1: aslstatus.1.md
 	pandoc --standalone --from=markdown $< --to=man -o $@
