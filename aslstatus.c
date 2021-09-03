@@ -33,24 +33,6 @@
 		pthread_mutex_unlock(&(MUTEX));                               \
 	} while (0)
 
-#define END                                                                   \
-	{                                                                     \
-		.data = { 0 }, .mutex = PTHREAD_MUTEX_INITIALIZER             \
-	}
-
-struct segment_t {
-	char		data[BUFF_SZ];
-	pthread_mutex_t mutex;
-};
-
-struct arg_t {
-	const func_t	   f;
-	const char *	   fmt;
-	const char *	   args;
-	const unsigned int interval;
-	struct segment_t   segment;
-};
-
 #undef MIN
 #include "config.h"
 #define ARGS_LEN LEN(args)

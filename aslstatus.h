@@ -1,23 +1,42 @@
 #ifndef _ASLSTATUS_H
 #define _ASLSTATUS_H
 
-#include <limits.h>  /* PATH_MAX */
+#include <limits.h>   /* PATH_MAX */
+#include <pthread.h>  /* PTHREAD_MUTEX_INITIALIZER */
+#include <inttypes.h> /* uintmax_t in cpu_perc */
 
 #if USE_X
-#include <xcb/xcb.h>
+#	include <xcb/xcb.h>
 #endif
 
 #include "os.h"
+#include "util.h"
 
 #define FUNC_ARGS (char *, const char *, unsigned int, void *)
 
+#define END                                                                   \
+	{                                                                     \
+		.data = { 0 }, .mutex = PTHREAD_MUTEX_INITIALIZER             \
+	}
 
 typedef struct _func_t {
-	void (*func) FUNC_ARGS;
-	const char name[16];
+	void(*func) FUNC_ARGS;
+	const char   name[16];
 	unsigned int static_size;
 } func_t;
 
+struct segment_t {
+	char		data[BUFF_SZ];
+	pthread_mutex_t mutex;
+};
+
+struct arg_t {
+	const func_t	   f;
+	const char *	   fmt;
+	const char *	   args;
+	const unsigned int interval;
+	struct segment_t   segment;
+};
 
 /* clang-format off */
 
