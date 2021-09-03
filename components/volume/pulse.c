@@ -8,7 +8,9 @@
 
 #include <pulse/pulseaudio.h>
 
+#ifndef USE_PULSE
 #define USE_PULSE
+#endif
 #include "volume.h"
 #include "../../util.h"
 #include "../../components_config.h"

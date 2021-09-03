@@ -6,7 +6,9 @@
 #include <alsa/control.h>
 /* header file inclusion order is important */
 
+#ifndef USE_ALSA
 #define USE_ALSA
+#endif
 #include "volume.h"
 #include "../../util.h"
 #include "../../components_config.h"
