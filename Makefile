@@ -3,10 +3,8 @@
 include config.mk
 
 
-COMPONENTS  := $(wildcard components/*.c)
+COMPONENTS  ?= $(wildcard components/*.c)
 OBJ          = ${COMPONENTS:.c=.o}
-
-NEED_VOLUME := aslstatus.o
 
 X         ?= 1
 XKB       ?= 1
@@ -16,10 +14,7 @@ A_DEF_O   := components/volume/default.o
 A_PULSE_O := components/volume/pulse.o
 
 
-.PHONY: all
-all: aslstatus
-
-
+SMART_CONFIG ?= 1
 
 
 ifeq (${X},1)
@@ -38,30 +33,27 @@ CPPFLAGS += -DUSE_X=0
 CPPFLAGS += -DUSE_XKB=0
 endif  # X
 
+.PHONY: all
+ifeq (${SMART_CONFIG},1)
+all: smart-conf
+include smart-config.mk
+else
+all: aslstatus
+	echo ebat ${COMPONENTS}
+endif
+
 
 ifeq (${AUDIO},ALSA)
-LDLIBS     += ${LDALSA}
-COMPONENTS += ${A_ALSA_O:.o=.c}
-
-${NEED_VOLUME}: CPPFLAGS += -DUSE_ALSA
+LDLIBS += ${LDALSA}
+CPPFLAGS += -DUSE_ALSA
 endif  # ALSA
 
 
 ifeq (${AUDIO},PULSE)
-LDLIBS     += ${LDPULSE}
-COMPONENTS += ${A_PULSE_O:.o=.c}
-
-${NEED_VOLUME}: CPPFLAGS += -DUSE_PULSE
+LDLIBS += ${LDPULSE}
+CPPFLAGS += -DUSE_PULSE
 endif  # PULSE
 
-
-ifneq (${AUDIO},ALSA)
-ifneq (${AUDIO},PULSE)
-COMPONENTS += ${A_DEF_O:.o=.c}
-endif  # PULSE
-endif  # ALSA
-
-${NEED_VOLUME}: components/volume/volume.h
 
 
 ${OBJ}: util.h components_config.h
@@ -89,6 +81,9 @@ install: all
 	chmod 644 "${DESTDIR}${MANPREFIX}/man1/aslstatus.1"
 
 .PHONY: clean
+ifeq (${SMART_CONFIG},1)
+clean: smart-config-clean
+endif
 clean:
 	rm -f aslstatus aslstatus.o util.o ${OBJ} ${A_ALSA_O} ${A_PULSE_O} ${A_DEF_O}
 

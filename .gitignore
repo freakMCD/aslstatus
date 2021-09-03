@@ -2,3 +2,5 @@ aslstatus
 components/.*.c
 *.swp
 *.o
+
+smart-config/smart-config
