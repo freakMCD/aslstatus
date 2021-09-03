@@ -1,3 +1,6 @@
+#ifndef _UTIL_H
+#define _UTIL_H
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdarg.h>
@@ -26,3 +29,5 @@ void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
 int  esnprintf(char *, size_t, const char *, ...);
 void fmt_human(char *, uintmax_t, unsigned short int);
+
+#endif /* _UTIL_H */
