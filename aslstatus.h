@@ -1,4 +1,5 @@
-/* See LICENSE file for copyright and license details. */
+#ifndef _ASLSTATUS_H
+#define _ASLSTATUS_H
 
 #include <limits.h>  /* PATH_MAX */
 
@@ -17,6 +18,8 @@ typedef struct _func_t {
 	unsigned int static_size;
 } func_t;
 
+
+/* clang-format off */
 
 /* battery */
 void battery_perc FUNC_ARGS;
@@ -188,3 +191,7 @@ void wifi_perc FUNC_ARGS;
 
 void wifi_essid FUNC_ARGS;
 #define wifi_essid {wifi_essid, "wifi_essid", 0}
+
+/* clang-format on */
+
+#endif /* _ASLSTATUS_H */
