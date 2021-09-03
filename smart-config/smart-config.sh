@@ -13,6 +13,7 @@ find_file() {
 		[ -z "$(sed -zn "${pattern}" "${file}")" ] || {
 			found=1
 			echo "${file##*/}"
+			break
 		}
 	done
 	[ "${found}" -eq 1 ] || 1>&2 echo "${func} not found"
