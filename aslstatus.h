@@ -1,6 +1,7 @@
 #ifndef _ASLSTATUS_H
 #define _ASLSTATUS_H
 
+#include <stdio.h>    /* FILE */
 #include <limits.h>   /* PATH_MAX */
 #include <pthread.h>  /* PTHREAD_MUTEX_INITIALIZER */
 #include <inttypes.h> /* uintmax_t in cpu_perc */
@@ -18,6 +19,9 @@
 	{                                                                     \
 		.data = { 0 }, .mutex = PTHREAD_MUTEX_INITIALIZER             \
 	}
+
+#define _FILE_ON_LINUX (LINUX * sizeof(FILE *))
+/* if linux: sizeof(FILE *); otherwise: 0 */
 
 typedef struct _func_t {
 	void(*func) FUNC_ARGS;
@@ -95,7 +99,7 @@ void disk_used FUNC_ARGS;
 
 /* entropy */
 void entropy FUNC_ARGS;
-#define entropy {entropy, "entropy", 0}
+#define entropy {entropy, "entropy", _FILE_ON_LINUX}
 
 
 /* hostname */
