@@ -1,5 +1,8 @@
 /* See LICENSE file for copyright and license details. */
-#if defined(__linux__)
+
+#include "../os.h"
+
+#if LINUX
 #	include <stdint.h>
 #	include <stdio.h>
 
@@ -18,8 +21,12 @@ entropy(char *	   out,
 
 	bprintf(out, "%ju", num);
 }
-#elif defined(__OpenBSD__) || defined(__FreeBSD__)
+
+#elif IF_BSD
 #	include <string.h>
+#	ifndef ENTROPY_INFINITY
+#		define ENTROPY_INFINITY "\xe2\x88\x9e"
+#	endif
 
 void
 entropy(char *	   out,
@@ -27,7 +34,7 @@ entropy(char *	   out,
 	unsigned int __unused _i,
 	void __unused *_p)
 {
-	/* Unicode Character 'INFINITY' (U+221E) */
-	strcpy(out, "\xe2\x88\x9e");
+	bprintf(out, "%s", ENTROPY_INFINITY);
 }
+
 #endif

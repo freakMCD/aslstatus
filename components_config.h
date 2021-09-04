@@ -25,6 +25,10 @@
 /* define to show vacant tags */
 /* #define BSPWM_SHOW_VACANT_TAGS */
 
+/* ENTROPY */
+/* Unicode Character 'INFINITY' (U+221E) */
+#define ENTROPY_INFINITY "\xe2\x88\x9e" /* will be used only on BSD */
+
 /* VOLUME */
 #define VOLUME_SYM	       "墳 "   /* you can specify volume sym there */
 #define VOLUME_PERCENT	       " %"    /* percent sign */
