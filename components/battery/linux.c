@@ -14,18 +14,8 @@
 #define STATE_PATTERN "%" STR(MAX_STATE) "[^\n]s"
 #define SYS_CLASS     "/sys/class/power_supply"
 
-#define SEEK_0(F, ...)                                                        \
-	do {                                                                  \
-		if (!!fseek((F), 0, SEEK_SET)) {                              \
-			warn("seek");                                         \
-			__VA_ARGS__                                           \
-		}                                                             \
-	} while (0)
-
 static inline uint8_t
 pick(const char *bat, FILE **fptr, const char **arr, size_t len);
-static inline uint8_t
-get_fptr(FILE **fptr, const char *bat, const char *property);
 static inline uint8_t
 get_state(char state[MAX_STATE], FILE **fptr, const char *bat);
 
@@ -38,7 +28,7 @@ battery_perc(char *		   out,
 	uint8_t perc;
 	FILE ** perc_fptr = static_ptr;
 
-	if (get_fptr(perc_fptr, bat, "capacity")) ERRRET(out);
+	if (sysfs_fptr(perc_fptr, SYS_CLASS, bat, "capacity")) ERRRET(out);
 
 	if (fscanf(*perc_fptr, "%hhu", &perc) == EOF) ERRRET(out);
 
@@ -151,27 +141,9 @@ end:
 }
 
 static inline uint8_t
-get_fptr(FILE **fptr, const char *bat, const char *property)
-{
-	int fd;
-	if (!*fptr) {
-		if ((fd = sysfs_fd(SYS_CLASS, bat, property)) == -1) return !0;
-
-		if (!(*fptr = fdopen(fd, "r"))) {
-			warn("fdopen(%d, r)", fd);
-			return !0;
-		}
-	} else {
-		SEEK_0(*fptr, { return !0; });
-	}
-
-	return 0;
-}
-
-static inline uint8_t
 get_state(char state[MAX_STATE], FILE **fptr, const char *bat)
 {
-	if (get_fptr(fptr, bat, "status")) return !0;
+	if (sysfs_fptr(fptr, SYS_CLASS, bat, "status")) return !0;
 
 	return fscanf(*fptr, STATE_PATTERN, state) == EOF;
 }
