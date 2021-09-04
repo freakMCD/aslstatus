@@ -27,6 +27,19 @@ _battery(void)
 	    ".c");
 }
 
+static inline void
+_netspeed(void)
+{
+	puts(
+	    "file:netspeed/"
+#if LINUX
+	    "linux"
+#else
+	    "bsd"
+#endif
+	    ".c");
+}
+
 /* battery */
 void battery_perc FUNC_ARGS { _battery(); }
 
@@ -75,9 +88,9 @@ DEF(keymap)
 DEF(load_avg)
 
 /* netspeeds */
-DEF(netspeed_rx)
+void netspeed_rx FUNC_ARGS { _netspeed(); }
 
-DEF(netspeed_tx)
+void netspeed_tx FUNC_ARGS { _netspeed(); }
 
 /* num_files */
 DEF(num_files)

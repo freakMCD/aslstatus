@@ -134,11 +134,13 @@ void load_avg FUNC_ARGS;
 
 
 /* netspeeds */
+#include "components/netspeed/netspeed.h"
+
 void netspeed_rx FUNC_ARGS;
-#define netspeed_rx {netspeed_rx, "netspeed_rx", sizeof(uintmax_t)}
+#define netspeed_rx {netspeed_rx, "netspeed_rx", NETSPEED_STATIC_SIZE}
 
 void netspeed_tx FUNC_ARGS;
-#define netspeed_tx {netspeed_tx, "netspeed_tx", sizeof(uintmax_t)}
+#define netspeed_tx {netspeed_tx, "netspeed_tx", NETSPEED_STATIC_SIZE}
 
 
 /* num_files */
