@@ -141,3 +141,25 @@ end:
 
 	return *property_fd;
 }
+
+uint8_t
+sysfs_fptr(FILE **     fptr,
+	   const char *path,
+	   const char *device,
+	   const char *property)
+{
+	int fd;
+
+	if (!*fptr) {
+		if ((fd = sysfs_fd(path, device, property)) == -1) return !0;
+
+		if (!(*fptr = fdopen(fd, "r"))) {
+			warn("fdopen(%d, r)", fd);
+			return !0;
+		}
+	} else {
+		SEEK_0(*fptr, { return !0; });
+	}
+
+	return 0;
+}

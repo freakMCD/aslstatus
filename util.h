@@ -1,9 +1,10 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdarg.h>
+#include <err.h>    /* warn */
+#include <stdio.h>  /* fseek */
+#include <stdint.h> /* uintmax_t, uint8_t */
+#include <stdarg.h> /* ... */
 
 #define BUFF_SZ 96
 /*
@@ -39,10 +40,25 @@
 #define STRINGIFY_AUX(X) #X
 #define STR(X)		 STRINGIFY_AUX(X)
 
-void bprintf(char *, const char *, ...);
-int  pscanf(const char *, const char *, ...);
-int  esnprintf(char *, size_t, const char *, ...);
-void fmt_human(char *, uintmax_t, unsigned short int);
-int sysfs_fd(const char *, const char *, const char *);
+void	bprintf(char *, const char *, ...);
+int	pscanf(const char *, const char *, ...);
+int	esnprintf(char *, size_t, const char *, ...);
+void	fmt_human(char *, uintmax_t, unsigned short int);
+
+/* 
+ * get fd of sysfs file
+ * example:
+ *   sysfs_fd("/sys/class/power_supply", "BAT0", "capacity")
+ *
+ * if last arg is NULL, then return fd of directory
+ *   sysfs_fd("/sys/class/power_supply", "BAT0", NULL)
+ */
+int	sysfs_fd(const char *, const char *, const char *);
+
+/*
+ * if fptr already opened then seek it to begin
+ * otherwise open fptr same as sysfs_fd, but all args must be not NULL
+ */
+uint8_t sysfs_fptr(FILE **fptr, const char *, const char *, const char *);
 
 #endif /* _UTIL_H */
