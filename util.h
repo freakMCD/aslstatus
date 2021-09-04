@@ -18,6 +18,20 @@
 		return;                                                       \
 	} while (0)
 
+/*
+ * seek F to 0
+ * if error: run second arg
+ * example:
+ *   SEEK_0(fptr, { return !0; });
+ */
+#define SEEK_0(F, ...)                                                        \
+	do {                                                                  \
+		if (!!fseek((F), 0, SEEK_SET)) {                              \
+			warn("seek");                                         \
+			__VA_ARGS__                                           \
+		}                                                             \
+	} while (0)
+
 #define __unused	   __attribute__((__unused__))
 #define typeof_field(S, F) __typeof__(((S *)0)->F)
 #define TWICE(V)	   V, V
