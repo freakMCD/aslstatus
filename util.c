@@ -1,8 +1,10 @@
 #include <err.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "util.h"
 
@@ -96,4 +98,46 @@ fmt_human(char *out, uintmax_t num, unsigned short int base)
 		scaled /= base;
 	}
 	bprintf(out, "%.1f %s", scaled, prefix[i]);
+}
+
+int
+sysfs_fd(const char *path, const char *device, const char *property)
+{
+	uint8_t i;
+
+	int  fds[3];
+	int *path_fd = &fds[0], *device_fd = &fds[1], *property_fd = &fds[2];
+
+	static const int DIR_FLAGS = O_RDONLY | O_CLOEXEC | O_DIRECTORY;
+
+	memset(fds, -1, sizeof(fds));
+
+	if ((*path_fd = open(path, DIR_FLAGS)) == -1) {
+		warn("%s", path);
+		goto end;
+	}
+
+	if ((*device_fd = openat(*path_fd, device, DIR_FLAGS)) == -1) {
+		warn("%s/%s", path, device);
+		goto end;
+	}
+
+	if (!!property) {
+		if ((*property_fd =
+			 openat(*device_fd, property, O_RDONLY | O_CLOEXEC))
+		    == -1) {
+			warn("%s/%s/%s", path, device, property);
+			goto end;
+		}
+	} else {
+		*property_fd = *device_fd;
+		*device_fd   = -1;
+	}
+
+end:
+	for (i = 0; i < (LEN(fds) - 1 /* except last */); i++)
+		if (fds[i] >= 0)
+			if (close(fds[i]) == -1) warn("%d", fds[i]);
+
+	return *property_fd;
 }

@@ -29,5 +29,6 @@ void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
 int  esnprintf(char *, size_t, const char *, ...);
 void fmt_human(char *, uintmax_t, unsigned short int);
+int sysfs_fd(const char *, const char *, const char *);
 
 #endif /* _UTIL_H */
