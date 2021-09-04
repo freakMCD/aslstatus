@@ -12,10 +12,11 @@
 /* #define KEYMAP_NUMLOCK " NL" */
 
 /* BATTERY */
-#define BATTERY_FULL	    ""	 /* "f" */
-#define BATTERY_UNKNOWN	    ""	 /* "?" */
-#define BATTERY_CHARGING    "+" /* "+" */
-#define BATTERY_DISCHARGING "-" /* "-" */
+#define BATTERY_FULL			  ""  /* "f" */
+#define BATTERY_UNKNOWN			  ""  /* "?" */
+#define BATTERY_CHARGING		  "+" /* "+" */
+#define BATTERY_DISCHARGING		  "-" /* "-" */
+#define BATTERY_REMAINING_NOT_DISCHARGING "?"
 
 /* BSPWM */
 #define BSPWM_FOCUSED_RESET "%{F-}%{B-}"

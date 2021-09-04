@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../os.h"
 #include "../util.h"
 
 #define FUNC_ARGS                                                             \
@@ -11,12 +12,27 @@
 #define DEF(F)                                                                \
 	void F FUNC_ARGS { puts(#F); }
 
+static inline void
+_battery(void)
+{
+	puts(
+	    "file:battery/"
+#if LINUX
+	    "linux"
+#elif OBSD
+	    "openbsd"
+#elif FBSD
+	    "freebsd"
+#endif
+	    ".c");
+}
+
 /* battery */
-DEF(battery_perc)
+void battery_perc FUNC_ARGS { _battery(); }
 
-DEF(battery_state)
+void battery_state FUNC_ARGS { _battery(); }
 
-DEF(battery_remaining)
+void battery_remaining FUNC_ARGS { _battery(); }
 
 /* bspwm */
 DEF(bspwm_ws)

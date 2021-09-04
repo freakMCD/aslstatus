@@ -46,13 +46,14 @@ struct arg_t {
 
 /* battery */
 void battery_perc FUNC_ARGS;
-#define battery_perc {battery_perc, "batt_percentage", 0}
+#define battery_perc {battery_perc, "batt_percentage", _FILE_ON_LINUX}
 
 void battery_state FUNC_ARGS;
-#define battery_state {battery_state, "batt_state", 0}
+#define battery_state {battery_state, "batt_state", _FILE_ON_LINUX}
 
 void battery_remaining FUNC_ARGS;
-#define battery_remaining {battery_remaining, "batt_remaining", 0}
+#define battery_remaining \
+	{battery_remaining, "batt_remaining", _FILE_ON_LINUX * 3}
 
 
 #if USE_X
