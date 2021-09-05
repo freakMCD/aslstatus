@@ -40,12 +40,15 @@
 #define STRINGIFY_AUX(X) #X
 #define STR(X)		 STRINGIFY_AUX(X)
 
-void	bprintf(char *, const char *, ...);
-int	pscanf(const char *, const char *, ...);
-int	esnprintf(char *, size_t, const char *, ...);
-void	fmt_human(char *, uintmax_t, unsigned short int);
+#define MAX(X, Y) (((X) > (Y)) * (X) + ((X) <= (Y)) * (Y))
+#define MIN(X, Y) (((X) < (Y)) * (X) + ((X) >= (Y)) * (Y))
 
-/* 
+void bprintf(char *, const char *, ...);
+int  pscanf(const char *, const char *, ...);
+int  esnprintf(char *, size_t, const char *, ...);
+void fmt_human(char *, uintmax_t, unsigned short int);
+
+/*
  * get fd of sysfs file
  * example:
  *   sysfs_fd("/sys/class/power_supply", "BAT0", "capacity")
@@ -53,7 +56,7 @@ void	fmt_human(char *, uintmax_t, unsigned short int);
  * if last arg is NULL, then return fd of directory
  *   sysfs_fd("/sys/class/power_supply", "BAT0", NULL)
  */
-int	sysfs_fd(const char *, const char *, const char *);
+int sysfs_fd(const char *, const char *, const char *);
 
 /*
  * if fptr already opened then seek it to begin
