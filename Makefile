@@ -3,15 +3,20 @@
 include config.mk
 
 
-COMPONENTS  ?= $(wildcard components/*.c)
+ifeq (${COMPONENTS},)
+GLOB := $(shell case "$$(uname -s)" in \
+		([Ff]ree[Bb][Ss][Dd]*) echo freebsd bsd;;\
+		([Oo]pen[Bb][Ss][Dd]*) echo openbsd bsd;;\
+		([Ll]inux*) echo linux;; esac)
+COMPONENTS := $(wildcard components/*.c \
+	      $(foreach _,${GLOB},components/*/${_}.c))
+endif # COMPONENTS
+
 OBJ          = ${COMPONENTS:.c=.o}
 
 X         ?= 1
 XKB       ?= 1
 AUDIO     ?= ALSA
-A_ALSA_O  := components/volume/alsa.o
-A_DEF_O   := components/volume/default.o
-A_PULSE_O := components/volume/pulse.o
 
 
 SMART_CONFIG ?= 1
@@ -39,20 +44,31 @@ all: smart-conf
 include smart-config.mk
 else
 all: aslstatus
-	echo ebat ${COMPONENTS}
+
+A_ALSA_C  := components/volume/alsa.c
+A_DEF_C   := components/volume/default.c
+A_PULSE_C := components/volume/pulse.c
 endif
 
 
 ifeq (${AUDIO},ALSA)
-LDLIBS += ${LDALSA}
-CPPFLAGS += -DUSE_ALSA
+LDLIBS     += ${LDALSA}
+CPPFLAGS   += -DUSE_ALSA
+COMPONENTS += ${A_ALSA_C}
 endif  # ALSA
 
 
 ifeq (${AUDIO},PULSE)
-LDLIBS += ${LDPULSE}
-CPPFLAGS += -DUSE_PULSE
+LDLIBS     += ${LDPULSE}
+CPPFLAGS   += -DUSE_PULSE
+COMPONENTS += ${A_PULSE_C}
 endif  # PULSE
+
+ifneq (${AUDIO},ALSA)
+ifneq (${AUDIO},PULSE)
+COMPONENTS += ${A_DEF_C}
+endif
+endif
 
 
 
@@ -85,7 +101,8 @@ ifeq (${SMART_CONFIG},1)
 clean: smart-config-clean
 endif
 clean:
-	rm -f aslstatus aslstatus.o util.o ${OBJ} ${A_ALSA_O} ${A_PULSE_O} ${A_DEF_O}
+	rm -f aslstatus aslstatus.o util.o \
+		$(wildcard components/*.o components/*/*.o)
 
 .PHONY: uninstall
 uninstall:
