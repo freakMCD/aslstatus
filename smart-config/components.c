@@ -35,6 +35,12 @@ _battery(void)
 }
 
 static inline void
+_cpu(void)
+{
+	puts("file:cpu/" LOF_FILE ".c");
+}
+
+static inline void
 _netspeed(void)
 {
 	puts("file:netspeed/" LB_FILE ".c");
@@ -51,9 +57,9 @@ void battery_remaining FUNC_ARGS { _battery(); }
 DEF(bspwm_ws)
 
 /* cpu */
-DEF(cpu_freq)
+void cpu_freq FUNC_ARGS { _cpu(); }
 
-DEF(cpu_perc)
+void cpu_perc FUNC_ARGS { _cpu(); }
 
 /* datetime */
 DEF(datetime)

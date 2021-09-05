@@ -64,20 +64,13 @@ void bspwm_ws FUNC_ARGS;
 
 
 /* cpu */
+#include "components/cpu/cpu.h"
+
 void cpu_freq FUNC_ARGS;
-#define cpu_freq {cpu_freq, "cpu_freq", 0}
+#define cpu_freq {cpu_freq, "cpu_freq", _FILE_ON_LINUX}
 
 void cpu_perc FUNC_ARGS;
-#if ISBSD
-# include <sys/param.h>  /* CPUSTATES */
-#else
-# define CPUSTATES 1
-#endif
-#define cpu_perc {cpu_perc, "cpu_percentage", 0		\
-	+ (LINUX * sizeof(long double [7]))		\
-	+ (OBSD  * sizeof(uintmax_t   [CPUSTATES]))	\
-	+ (FBSD  * sizeof(long        [CPUSTATES]))	\
-}
+#define cpu_perc {cpu_perc, "cpu_percentage", CPU_STATIC_SIZE}
 
 /* datetime */
 void datetime FUNC_ARGS;
