@@ -12,32 +12,32 @@
 #define DEF(F)                                                                \
 	void F FUNC_ARGS { puts(#F); }
 
+/*
+ * LOF - Linux || OpenBSD || FreeBSD
+ * LB  - Linux || BSD
+ */
+#if LINUX
+#	define LOF_FILE "linux"
+#	define LB_FILE	 "linux"
+#else
+#	define LB_FILE "bsd"
+#	if OBSD
+#		define LOF_FILE "openbsd"
+#	elif FBSD
+#		define LOF_FILE "freebsd"
+#	endif
+#endif
+
 static inline void
 _battery(void)
 {
-	puts(
-	    "file:battery/"
-#if LINUX
-	    "linux"
-#elif OBSD
-	    "openbsd"
-#elif FBSD
-	    "freebsd"
-#endif
-	    ".c");
+	puts("file:battery/" LOF_FILE ".c");
 }
 
 static inline void
 _netspeed(void)
 {
-	puts(
-	    "file:netspeed/"
-#if LINUX
-	    "linux"
-#else
-	    "bsd"
-#endif
-	    ".c");
+	puts("file:netspeed/" LB_FILE ".c");
 }
 
 /* battery */
