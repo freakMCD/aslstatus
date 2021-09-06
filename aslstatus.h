@@ -22,11 +22,13 @@
 #define _FILE_ON_LINUX (LINUX * sizeof(FILE *))
 /* if linux: sizeof(FILE *); otherwise: 0 */
 
-typedef struct _func_t {
-	void(*func) FUNC_ARGS;
+typedef void(*func_t) FUNC_ARGS;
+
+typedef struct func_data_t {
+	func_t	     func;
 	const char   name[16];
 	unsigned int static_size;
-} func_t;
+} func_data_t;
 
 struct segment_t {
 	char		data[BUFF_SZ];
@@ -34,7 +36,7 @@ struct segment_t {
 };
 
 struct arg_t {
-	const func_t	   f;
+	const func_data_t  f;
 	const char *	   fmt;
 	const char *	   args;
 	const unsigned int interval;
