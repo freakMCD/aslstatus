@@ -22,6 +22,18 @@ X     ?= 1
 XKB   ?= 1
 AUDIO ?= ALSA
 
+# components that needs running X server
+NEED_X_SERVER_COM := keymap
+
+NEED_X_SERVER_DEF := -DNEED_X_SERVER=1
+
+NEED_X_SERVER = $(if \
+			$(strip \
+			$(foreach _,\
+				${NEED_X_SERVER_COM},\
+				$(filter %/${_}.c,${COMPONENTS})\
+			)),\
+		${NEED_X_SERVER_DEF},)
 
 SMART_CONFIG ?= 1
 
@@ -74,6 +86,7 @@ endif
 
 ${OBJ}: util.h components_config.h
 aslstatus.o: aslstatus.c aslstatus.h config.h util.h os.h
+aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 
 ${OBJ} util.o: %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}

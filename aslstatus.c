@@ -13,6 +13,10 @@
 #if USE_X
 #	include <xcb/xcb.h>
 #	include "X.h"
+/* will be defined from makefile if some component need running X server */
+#	ifndef NEED_X_SERVER
+#		define NEED_X_SERVER 0
+#	endif
 #endif
 
 #ifndef VERSION
@@ -174,6 +178,11 @@ main(int argc, char *argv[])
 	char *strptr;
 	char *tofree;
 	char  thread_name[16];
+#if USE_X
+	int		      screen_num;
+	const xcb_setup_t *   setup;
+	xcb_screen_iterator_t iter;
+#endif
 
 	static const char usage[] =
 	    "[options]\n"
@@ -190,21 +199,6 @@ main(int argc, char *argv[])
 #endif
 	    ;
 
-#if USE_X
-	int		      screen_num;
-	const xcb_setup_t *   setup;
-	xcb_screen_iterator_t iter;
-
-	c = xcb_connect(NULL, &screen_num);
-	if (xcb_connection_has_error(c)) errx(!0, "Failed to open display");
-
-	setup = xcb_get_setup(c);
-	iter  = xcb_setup_roots_iterator(setup);
-	for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
-		xcb_screen_next(&iter);
-	root = iter.data->root;
-#endif
-
 	ARGBEGIN
 	{
 	case 'h':
@@ -220,6 +214,20 @@ main(int argc, char *argv[])
 		errx(!0, "%s", usage);
 	}
 	ARGEND;
+
+#if USE_X
+	if (NEED_X_SERVER || !sflag) {
+		c = xcb_connect(NULL, &screen_num);
+		if (xcb_connection_has_error(c))
+			errx(!0, "Failed to open display");
+
+		setup = xcb_get_setup(c);
+		iter  = xcb_setup_roots_iterator(setup);
+		for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
+			xcb_screen_next(&iter);
+		root = iter.data->root;
+	}
+#endif
 
 	main_thread = pthread_self();
 
