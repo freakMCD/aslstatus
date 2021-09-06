@@ -33,7 +33,7 @@ entropy(char*	   out,
 	bprintf(out, "%ju", num);
 }
 
-#elif IF_BSD
+#else
 #	include <string.h>
 #	ifndef ENTROPY_INFINITY
 #		define ENTROPY_INFINITY "\xe2\x88\x9e"
