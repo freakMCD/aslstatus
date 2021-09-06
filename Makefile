@@ -81,11 +81,11 @@ ${OBJ} util.o: %.o: %.c
 aslstatus: aslstatus.o util.o ${OBJ}
 	$(CC) -o $@  $^ ${LDFLAGS} ${LDLIBS} ${CFLAGS}
 
-aslstatus.1: aslstatus.1.md
+man/aslstatus.1: man/aslstatus.1.md
 	pandoc --standalone --from=markdown $< --to=man -o $@
 
 .PHONY: man
-man: aslstatus.1
+man: man/aslstatus.1
 
 .PHONY: install
 install: all
@@ -93,7 +93,7 @@ install: all
 	cp -f aslstatus "${DESTDIR}${PREFIX}/bin"
 	chmod 755 "${DESTDIR}${PREFIX}/bin/aslstatus"
 	mkdir -p "${DESTDIR}${MANPREFIX}/man1"
-	cp -f aslstatus.1 "${DESTDIR}${MANPREFIX}/man1"
+	cp -f man/aslstatus.1 "${DESTDIR}${MANPREFIX}/man1"
 	chmod 644 "${DESTDIR}${MANPREFIX}/man1/aslstatus.1"
 
 .PHONY: clean
