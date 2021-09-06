@@ -123,7 +123,7 @@ DEF(swap_total)
 DEF(swap_used)
 
 /* temperature */
-DEF(temp)
+void temp FUNC_ARGS { puts("file:temperature/" LOF_FILE ".c"); }
 
 /* uptime */
 DEF(uptime)

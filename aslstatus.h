@@ -2,7 +2,6 @@
 #define _ASLSTATUS_H
 
 #include <stdio.h>    /* FILE */
-#include <limits.h>   /* PATH_MAX */
 #include <pthread.h>  /* PTHREAD_MUTEX_INITIALIZER */
 #include <inttypes.h> /* uintmax_t in cpu_perc */
 
@@ -179,7 +178,7 @@ void swap_used FUNC_ARGS;
 
 /* temperature */
 void temp FUNC_ARGS;
-#define temp {temp, "temperature", LINUX * sizeof(char) * PATH_MAX}
+#define temp {temp, "temperature", _FILE_ON_LINUX}
 
 
 /* uptime */
