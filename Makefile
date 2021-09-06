@@ -10,13 +10,17 @@ GLOB := $(shell case "$$(uname -s)" in \
 		([Ll]inux*) echo linux;; esac)
 COMPONENTS := $(wildcard components/*.c \
 	      $(foreach _,${GLOB},components/*/${_}.c))
+
+A_ALSA_C  := components/volume/alsa.c
+A_DEF_C   := components/volume/default.c
+A_PULSE_C := components/volume/pulse.c
 endif # COMPONENTS
 
-OBJ          = ${COMPONENTS:.c=.o}
+OBJ = ${COMPONENTS:.c=.o}
 
-X         ?= 1
-XKB       ?= 1
-AUDIO     ?= ALSA
+X     ?= 1
+XKB   ?= 1
+AUDIO ?= ALSA
 
 
 SMART_CONFIG ?= 1
@@ -44,10 +48,6 @@ all: smart-conf
 include smart-config.mk
 else
 all: aslstatus
-
-A_ALSA_C  := components/volume/alsa.c
-A_DEF_C   := components/volume/default.c
-A_PULSE_C := components/volume/pulse.c
 endif
 
 
