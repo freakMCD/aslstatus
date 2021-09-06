@@ -27,7 +27,7 @@ smart-conf: ${SMART_CONFIG_DEPS}
 	@+$(MAKE)
 
 ${_EXE}: ${SMART_CONFIG_OFILES}
-	$(CC) -o $@ $^ ${LDFLAGS} ${LDLIBS} ${CFLAGS}
+	$(CC) -o $@ $^ ${LDFLAGS} ${CFLAGS}
 
 .PHONY: smart-config-clean
 smart-config-clean:

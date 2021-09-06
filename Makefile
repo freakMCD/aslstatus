@@ -82,6 +82,13 @@ COMPONENTS += ${A_DEF_C}
 endif
 endif
 
+ifneq (,$(filter %tcc,${CC})) # if compiler is tcc
+# libraries and flags first, then files to link
+LINK_FLAGS = ${LDFLAGS} ${LDLIBS} ${CFLAGS} ${1}
+else
+# vice versa
+LINK_FLAGS = ${1} ${LDFLAGS} ${LDLIBS} ${CFLAGS}
+endif
 
 
 ${OBJ}: util.h components_config.h
@@ -92,7 +99,7 @@ ${OBJ} util.o: %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
 aslstatus: aslstatus.o util.o ${OBJ}
-	$(CC) -o $@  $^ ${LDFLAGS} ${LDLIBS} ${CFLAGS}
+	$(CC) -o $@ $(call LINK_FLAGS,$^)
 
 man/aslstatus.1: man/aslstatus.1.md
 	pandoc --standalone --from=markdown $< --to=man -o $@
