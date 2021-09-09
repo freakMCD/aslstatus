@@ -9,8 +9,17 @@
 	 unsigned int __unused _i,                                            \
 	 void __unused* _p)
 
+#define TRAILING_SEMICOLON(...) struct trailing_semicolon
+
 #define DEF(F)                                                                \
-	void F FUNC_ARGS { puts(#F); }
+	void F FUNC_ARGS { puts(#F); }                                        \
+	TRAILING_SEMICOLON()
+
+#define COMP_F(C, O) puts("file:" C "/" O ".c")
+
+#define COMMON_FILE(F, O)                                                     \
+	static inline void F(void) { COMP_F(#F, O); }                         \
+	TRAILING_SEMICOLON()
 
 /*
  * LOF - Linux || OpenBSD || FreeBSD
@@ -28,129 +37,113 @@
 #	endif
 #endif
 
-static inline void
-_battery(void)
-{
-	puts("file:battery/" LOF_FILE ".c");
-}
+#if defined(USE_ALSA)
+#	define VOLUME "alsa"
+#elif defined(USE_PULSE)
+#	define VOLUME "pulse"
+#else
+#	define VOLUME "volume"
+#endif
 
-static inline void
-_cpu(void)
-{
-	puts("file:cpu/" LOF_FILE ".c");
-}
+COMMON_FILE(battery, LOF_FILE);
 
-static inline void
-_netspeed(void)
-{
-	puts("file:netspeed/" LB_FILE ".c");
-}
+COMMON_FILE(cpu, LOF_FILE);
+
+COMMON_FILE(netspeed, LB_FILE);
 
 /* battery */
-void battery_perc FUNC_ARGS { _battery(); }
+void battery_perc FUNC_ARGS { battery(); }
 
-void battery_state FUNC_ARGS { _battery(); }
+void battery_state FUNC_ARGS { battery(); }
 
-void battery_remaining FUNC_ARGS { _battery(); }
+void battery_remaining FUNC_ARGS { battery(); }
 
 /* bspwm */
-DEF(bspwm_ws)
+DEF(bspwm_ws);
 
 /* cpu */
-void cpu_freq FUNC_ARGS { _cpu(); }
+void cpu_freq FUNC_ARGS { cpu(); }
 
-void cpu_perc FUNC_ARGS { _cpu(); }
+void cpu_perc FUNC_ARGS { cpu(); }
 
 /* datetime */
-DEF(datetime)
+DEF(datetime);
 
 /* disk */
-DEF(disk_free)
+DEF(disk_free);
 
-DEF(disk_perc)
+DEF(disk_perc);
 
-DEF(disk_total)
+DEF(disk_total);
 
-DEF(disk_used)
+DEF(disk_used);
 
 /* entropy */
-DEF(entropy)
+DEF(entropy);
 
 /* hostname */
-DEF(hostname)
+DEF(hostname);
 
 /* ip */
-DEF(ipv4)
+DEF(ipv4);
 
-DEF(ipv6)
+DEF(ipv6);
 
 /* kernel_release */
-DEF(kernel_release)
+DEF(kernel_release);
 
 /* keymap */
-DEF(keymap)
+DEF(keymap);
 
 /* load_avg */
-DEF(load_avg)
+DEF(load_avg);
 
 /* netspeeds */
-void netspeed_rx FUNC_ARGS { _netspeed(); }
+void netspeed_rx FUNC_ARGS { netspeed(); }
 
-void netspeed_tx FUNC_ARGS { _netspeed(); }
+void netspeed_tx FUNC_ARGS { netspeed(); }
 
 /* num_files */
-DEF(num_files)
+DEF(num_files);
 
 /* ram */
-DEF(ram_free)
+DEF(ram_free);
 
-DEF(ram_perc)
+DEF(ram_perc);
 
-DEF(ram_total)
+DEF(ram_total);
 
-DEF(ram_used)
+DEF(ram_used);
 
 /* run_command */
-DEF(run_command)
+DEF(run_command);
 
 /* swap */
-DEF(swap_free)
+DEF(swap_free);
 
-DEF(swap_perc)
+DEF(swap_perc);
 
-DEF(swap_total)
+DEF(swap_total);
 
-DEF(swap_used)
+DEF(swap_used);
 
 /* temperature */
-void temp FUNC_ARGS { puts("file:temperature/" LOF_FILE ".c"); }
+void temp FUNC_ARGS { COMP_F("temperature", LOF_FILE); }
 
 /* uptime */
-DEF(uptime)
+DEF(uptime);
 
 /* user */
-DEF(gid)
+DEF(gid);
 
-DEF(uid)
+DEF(uid);
 
-DEF(username)
+DEF(username);
 
 /* volume */
-void vol_perc FUNC_ARGS
-{
-	puts(
-	    "file:volume/"
-#if defined(USE_ALSA)
-	    "alsa"
-#elif defined(USE_PULSE)
-	    "pulse"
-#else
-	    "volume"
-#endif
-	    ".c");
-}
+void vol_perc FUNC_ARGS { COMP_F("volume", VOLUME); }
 
 /* wifi */
-DEF(wifi_perc)
+DEF(wifi_perc);
 
-DEF(wifi_essid)
+DEF(wifi_essid);
