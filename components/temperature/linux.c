@@ -89,7 +89,7 @@ end_loop:
 
 	if (!!found) {
 	get_temp:
-		if (fscanf(*fptr, "%ju", &temp) == EOF) ERRRET(out);
+		if (fscanf(*fptr, "%ju", &temp) != 1) ERRRET(out);
 		bprintf(out, "%ju", temp / 1000);
 	}
 }

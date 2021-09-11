@@ -28,7 +28,7 @@ entropy(char*	   out,
 		fseek(*avail_fptr, 0, SEEK_SET);
 	}
 
-	if (fscanf(*avail_fptr, "%ju", &num) == EOF) ERRRET(out);
+	if (fscanf(*avail_fptr, "%ju", &num) != 1) ERRRET(out);
 
 	bprintf(out, "%ju", num);
 }

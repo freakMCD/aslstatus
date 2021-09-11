@@ -46,7 +46,7 @@ netspeed(char *	      out,
 	uintmax_t oldbytes	     = data->bytes;
 
 	if (sysfs_fptr(&data->fptr, SYS_CLASS, interface, property)
-	    || fscanf(data->fptr, "%ju", &data->bytes) == EOF || oldbytes == 0)
+	    || fscanf(data->fptr, "%ju", &data->bytes) != 1 || oldbytes == 0)
 		ERRRET(out);
 
 	fmt_human(out, (data->bytes - oldbytes) * 1000 / interval, 1024);

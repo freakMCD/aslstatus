@@ -30,7 +30,7 @@ battery_perc(char *		   out,
 
 	if (sysfs_fptr(perc_fptr, SYS_CLASS, bat, "capacity")) ERRRET(out);
 
-	if (fscanf(*perc_fptr, "%hhu", &perc) == EOF) ERRRET(out);
+	if (fscanf(*perc_fptr, "%hhu", &perc) != 1) ERRRET(out);
 
 	bprintf(out, "%hhu", perc);
 }
@@ -90,7 +90,7 @@ battery_remaining(char *		out,
 
 #define pick_scan(C)                                                          \
 	(pick(bat, C, C##_arr, LEN(C##_arr))                                  \
-	 || fscanf(*C, "%ju", &C##_now) == EOF)
+	 || fscanf(*C, "%ju", &C##_now) != 1)
 
 	if (!strcmp(state, "Discharging")) {
 		if (pick_scan(charge) || pick_scan(current)) ERRRET(out);
@@ -145,5 +145,5 @@ get_state(char state[MAX_STATE], FILE **fptr, const char *bat)
 {
 	if (sysfs_fptr(fptr, SYS_CLASS, bat, "status")) return !0;
 
-	return fscanf(*fptr, STATE_PATTERN, state) == EOF;
+	return fscanf(*fptr, STATE_PATTERN, state) != 1;
 }

@@ -22,7 +22,7 @@ cpu_freq(char *	    out,
 		ERRRET(out);
 
 	/* in kHz */
-	if (fscanf(*freq_fptr, "%ju", &freq) == EOF) ERRRET(out);
+	if (fscanf(*freq_fptr, "%ju", &freq) != 1) ERRRET(out);
 
 	fmt_human(out, freq * 1000, 1000);
 }
