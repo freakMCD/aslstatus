@@ -40,6 +40,8 @@
 #define STRINGIFY_AUX(X) #X
 #define STR(X)		 STRINGIFY_AUX(X)
 
+#undef MIN
+#undef MAX
 #define MAX(X, Y) (((X) > (Y)) * (X) + ((X) <= (Y)) * (Y))
 #define MIN(X, Y) (((X) < (Y)) * (X) + ((X) >= (Y)) * (Y))
 
