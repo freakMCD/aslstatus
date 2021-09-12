@@ -39,4 +39,3 @@ components/volume/pulse.o: ${thread_helper}
 $(call gendeps,aslstatus,aslstatus.h,\
 	util.h os.h ${cpu} ${netspeed} components/volume/volume.h)
 aslstatus.o: config.h ${thread_helper} ${aslstatus}
-aslstatus.h: ${aslstatus}
