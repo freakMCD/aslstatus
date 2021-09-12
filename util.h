@@ -12,7 +12,9 @@
  * if you are using `wifi.c` it must be at least 78 bytes
  */
 
-#define LEN(S) (sizeof(S) / sizeof *(S))
+#define LEN(S)	    (sizeof(S) / sizeof *(S))
+#define WITH_LEN(S) S, LEN(S)
+
 #define ERRRET(B)                                                             \
 	do {                                                                  \
 		(B)[0] = '\0';                                                \
@@ -44,6 +46,9 @@
 #undef MAX
 #define MAX(X, Y) (((X) > (Y)) * (X) + ((X) <= (Y)) * (Y))
 #define MIN(X, Y) (((X) < (Y)) * (X) + ((X) >= (Y)) * (Y))
+
+#define STR_SIZE(S)   (LEN(S) - 1) /* minus null byte */
+#define WITH_SSIZE(S) S, STR_SIZE(S)
 
 void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
