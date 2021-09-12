@@ -90,9 +90,8 @@ else
 LINK_FLAGS = ${1} ${LDFLAGS} ${LDLIBS} ${CFLAGS}
 endif
 
+include deps.mk
 
-${OBJ}: util.h components_config.h
-aslstatus.o: aslstatus.c aslstatus.h config.h util.h os.h
 aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 
 ${OBJ} util.o: %.o: %.c
