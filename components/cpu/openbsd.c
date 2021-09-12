@@ -29,7 +29,7 @@ cpu_freq(char *	    out,
 		ERRRET(out);
 	}
 
-	fmt_human(out, freq * 1E6, 1000);
+	fmt_human(out, freq * 1E6);
 }
 
 void

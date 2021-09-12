@@ -7,6 +7,12 @@
 #include <unistd.h>
 
 #include "util.h"
+#include "numfmt.h"
+#include "components_config.h"
+
+#ifndef FMT_HUMAN_NUMFMT
+#	define FMT_HUMAN_NUMFMT NUMFMT_IEC
+#endif
 
 static inline int
 evsnprintf(char *str, size_t size, const char *fmt, va_list ap)
@@ -70,33 +76,40 @@ esnprintf(char *str, size_t size, const char *fmt, ...)
 }
 
 void
-fmt_human(char *out, uintmax_t num, unsigned short int base)
+fmt_human(char *out, uintmax_t num)
 {
-	double		   scaled;
-	unsigned int	   i;
-	const char **	   prefix;
-	const unsigned int prefixlen	 = 9;
-	const char *	   prefix_1000[] = { "",  "k", "M", "G", "T",
-					     "P", "E", "Z", "Y" };
-	const char *	   prefix_1024[] = { "",   "Ki", "Mi", "Gi", "Ti",
-					     "Pi", "Ei", "Zi", "Yi" };
-
-	switch (base) {
-	case 1000:
-		prefix = prefix_1000;
-		break;
-	case 1024:
-		prefix = prefix_1024;
-		break;
-	default:
-		warn("fmt_human: Invalid base");
-		ERRRET(out);
-	}
+	double	     scaled;
+	unsigned int i;
+	const char * prefix[] =
+#if FMT_HUMAN_NUMFMT == NUMFMT_IEC
+	{ "",
+	  "Ki",
+	  "Mi",
+	  "Gi",
+	  "Ti",
+	  "Pi",
+	  "Ei",
+	  "Zi",
+	  "Yi" }
+#elif FMT_HUMAN_NUMFMT == NUMFMT_SI
+	{ "",
+	  "k",
+	  "M",
+	  "G",
+	  "T",
+	  "P",
+	  "E",
+	  "Z",
+	  "Y" }
+#else
+#	error invalid FMT_HUMAN_NUMFMT
+#endif
+	;
 
 	scaled = num;
-	for (i = 0; i < prefixlen && scaled >= base; i++) {
-		scaled /= base;
-	}
+	for (i = 0; i < LEN(prefix) && scaled >= FMT_HUMAN_NUMFMT; i++)
+		scaled /= FMT_HUMAN_NUMFMT;
+
 	bprintf(out, "%.1f %s", scaled, prefix[i]);
 }
 

@@ -1,7 +1,17 @@
 #ifndef _COMPONENTS_CONFIG_H
 #define _COMPONENTS_CONFIG_H
 
+#include "numfmt.h"
+
 /* some settings for components */
+
+/*
+ * for fmt_human from util.c
+ *
+ * NUMFMT_SI:  1000 = 1 K
+ * NUMFMT_IEC: 1024 = 1 Ki
+ */
+#define FMT_HUMAN_NUMFMT NUMFMT_SI
 
 /*
  * KEYMAP

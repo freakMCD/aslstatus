@@ -43,7 +43,7 @@ netspeed_rx(char *	 out,
 	}
 	if (oldrxbytes == 0) { ERRRET(out); }
 
-	fmt_human(out, (*rxbytes - oldrxbytes) * 1000 / interval, 1024);
+	fmt_human(out, (*rxbytes - oldrxbytes) * 1000 / interval);
 }
 
 void
@@ -79,5 +79,5 @@ netspeed_tx(char *	 out,
 	}
 	if (oldtxbytes == 0) { ERRRET(out); }
 
-	fmt_human(out, (*txbytes - oldtxbytes) * 1000 / interval, 1024);
+	fmt_human(out, (*txbytes - oldtxbytes) * 1000 / interval);
 }

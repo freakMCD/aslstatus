@@ -25,7 +25,7 @@ ram_free(char *	    out,
 		ERRRET(out);
 	}
 
-	fmt_human(out, free * 1024, 1024);
+	fmt_human(out, free * 1024);
 }
 
 void
@@ -68,7 +68,7 @@ ram_total(char *     out,
 	if (pscanf("/proc/meminfo", "MemTotal: %ju kB\n", &total) != 1)
 		ERRRET(out);
 
-	fmt_human(out, total * 1024, 1024);
+	fmt_human(out, total * 1024);
 }
 
 void
@@ -93,7 +93,7 @@ ram_used(char *	    out,
 	    != 5)
 		ERRRET(out);
 
-	fmt_human(out, (total - free - buffers - cached) * 1024, 1024);
+	fmt_human(out, (total - free - buffers - cached) * 1024);
 }
 #elif defined(__OpenBSD__)
 #	include <stdlib.h>
@@ -130,8 +130,7 @@ ram_free(char *	    out,
 	if (load_uvmexp(&uvmexp)) {
 		free_pages = uvmexp.npages - uvmexp.active;
 		fmt_human(out,
-			  pagetok(free_pages, uvmexp.pageshift) * 1024,
-			  1024);
+			  pagetok(free_pages, uvmexp.pageshift) * 1024);
 	}
 
 	ERRRET(out);
@@ -164,8 +163,8 @@ ram_total(char *     out,
 
 	if (load_uvmexp(&uvmexp))
 		fmt_human(out,
-			  pagetok(uvmexp.npages, uvmexp.pageshift) * 1024,
-			  1024);
+			  pagetok(uvmexp.npages, uvmexp.pageshift) * 1024
+			  );
 
 	ERRRET(out);
 }
@@ -180,8 +179,7 @@ ram_used(char *	    out,
 
 	if (load_uvmexp(&uvmexp))
 		fmt_human(out,
-			  pagetok(uvmexp.active, uvmexp.pageshift) * 1024,
-			  1024);
+			  pagetok(uvmexp.active, uvmexp.pageshift) * 1024);
 
 	ERRRET(out);
 }
@@ -205,7 +203,7 @@ ram_free(char *	    out,
 	if (sysctl(mib, 2, &vm_stats, &len, NULL, 0) == -1 || !len)
 		ERRRET(out);
 
-	fmt_human(out, vm_stats.t_free * getpagesize(), 1024);
+	fmt_human(out, vm_stats.t_free * getpagesize());
 }
 
 void
@@ -223,7 +221,7 @@ ram_total(char *     out,
 	    || !len)
 		ERRRET(out);
 
-	fmt_human(out, npages * getpagesize(), 1024);
+	fmt_human(out, npages * getpagesize());
 }
 
 void
@@ -265,6 +263,6 @@ ram_used(char *	    out,
 	    || !len)
 		ERRRET(out);
 
-	fmt_human(out, active * getpagesize(), 1024);
+	fmt_human(out, active * getpagesize());
 }
 #endif

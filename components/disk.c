@@ -18,7 +18,7 @@ disk_free(char *		out,
 		ERRRET(out);
 	}
 
-	fmt_human(out, fs.f_frsize * fs.f_bavail, 1024);
+	fmt_human(out, fs.f_frsize * fs.f_bavail);
 }
 
 void
@@ -53,7 +53,7 @@ disk_total(char *		 out,
 		ERRRET(out);
 	}
 
-	fmt_human(out, fs.f_frsize * fs.f_blocks, 1024);
+	fmt_human(out, fs.f_frsize * fs.f_blocks);
 }
 
 void
@@ -69,5 +69,5 @@ disk_used(char *		out,
 		ERRRET(out);
 	}
 
-	fmt_human(out, fs.f_frsize * (fs.f_blocks - fs.f_bfree), 1024);
+	fmt_human(out, fs.f_frsize * (fs.f_blocks - fs.f_bfree));
 }

@@ -24,7 +24,7 @@ cpu_freq(char *	    out,
 	/* in kHz */
 	if (fscanf(*freq_fptr, "%ju", &freq) != 1) ERRRET(out);
 
-	fmt_human(out, freq * 1000, 1000);
+	fmt_human(out, freq * 1000);
 }
 
 void

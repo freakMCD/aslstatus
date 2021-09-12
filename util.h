@@ -46,7 +46,7 @@
 void bprintf(char *, const char *, ...);
 int  pscanf(const char *, const char *, ...);
 int  esnprintf(char *, size_t, const char *, ...);
-void fmt_human(char *, uintmax_t, unsigned short int);
+void fmt_human(char *, uintmax_t);
 
 /*
  * get fd of sysfs file

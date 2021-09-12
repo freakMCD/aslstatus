@@ -49,5 +49,5 @@ netspeed(char *	      out,
 	    || fscanf(data->fptr, "%ju", &data->bytes) != 1 || oldbytes == 0)
 		ERRRET(out);
 
-	fmt_human(out, (data->bytes - oldbytes) * 1000 / interval, 1024);
+	fmt_human(out, (data->bytes - oldbytes) * 1000 / interval);
 }

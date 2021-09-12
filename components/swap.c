@@ -68,7 +68,7 @@ swap_free(char *     out,
 
 	if (get_swap_info(NULL, &free, NULL)) ERRRET(out);
 
-	fmt_human(out, free * 1024, 1024);
+	fmt_human(out, free * 1024);
 }
 
 void
@@ -94,7 +94,7 @@ swap_total(char *     out,
 
 	if (get_swap_info(&total, NULL, NULL)) ERRRET(out);
 
-	fmt_human(out, total * 1024, 1024);
+	fmt_human(out, total * 1024);
 }
 
 void
@@ -107,7 +107,7 @@ swap_used(char *     out,
 
 	if (get_swap_info(&total, &free, &cached)) ERRRET(out);
 
-	fmt_human(out, (total - free - cached) * 1024, 1024);
+	fmt_human(out, (total - free - cached) * 1024);
 }
 #elif defined(__OpenBSD__)
 #	include <stdlib.h>
@@ -161,7 +161,7 @@ swap_free(char *     out,
 
 	if (getstats(&total, &used)) ERRRET(out);
 
-	fmt_human(out, (total - used) * 1024, 1024);
+	fmt_human(out, (total - used) * 1024);
 }
 
 void
@@ -189,7 +189,7 @@ swap_total(char *     out,
 
 	if (getstats(&total, &used)) ERRRET(out);
 
-	fmt_human(out, total * 1024, 1024);
+	fmt_human(out, total * 1024);
 }
 
 void
@@ -202,7 +202,7 @@ swap_used(char *     out,
 
 	if (getstats(&total, &used)) ERRRET(out);
 
-	fmt_human(out, used * 1024, 1024);
+	fmt_human(out, used * 1024);
 }
 #elif defined(__FreeBSD__)
 #	include <stdlib.h>
@@ -246,7 +246,7 @@ swap_free(char *     out,
 	total = swap_info[0].ksw_total;
 	used  = swap_info[0].ksw_used;
 
-	fmt_human(out, (total - used) * getpagesize(), 1024);
+	fmt_human(out, (total - used) * getpagesize());
 }
 
 void
@@ -279,7 +279,7 @@ swap_total(char *     out,
 
 	total = swap_info[0].ksw_total;
 
-	fmt_human(out, total * getpagesize(), 1024);
+	fmt_human(out, total * getpagesize());
 }
 
 void
@@ -295,6 +295,6 @@ swap_used(char *     out,
 
 	used = swap_info[0].ksw_used;
 
-	fmt_human(out, used * getpagesize(), 1024);
+	fmt_human(out, used * getpagesize());
 }
 #endif
