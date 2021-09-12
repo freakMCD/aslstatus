@@ -144,16 +144,16 @@ void num_files FUNC_ARGS;
 
 /* ram */
 void ram_free FUNC_ARGS;
-#define ram_free {ram_free, "ram_free", 0}
+#define ram_free {ram_free, "ram_free", _FILE_ON_LINUX}
 
 void ram_perc FUNC_ARGS;
-#define ram_perc {ram_perc, "ram_percentage", 0}
+#define ram_perc {ram_perc, "ram_percentage", _FILE_ON_LINUX}
 
 void ram_total FUNC_ARGS;
-#define ram_total {ram_total, "ram_total", 0}
+#define ram_total {ram_total, "ram_total", _FILE_ON_LINUX}
 
 void ram_used FUNC_ARGS;
-#define ram_used {ram_used, "ram_used", 0}
+#define ram_used {ram_used, "ram_used", _FILE_ON_LINUX}
 
 
 /* run_command */

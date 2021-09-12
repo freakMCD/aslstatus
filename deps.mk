@@ -35,6 +35,8 @@ components/netspeed/linux.o: ${netspeed}
 $(wildcard components/volume/*.o): components/volume/volume.h
 components/volume/pulse.o: ${thread_helper}
 
+$(call gendeps,meminfo,components/libmeminfo.h,util.h)
+components/ram/linux.o: ${meminfo}
 
 $(call gendeps,aslstatus,aslstatus.h,\
 	util.h os.h ${cpu} ${netspeed} components/volume/volume.h)

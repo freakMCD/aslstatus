@@ -51,6 +51,8 @@ COMMON_FILE(cpu, LOF_FILE);
 
 COMMON_FILE(netspeed, LB_FILE);
 
+COMMON_FILE(ram, LOF_FILE);
+
 /* battery */
 void battery_perc FUNC_ARGS { battery(); }
 
@@ -107,13 +109,13 @@ void netspeed_tx FUNC_ARGS { netspeed(); }
 DEF(num_files);
 
 /* ram */
-DEF(ram_free);
+void ram_free FUNC_ARGS { ram(); }
 
-DEF(ram_perc);
+void ram_perc FUNC_ARGS { ram(); }
 
-DEF(ram_total);
+void ram_total FUNC_ARGS { ram(); }
 
-DEF(ram_used);
+void ram_used FUNC_ARGS { ram(); }
 
 /* run_command */
 DEF(run_command);
