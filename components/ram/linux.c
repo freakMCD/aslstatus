@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/param.h> /* MIN */
 
 #include "../../util.h"
 #include "../libmeminfo.h"

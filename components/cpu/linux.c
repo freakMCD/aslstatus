@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/param.h> /* MIN, MAX */
 
 #include "cpu.h"
 #include "../../util.h"
