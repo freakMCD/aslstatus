@@ -179,7 +179,7 @@ DEF(uid);
 DEF(username);
 
 /* volume */
-void vol_perc FUNC_ARGS { COMP_F("volume", VOLUME); }
+void vol_perc FUNC_ARGS { COMP_F(VOLUME, "volume"); }
 
 /* wifi */
 DEF(wifi_perc);
