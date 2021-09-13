@@ -7,7 +7,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "icons.h"
+#include "../battery.h"
 #include "../../lib/util.h"
 
 static inline int

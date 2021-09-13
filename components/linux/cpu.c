@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/param.h> /* MIN, MAX */
 
-#include "cpu.h"
+#include "../cpu.h"
 #include "../../lib/util.h"
 #include "../../components_config.h"
 

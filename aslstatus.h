@@ -65,7 +65,7 @@ void bspwm_ws FUNC_ARGS;
 
 
 /* cpu */
-#include "components/cpu/cpu.h"
+#include "components/cpu.h"
 
 void cpu_freq FUNC_ARGS;
 #define cpu_freq {cpu_freq, "cpu_freq", _FILE_ON_LINUX}
@@ -128,7 +128,7 @@ void load_avg FUNC_ARGS;
 
 
 /* netspeeds */
-#include "components/netspeed/netspeed.h"
+#include "components/netspeed.h"
 
 void netspeed_rx FUNC_ARGS;
 #define netspeed_rx {netspeed_rx, "netspeed_rx", NETSPEED_STATIC_SIZE}

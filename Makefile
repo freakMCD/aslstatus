@@ -5,11 +5,12 @@ include config.mk
 
 ifeq (${COMPONENTS},)
 GLOB := $(shell case "$$(uname -s)" in \
-		([Ff]ree[Bb][Ss][Dd]*) echo freebsd bsd;;\
-		([Oo]pen[Bb][Ss][Dd]*) echo openbsd bsd;;\
+		([Ff]ree[Bb][Ss][Dd]*) echo freebsd;;\
+		([Oo]pen[Bb][Ss][Dd]*) echo openbsd;;\
 		([Ll]inux*) echo linux;; esac)
 COMPONENTS := $(wildcard components/*.c \
-	      $(foreach _,${GLOB},components/*/${_}.c))
+	      $(foreach _,${GLOB},components/${_}/*.c))
+COMPONENTS += $(wildcard lib/*.c)
 
 A_ALSA_C  := components/volume/alsa.c
 A_DEF_C   := components/volume/default.c
@@ -97,7 +98,7 @@ aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
-aslstatus: aslstatus.o lib/util.o ${OBJ}
+aslstatus: aslstatus.o ${OBJ}
 	$(CC) -o $@ $(call LINK_FLAGS,$^)
 
 man/aslstatus.1: man/aslstatus.1.md
@@ -120,8 +121,8 @@ ifeq (${SMART_CONFIG},1)
 clean: smart-config-clean
 endif
 clean:
-	rm -f aslstatus aslstatus.o util.o \
-		$(wildcard components/*.o components/*/*.o)
+	rm -f aslstatus aslstatus.o \
+		$(wildcard lib/*.o components/*.o components/*/*.o)
 
 .PHONY: uninstall
 uninstall:

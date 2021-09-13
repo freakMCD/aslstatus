@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "../../os.h"
+#include "../os.h"
 
 #if LINUX
 struct netspeed_data_t {

@@ -15,7 +15,7 @@
 	void F FUNC_ARGS { puts(#F); }                                        \
 	TRAILING_SEMICOLON()
 
-#define COMP_F(C, O) puts("file:" C "/" O ".c")
+#define COMP_F(C, O) puts("file:" O "/" C ".c")
 
 #define COMMON_FILE(F, O)                                                     \
 	static inline void F(void) { COMP_F(#F, O); }                         \

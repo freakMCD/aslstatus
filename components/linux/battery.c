@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include "icons.h"
+#include "../battery.h"
 #include "../../lib/util.h"
 
 #define MAX_STATE     13

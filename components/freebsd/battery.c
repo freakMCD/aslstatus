@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/sysctl.h>
 
-#include "icons.h"
+#include "../battery.h"
 #include "../../lib/util.h"
 
 void

@@ -1,7 +1,7 @@
 #ifndef BATTERY_ICONS_H
 #define BATTERY_ICONS_H
 
-#include "../../components_config.h"
+#include "../components_config.h"
 
 #ifndef BATTERY_FULL
 #	define BATTERY_FULL "" /* "f" */
