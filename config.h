@@ -75,7 +75,7 @@ static const char unknown_str[] = "n/a";
 #define MAXLEN 256
 /*
  * if you want to change buffer size for each segment,
- * then change `BUFF_SZ` in util.h
+ * then change `BUFF_SZ` in lib/util.h
  */
 
 #define IFC "wlan0" /* wifi interface */

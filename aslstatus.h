@@ -10,7 +10,7 @@
 #endif
 
 #include "os.h"
-#include "util.h"
+#include "lib/util.h"
 
 #define FUNC_ARGS (char *, const char *, unsigned int, void *)
 
@@ -166,16 +166,16 @@ void run_command FUNC_ARGS;
 
 /* swap */
 void swap_free FUNC_ARGS;
-#define swap_free {swap_free, "swap_free", 0}
+#define swap_free {swap_free, "swap_free", _FILE_ON_LINUX}
 
 void swap_perc FUNC_ARGS;
-#define swap_perc {swap_perc, "swap_percentage", 0}
+#define swap_perc {swap_perc, "swap_percentage", _FILE_ON_LINUX}
 
 void swap_total FUNC_ARGS;
-#define swap_total {swap_total, "swap_total", 0}
+#define swap_total {swap_total, "swap_total", _FILE_ON_LINUX}
 
 void swap_used FUNC_ARGS;
-#define swap_used {swap_used, "swap_used", 0}
+#define swap_used {swap_used, "swap_used", _FILE_ON_LINUX}
 
 
 /* temperature */

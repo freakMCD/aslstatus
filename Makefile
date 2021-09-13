@@ -94,10 +94,10 @@ include deps.mk
 
 aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 
-${OBJ} util.o: %.o: %.c
+%.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
-aslstatus: aslstatus.o util.o ${OBJ}
+aslstatus: aslstatus.o lib/util.o ${OBJ}
 	$(CC) -o $@ $(call LINK_FLAGS,$^)
 
 man/aslstatus.1: man/aslstatus.1.md

@@ -5,7 +5,7 @@
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
-#include "../../util.h"
+#include "../../lib/util.h"
 #include "../../components_config.h"
 
 #ifndef VOLUME_SYM

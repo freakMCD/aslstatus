@@ -4,7 +4,7 @@
 #include <sys/sysctl.h>
 
 #include "icons.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 
 void
 battery_perc(char *out, const char *unused)

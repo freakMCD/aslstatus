@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 load_avg(char *	    out,

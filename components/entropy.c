@@ -7,7 +7,7 @@
 #	include <stdint.h>
 #	include <stdio.h>
 
-#	include "../util.h"
+#	include "../lib/util.h"
 #	define ENTROPY_AVAIL "/proc/sys/kernel/random/entropy_avail"
 
 void

@@ -1,4 +1,4 @@
-#include "../util.h"
+#include "../lib/util.h"
 #include "../aslstatus.h"
 
 #include "../config.h"

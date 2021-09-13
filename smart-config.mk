@@ -15,8 +15,8 @@ SMART_CONFIG_COMPONENTS_O := ${_COMP_O}
 SMART_CONFIG_OFILES := ${_EXE}.o ${_COMP_O}
 SMART_CONFIG_DEPS   := ${_EXE} ${_SH}
 
-${_COMP_O}: util.h
-${_EXE}.o: util.h aslstatus.h config.h
+${_COMP_O}: lib/util.h
+${_EXE}.o: lib/util.h aslstatus.h config.h
 
 .PHONY: smart-conf
 smart-conf: ${SMART_CONFIG_DEPS}

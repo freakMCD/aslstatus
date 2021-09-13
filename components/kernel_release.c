@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <err.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 kernel_release(char *	  out,

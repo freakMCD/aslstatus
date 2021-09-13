@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #include "icons.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 
 static inline int
 load_apm_power_info(struct apm_power_info *apm_info)

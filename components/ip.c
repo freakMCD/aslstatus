@@ -12,7 +12,7 @@
 #	include <sys/socket.h>
 #endif
 
-#include "../util.h"
+#include "../lib/util.h"
 
 static inline void
 ip(char *out, const char *interface, sa_family_t sa_family)

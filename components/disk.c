@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <sys/statvfs.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 disk_free(char *		out,

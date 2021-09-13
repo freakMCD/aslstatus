@@ -4,7 +4,7 @@
 #include <dirent.h>
 #include <string.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 num_files(char *		out,

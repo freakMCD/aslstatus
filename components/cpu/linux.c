@@ -6,14 +6,8 @@
 #include <sys/param.h> /* MIN, MAX */
 
 #include "cpu.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 #include "../../components_config.h"
-
-#ifdef CPU_ACCOUNT_IOWAIT
-#	define IOWAIT(X) X[CPU_STATE_IOWAIT]
-#else
-#	define IOWAIT(X) 0
-#endif
 
 /* clang-format off */
 #define CPU_SUM(X)                                                            \
@@ -30,7 +24,6 @@
 	(X[CPU_STATE_USER]                                                    \
 	 + X[CPU_STATE_NICE]                                                  \
 	 + X[CPU_STATE_SYSTEM]                                                \
-	 + IOWAIT(X)                                                          \
 	 + X[CPU_STATE_IRQ]                                                   \
 	 + X[CPU_STATE_SOFTIRQ]                                               \
 	 + X[CPU_STATE_STEAL])

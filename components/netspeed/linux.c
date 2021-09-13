@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "netspeed.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 
 #define SYS_CLASS "/sys/class/net"
 

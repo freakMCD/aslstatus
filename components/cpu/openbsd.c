@@ -7,7 +7,7 @@
 #include <sys/sched.h>
 #include <sys/sysctl.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 void
 cpu_freq(char *	    out,

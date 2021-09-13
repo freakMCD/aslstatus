@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 datetime(char *		       out,

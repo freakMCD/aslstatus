@@ -24,7 +24,7 @@
 #endif
 
 #include "arg.h"
-#include "util.h"      /* you can change there segment buffer size (BUFF_SZ) */
+#include "lib/util.h"  /* you can change there segment buffer size (BUFF_SZ) */
 #include "aslstatus.h" /* you can change there threads names */
 
 #define MUTEX_WRAP(MUTEX, BLOCK)                                              \

@@ -14,14 +14,18 @@ endef
 gendeps = $(eval $(call _gendeps,$1,$2,$3))
 
 
-$(call gendeps,components_config,components_config.h,numfmt.h)
+$(call gendeps,components_config,components_config.h,)
 $(call gendeps,thread_helper,thread_helper.h,os.h)
+$(call gendeps,util,lib/util.h,${components_config})
+$(call gendeps,meminfo,lib/meminfo.h,${util})
 
-util.o: util.h ${components_config}
+util.o: ${util}
+libs := $(wildcard lib/*.c)
+${libs:.c=.o}: %.o: %.h
 
 # COMPONENTS should be defined
 
-${COMPONENTS:.c=.o}: util.h ${components_config}
+${COMPONENTS:.c=.o}: ${util} ${components_config}
 
 $(call gendeps,battery,components/battery/icons.h,${components_config})
 $(wildcard components/battery/*.o): ${battery}
@@ -35,9 +39,8 @@ components/netspeed/linux.o: ${netspeed}
 $(wildcard components/volume/*.o): components/volume/volume.h
 components/volume/pulse.o: ${thread_helper}
 
-$(call gendeps,meminfo,components/libmeminfo.h,util.h)
 components/ram/linux.o: ${meminfo}
 
 $(call gendeps,aslstatus,aslstatus.h,\
-	util.h os.h ${cpu} ${netspeed} components/volume/volume.h)
+	${util} os.h ${cpu} ${netspeed} components/volume/volume.h)
 aslstatus.o: config.h ${thread_helper} ${aslstatus}

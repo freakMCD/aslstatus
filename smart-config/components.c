@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "../os.h"
-#include "../util.h"
+#include "../lib/util.h"
 
 #define FUNC_ARGS                                                             \
 	(char __unused* _o,                                                   \
@@ -28,6 +28,7 @@
 #if LINUX
 #	define LOF_FILE "linux"
 #	define LB_FILE	 "linux"
+#	define MEMINFO	 puts("file:../lib/meminfo.c")
 #else
 #	define LB_FILE "bsd"
 #	if OBSD
@@ -35,6 +36,7 @@
 #	elif FBSD
 #		define LOF_FILE "freebsd"
 #	endif
+#	define MEMINFO NULL
 #endif
 
 #if defined(USE_ALSA)
@@ -52,6 +54,8 @@ COMMON_FILE(cpu, LOF_FILE);
 COMMON_FILE(netspeed, LB_FILE);
 
 COMMON_FILE(ram, LOF_FILE);
+
+COMMON_FILE(swap, LOF_FILE);
 
 /* battery */
 void battery_perc FUNC_ARGS { battery(); }
@@ -109,25 +113,57 @@ void netspeed_tx FUNC_ARGS { netspeed(); }
 DEF(num_files);
 
 /* ram */
-void ram_free FUNC_ARGS { ram(); }
+void ram_free FUNC_ARGS
+{
+	ram();
+	MEMINFO;
+}
 
-void ram_perc FUNC_ARGS { ram(); }
+void ram_perc FUNC_ARGS
+{
+	ram();
+	MEMINFO;
+}
 
-void ram_total FUNC_ARGS { ram(); }
+void ram_total FUNC_ARGS
+{
+	ram();
+	MEMINFO;
+}
 
-void ram_used FUNC_ARGS { ram(); }
+void ram_used FUNC_ARGS
+{
+	ram();
+	MEMINFO;
+}
 
 /* run_command */
 DEF(run_command);
 
 /* swap */
-DEF(swap_free);
+void swap_free FUNC_ARGS
+{
+	swap();
+	MEMINFO;
+}
 
-DEF(swap_perc);
+void swap_perc FUNC_ARGS
+{
+	swap();
+	MEMINFO;
+}
 
-DEF(swap_total);
+void swap_total FUNC_ARGS
+{
+	swap();
+	MEMINFO;
+}
 
-DEF(swap_used);
+void swap_used FUNC_ARGS
+{
+	swap();
+	MEMINFO;
+}
 
 /* temperature */
 void temp FUNC_ARGS { COMP_F("temperature", LOF_FILE); }

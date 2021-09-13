@@ -12,7 +12,7 @@
 #	include "../X.h"
 #endif
 
-#include "../util.h"
+#include "../lib/util.h"
 #include "../components_config.h"
 
 #ifndef KEYMAP_NUMLOCK

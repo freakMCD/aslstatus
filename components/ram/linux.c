@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <sys/param.h> /* MIN */
 
-#include "../../util.h"
-#include "../libmeminfo.h"
+#include "../../lib/util.h"
+#include "../../lib/meminfo.h"
 
-static inline memory_t get_used(const struct meminfo* info);
+static inline memory_t get_used(const struct meminfo_ram* info);
 
 void
 ram_free(char*	    out,
@@ -13,12 +13,12 @@ ram_free(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**	       fptr = static_ptr;
-	struct meminfo info = MEMINFO_INIT;
+	FILE**		   fptr = static_ptr;
+	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
 	if (MEMINFO_FPTR(fptr)) ERRRET(out);
 
-	if (!get_meminfo(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
 
 	fmt_human(
 	    out,
@@ -32,12 +32,12 @@ ram_perc(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**	       fptr = static_ptr;
-	struct meminfo info = MEMINFO_INIT;
+	FILE**		   fptr = static_ptr;
+	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
 	if (MEMINFO_FPTR(fptr)) ERRRET(out);
 
-	if (!get_meminfo(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
 
 	if (!info.total) ERRRET(out);
 
@@ -66,18 +66,18 @@ ram_used(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**	       fptr = static_ptr;
-	struct meminfo info = MEMINFO_INIT;
+	FILE**		   fptr = static_ptr;
+	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
 	if (MEMINFO_FPTR(fptr)) ERRRET(out);
 
-	if (!get_meminfo(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
 
 	fmt_human(out, get_used(&info) * 1024);
 }
 
 static inline memory_t
-get_used(const struct meminfo* info)
+get_used(const struct meminfo_ram* info)
 {
 	/*
 	 * see procps(free):

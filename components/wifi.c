@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 #define RSSI_TO_PERC(rssi) \
 			rssi >= -50 ? 100 : \

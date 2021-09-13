@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 hostname(char *	    out,

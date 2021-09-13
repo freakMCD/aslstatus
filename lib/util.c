@@ -8,7 +8,7 @@
 
 #include "util.h"
 #include "numfmt.h"
-#include "components_config.h"
+#include "../components_config.h"
 
 #ifndef FMT_HUMAN_NUMFMT
 #	define FMT_HUMAN_NUMFMT NUMFMT_IEC

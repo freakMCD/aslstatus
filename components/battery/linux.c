@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #include "icons.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 
 #define MAX_STATE     13
 #define STATE_PATTERN "%" STR(MAX_STATE) "[^\n]s"

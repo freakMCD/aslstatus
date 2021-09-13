@@ -1,7 +1,7 @@
 #include <err.h>
 #include <stddef.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 #include <stdio.h>
 #include <stdlib.h>

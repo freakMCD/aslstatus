@@ -1,8 +1,6 @@
 #ifndef _COMPONENTS_CONFIG_H
 #define _COMPONENTS_CONFIG_H
 
-#include "numfmt.h"
-
 /* some settings for components */
 
 /*
@@ -12,13 +10,6 @@
  * NUMFMT_IEC: 1024 = 1 Ki
  */
 #define FMT_HUMAN_NUMFMT NUMFMT_IEC
-
-/* 
- * CPU
- *
- * CPU_ACCOUNT_IOWAIT	account iowait in cpu usage
- */
-/* #define CPU_ACCOUNT_IOWAIT */
 
 /*
  * KEYMAP

@@ -12,7 +12,7 @@
 #define USE_PULSE
 #endif
 #include "volume.h"
-#include "../../util.h"
+#include "../../lib/util.h"
 #include "../../components_config.h"
 
 #ifndef VOLUME_SYM

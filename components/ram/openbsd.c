@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 #define LOG1024			 10
 #define pagetok(size, pageshift) (size_t)(size << (pageshift - LOG1024))

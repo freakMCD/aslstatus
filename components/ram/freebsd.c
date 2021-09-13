@@ -4,7 +4,7 @@
 #include <sys/vmmeter.h>
 #include <vm/vm_param.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 void
 ram_free(char *	    out,

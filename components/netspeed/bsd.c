@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 void
 netspeed_rx(char *	 out,

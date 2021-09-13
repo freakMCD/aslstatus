@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "../util.h"
+#include "../lib/util.h"
 
 void
 gid(char *     out,

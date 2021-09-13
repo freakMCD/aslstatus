@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <unistd.h>
 
-#include "../../util.h"
+#include "../../lib/util.h"
 
 #define MAX_NAME  16
 #define TEMP_FILE "temp1_input"

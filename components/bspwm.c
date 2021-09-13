@@ -15,7 +15,7 @@
 #	include <xcb/xcb.h>
 #endif
 
-#include "../util.h"
+#include "../lib/util.h"
 #include "../components_config.h"
 
 #ifndef BSPWM_FOCUSED_RESET
