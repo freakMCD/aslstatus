@@ -13,6 +13,13 @@
  */
 #define FMT_HUMAN_NUMFMT NUMFMT_IEC
 
+/* 
+ * CPU
+ *
+ * CPU_ACCOUNT_IOWAIT	account iowait in cpu usage
+ */
+/* #define CPU_ACCOUNT_IOWAIT */
+
 /*
  * KEYMAP
  *

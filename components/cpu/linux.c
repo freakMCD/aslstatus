@@ -1,4 +1,5 @@
 #include <err.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -6,6 +7,34 @@
 
 #include "cpu.h"
 #include "../../util.h"
+#include "../../components_config.h"
+
+#ifdef CPU_ACCOUNT_IOWAIT
+#	define IOWAIT(X) X[CPU_STATE_IOWAIT]
+#else
+#	define IOWAIT(X) 0
+#endif
+
+/* clang-format off */
+#define CPU_SUM(X)                                                            \
+	(X[CPU_STATE_USER]                                                    \
+	 + X[CPU_STATE_NICE]                                                  \
+	 + X[CPU_STATE_SYSTEM]                                                \
+	 + X[CPU_STATE_IDLE]                                                  \
+	 + X[CPU_STATE_IOWAIT]                                                \
+	 + X[CPU_STATE_IRQ]                                                   \
+	 + X[CPU_STATE_SOFTIRQ]                                               \
+	 + X[CPU_STATE_STEAL])
+
+#define CPU_USED(X)                                                           \
+	(X[CPU_STATE_USER]                                                    \
+	 + X[CPU_STATE_NICE]                                                  \
+	 + X[CPU_STATE_SYSTEM]                                                \
+	 + IOWAIT(X)                                                          \
+	 + X[CPU_STATE_IRQ]                                                   \
+	 + X[CPU_STATE_SOFTIRQ]                                               \
+	 + X[CPU_STATE_STEAL])
+/* clang-format on */
 
 void
 cpu_freq(char *	    out,
@@ -36,43 +65,36 @@ cpu_perc(char *	    out,
 {
 	struct cpu_data_t *data = static_ptr;
 
-	__typeof__(*data->states) old_states[7], sum;
+	__typeof__(*data->states) old_states[LEN(data->states)], sum;
 
-	memcpy(old_states, data->states, sizeof(old_states));
+	memcpy(old_states, data->states, sizeof(data->states));
 
 	/* or not only sysfs :) */
 	if (sysfs_fptr(&data->fptr, "/", "proc", "stat")) ERRRET(out);
 
 	/* cpu user nice system idle iowait irq softirq */
 	if (fscanf(data->fptr,
-		   "%*s %ju %ju %ju %ju %ju %ju %ju",
-		   &data->states[0],
-		   &data->states[1],
-		   &data->states[2],
-		   &data->states[3],
-		   &data->states[4],
-		   &data->states[5],
-		   &data->states[6])
+		   "cpu  %Lf %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
+		   &data->states[CPU_STATE_USER],
+		   &data->states[CPU_STATE_NICE],
+		   &data->states[CPU_STATE_SYSTEM],
+		   &data->states[CPU_STATE_IDLE],
+		   &data->states[CPU_STATE_IOWAIT],
+		   &data->states[CPU_STATE_IRQ],
+		   &data->states[CPU_STATE_SOFTIRQ],
+		   &data->states[CPU_STATE_STEAL])
 	    != LEN(data->states))
 		ERRRET(out);
 
-	if (!old_states[0]) ERRRET(out);
+	if (!old_states[CPU_STATE_USER]) ERRRET(out);
 
-#define SUM7(X)	      (X[0] + X[1] + X[2] + X[3] + X[4] + X[5] + X[6])
-#define ABS_DEC(A, B) (MAX((A), (B)) - MIN((A), (B)))
-	/*
-	 * preprocessor will generate scary code, but it will be very good
-	 * optimized by compiler with any number of optimization, except -O0
-	 */
+	sum = CPU_SUM(old_states) - CPU_SUM(data->states);
 
-	if (!(sum = ABS_DEC(SUM7(old_states), SUM7(data->states))))
-		ERRRET(out);
+	if (!sum || isnan(sum)) ERRRET(out);
 
-#define SUM01256(X) (X[0] + X[1] + X[2] + X[5] + X[6])
 	bprintf(
 	    out,
 	    "%hhu",
-	    (uint8_t)(100
-		      * ABS_DEC(SUM01256(old_states), SUM01256(data->states))
+	    (uint8_t)(100.0 * (CPU_USED(old_states) - CPU_USED(data->states))
 		      / sum));
 }
