@@ -35,6 +35,29 @@
 		}                                                             \
 	} while (0)
 
+/*
+ * ERR	error block
+ * C	count of matches
+ * F	scanf function
+ * ...	args to scanf
+ */
+#define SCANF(ERR, C, F, ...)                                                 \
+	do {                                                                  \
+		int _m = errno = 0;                                           \
+		if ((_m = F(__VA_ARGS__)) == (C)) {                           \
+			break;                                                \
+		} else if (errno != 0) {                                      \
+			warn("%s: " #F, __func__);                            \
+			ERR                                                   \
+		} else {                                                      \
+			warnx("%s: " #F ": matched %d of %d",                 \
+			      __func__,                                       \
+			      _m,                                             \
+			      (C));                                           \
+			ERR                                                   \
+		}                                                             \
+	} while (0)
+
 #define __unused	   __attribute__((__unused__))
 #define typeof_field(S, F) __typeof__(((S *)0)->F)
 #define TWICE(V)	   V, V
