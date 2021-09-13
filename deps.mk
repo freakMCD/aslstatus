@@ -31,10 +31,10 @@ ${COMPONENTS:.c=.o}: ${util} ${components_config}
 $(call gendeps,battery,components/battery.h,${components_config})
 $(call all_os,battery): ${battery}
 
-$(call gendeps,cpu,components/cpu/cpu.h,os.h)
+$(call gendeps,cpu,components/cpu.h,os.h)
 components/linux/cpu.o: ${cpu}
 
-$(call gendeps,netspeed,components/netspeed/netspeed.h,os.h)
+$(call gendeps,netspeed,components/netspeed.h,os.h)
 components/linux/netspeed.o: ${netspeed}
 
 $(patsubst %.c,%.o,$(wildcard components/volume/*.c)): \
