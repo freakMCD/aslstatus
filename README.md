@@ -77,9 +77,9 @@ also you can change `BUFF_SZ` (see [util.h](util.h))
 ---
 # components/
 
-components were taken from [slstatus](https://tools.suckless.org/slstatus)
-and have been modified to work with `pthread`,
-some have been completely rewritten
+initially, components were taken from [slstatus](https://tools.suckless.org/slstatus),
+but now it is completely rewritten,
+bsd components only modified to work with `pthread`
 
 all components are tested in `Linux`
 
