@@ -13,12 +13,12 @@ ram_free(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**		   fptr = static_ptr;
+	int*		   fd	= static_ptr;
 	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
-	if (MEMINFO_FPTR(fptr)) ERRRET(out);
+	MEMINFO_FD({ ERRRET(out); }, *fd);
 
-	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
 
 	fmt_human(
 	    out,
@@ -32,12 +32,12 @@ ram_perc(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**		   fptr = static_ptr;
+	int*		   fd	= static_ptr;
 	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
-	if (MEMINFO_FPTR(fptr)) ERRRET(out);
+	MEMINFO_FD({ ERRRET(out); }, *fd);
 
-	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
 
 	if (!info.total) ERRRET(out);
 
@@ -51,11 +51,11 @@ ram_total(char*	     out,
 	  void*			static_ptr)
 {
 	memory_t total;
-	FILE**	 fptr = static_ptr;
+	int*	 fd = static_ptr;
 
-	if (MEMINFO_FPTR(fptr)) ERRRET(out);
+	MEMINFO_FD({ ERRRET(out); }, *fd);
 
-	if (!read_meminfo(*fptr, "MemTotal", &total)) ERRRET(out);
+	if (!read_meminfo(*fd, "MemTotal", &total)) ERRRET(out);
 
 	fmt_human(out, total * 1024);
 }
@@ -66,12 +66,12 @@ ram_used(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	FILE**		   fptr = static_ptr;
+	int*		   fd	= static_ptr;
 	struct meminfo_ram info = MEMINFO_INIT_RAM;
 
-	if (MEMINFO_FPTR(fptr)) ERRRET(out);
+	MEMINFO_FD({ ERRRET(out); }, *fd);
 
-	if (!get_meminfo_ram(*fptr, &info)) ERRRET(out);
+	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
 
 	fmt_human(out, get_used(&info) * 1024);
 }

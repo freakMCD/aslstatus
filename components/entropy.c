@@ -4,6 +4,7 @@
 
 #if LINUX
 #	include <err.h>
+#	include <fcntl.h>
 #	include <stdint.h>
 #	include <stdio.h>
 
@@ -16,21 +17,23 @@ entropy(char*	   out,
 	unsigned int __unused _i,
 	void*		      static_ptr)
 {
-	FILE**	  avail_fptr = static_ptr;
-	uintmax_t num;
+	size_t readed;
+	int*   fd = static_ptr;
+	char   buf[9 /* len(str(uint32_t)) */ + 1];
 
-	if (!*avail_fptr) {
-		if (!(*avail_fptr = fopen(ENTROPY_AVAIL, "r"))) {
-			warn("fopen(%s)", ENTROPY_AVAIL);
+	if (*fd > 0) {
+		SEEK_0({ ERRRET(out); }, *fd);
+	} else {
+		if ((*fd = open(ENTROPY_AVAIL, O_RDONLY | O_CLOEXEC)) == -1) {
+			warn("open(%s)", ENTROPY_AVAIL);
 			ERRRET(out);
 		}
-	} else {
-		fseek(*avail_fptr, 0, SEEK_SET);
 	}
 
-	if (fscanf(*avail_fptr, "%ju", &num) != 1) ERRRET(out);
+	EREAD({ ERRRET(out); },readed, *fd, WITH_LEN(buf));
+	buf[--readed /* '\n' at the end */] = '\0';
 
-	bprintf(out, "%ju", num);
+	bprintf(out, "%s", buf);
 }
 
 #else

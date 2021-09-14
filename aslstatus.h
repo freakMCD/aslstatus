@@ -19,8 +19,8 @@
 		.data = { 0 }, .mutex = PTHREAD_MUTEX_INITIALIZER             \
 	}
 
-#define _FILE_ON_LINUX (LINUX * sizeof(FILE *))
-/* if linux: sizeof(FILE *); otherwise: 0 */
+#define _FILE_ON_LINUX (LINUX * sizeof(int /* fd */))
+/* if linux: sizeof(int); otherwise: 0 */
 
 typedef void(*func_t) FUNC_ARGS;
 
@@ -46,6 +46,8 @@ struct arg_t {
 /* clang-format off */
 
 /* battery */
+#include "components/battery.h"
+
 void battery_perc FUNC_ARGS;
 #define battery_perc {battery_perc, "batt_percentage", _FILE_ON_LINUX}
 
@@ -54,7 +56,7 @@ void battery_state FUNC_ARGS;
 
 void battery_remaining FUNC_ARGS;
 #define battery_remaining \
-	{battery_remaining, "batt_remaining", _FILE_ON_LINUX * 3}
+	{battery_remaining, "batt_remaining", BATTERY_REMAINING_STATIC_SIZE}
 
 
 #if USE_X

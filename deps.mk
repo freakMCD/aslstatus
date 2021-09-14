@@ -45,5 +45,5 @@ components/linux/ram.o: ${meminfo}
 components/linux/swap.o: ${meminfo}
 
 $(call gendeps,aslstatus,aslstatus.h,\
-	${util} os.h ${cpu} ${netspeed} components/volume/volume.h)
+	${util} os.h ${battery} ${cpu} ${netspeed} components/volume/volume.h)
 aslstatus.o: config.h ${thread_helper} ${aslstatus}

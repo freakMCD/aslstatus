@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-#define MEMINFO_FPTR(F) sysfs_fptr(F, "/", "proc", "meminfo")
+#define MEMINFO_FD(ERR, FD) SYSFS_FD_OR_SEEK(ERR, FD, "/", "proc", "meminfo")
 
 /* clang-format off */
 #define MEMINFO_INIT_RAM_FIELDS(T, F, A, B, C, S, R)                          \
@@ -45,7 +45,8 @@
 	}
 /* clang-format on */
 
-typedef uintmax_t memory_t;
+#define memory_t_format "%8lu"
+typedef unsigned long int memory_t;
 
 struct meminfo_field {
 	const char *key;
@@ -72,7 +73,7 @@ struct meminfo_swap {
 };
 
 /* read single field from meminfo */
-uint8_t read_meminfo(FILE *fptr, const char *key, memory_t *val);
+uint8_t read_meminfo(int fd, const char *key, memory_t *val);
 
 /*
  * read multiple fields from meminfo
@@ -81,12 +82,12 @@ uint8_t read_meminfo(FILE *fptr, const char *key, memory_t *val);
  * because fptr read sequentially and not seeked while reading
  */
 uint8_t
-read_meminfo_keys(FILE *fptr, const struct meminfo_field *info, size_t size);
+read_meminfo_keys(int fd, const struct meminfo_field *info, size_t size);
 
 /* get only those fields which needed for `ram` components */
-uint8_t get_meminfo_ram(FILE *fptr, struct meminfo_ram *info);
+uint8_t get_meminfo_ram(int fd, struct meminfo_ram *info);
 
 /* get only those fields which needed for `swap` components */
-uint8_t get_meminfo_swap(FILE *fptr, struct meminfo_swap *info);
+uint8_t get_meminfo_swap(int fd, struct meminfo_swap *info);
 
 #endif /* MEMINFO_H */

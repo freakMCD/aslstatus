@@ -15,9 +15,9 @@
 #define SYS_CLASS     "/sys/class/power_supply"
 
 static inline uint8_t
-pick(const char *bat, FILE **fptr, const char **arr, size_t len);
+pick(const char *bat, int *fd, const char **arr, size_t len);
 static inline uint8_t
-get_state(char state[MAX_STATE], FILE **fptr, const char *bat);
+get_state(char state[MAX_STATE], int *fd, const char *bat);
 
 void
 battery_perc(char *		   out,
@@ -25,14 +25,17 @@ battery_perc(char *		   out,
 	     unsigned int __unused _i,
 	     void *		   static_ptr)
 {
-	uint8_t perc;
-	FILE ** perc_fptr = static_ptr;
+	size_t readed;
+	char   perc[4]; /* len(str(100)) + 1 */
+	int *  fd = static_ptr;
 
-	if (sysfs_fptr(perc_fptr, SYS_CLASS, bat, "capacity")) ERRRET(out);
+	SYSFS_FD_OR_SEEK({ ERRRET(out); }, *fd, SYS_CLASS, bat, "capacity");
 
-	if (fscanf(*perc_fptr, "%hhu", &perc) != 1) ERRRET(out);
+	EREAD({ ERRRET(out); }, readed, *fd, WITH_LEN(perc));
 
-	bprintf(out, "%hhu", perc);
+	perc[--readed /* '\n' at the end */] = '\0';
+
+	bprintf(out, "%.3s", perc);
 }
 
 void
@@ -41,7 +44,7 @@ battery_state(char *		    out,
 	      unsigned int __unused _i,
 	      void *		    static_ptr)
 {
-	FILE **state_fptr = static_ptr;
+	int *fd = static_ptr;
 
 	size_t i;
 	char   state[MAX_STATE];
@@ -54,7 +57,7 @@ battery_state(char *		    out,
 		{ "Not charging", BATTERY_FULL },
 	};
 
-	if (get_state(state, state_fptr, bat)) ERRRET(out);
+	if (get_state(state, fd, bat)) ERRRET(out);
 
 	for (i = 0; i < LEN(map); i++)
 		if (!strcmp(map[i].state, state)) break;
@@ -68,12 +71,13 @@ battery_remaining(char *		out,
 		  unsigned int __unused _i,
 		  void *		static_ptr)
 {
+	struct remaining *fds = static_ptr;
+
 	char	  state[MAX_STATE];
 	uintmax_t m, h, charge_now, current_now;
 
-	FILE **files  = static_ptr;
-
-	FILE **status = &files[0], **charge = &files[1], **current = &files[2];
+	int *status = &fds->status, *charge = &fds->charge,
+	    *current = &fds->current;
 
 	double timeleft;
 
@@ -88,12 +92,17 @@ battery_remaining(char *		out,
 
 	if (get_state(state, status, bat)) ERRRET(out);
 
-#define pick_scan(C)                                                          \
-	(pick(bat, C, C##_arr, LEN(C##_arr))                                  \
-	 || fscanf(*C, "%ju", &C##_now) != 1)
+#define pick_scan(ERR, C)                                                     \
+	do {                                                                  \
+		char _buf[JU_STR_SIZE];                                       \
+		if (!pick(bat, C, C##_arr, LEN(C##_arr))) ERR;                \
+		EREAD(ERR, _unused, *C, WITH_LEN(_buf));                      \
+		SCANF(ERR, 1, sscanf, _buf, "%ju", &C##_now);                 \
+	} while (0)
 
 	if (!strcmp(state, "Discharging")) {
-		if (pick_scan(charge) || pick_scan(current)) ERRRET(out);
+		pick_scan({ ERRRET(out); }, charge);
+		pick_scan({ ERRRET(out); }, current);
 
 		if (!current_now) goto not_discharging;
 
@@ -109,28 +118,24 @@ not_discharging:
 }
 
 static inline uint8_t
-pick(const char *bat, FILE **fptr, const char **arr, size_t len)
+pick(const char *bat, int *fd, const char **arr, size_t len)
 {
 	__typeof__(len) i;
 
-	uint8_t ret    = !0;
-	int	bat_fd = -1, fd;
+	uint8_t ret    = 0;
+	int	bat_fd = -1;
 
-	if (!!*fptr) {
-		SEEK_0(*fptr, { return !0; });
-		return 0;
+	if (*fd > 0) {
+		SEEK_0({ return 0; }, *fd);
+		return !0;
 	}
 
-	if ((bat_fd = sysfs_fd(SYS_CLASS, bat, NULL)) == -1) return !0;
+	if ((bat_fd = sysfs_fd(SYS_CLASS, bat, NULL)) == -1) return 0;
 
 	for (i = 0; i < len; i++) {
-		if ((fd = openat(bat_fd, arr[i], O_RDONLY | O_CLOEXEC))
+		if ((*fd = openat(bat_fd, arr[i], O_RDONLY | O_CLOEXEC))
 		    != -1) {
-			if (!(*fptr = fdopen(fd, "r"))) {
-				warn("fdopen(%d, r)", fd);
-				goto end;
-			}
-			ret = 0;
+			ret = !0;
 			goto end;
 		}
 	}
@@ -141,9 +146,14 @@ end:
 }
 
 static inline uint8_t
-get_state(char state[MAX_STATE], FILE **fptr, const char *bat)
+get_state(char state[MAX_STATE], int *fd, const char *bat)
 {
-	if (sysfs_fptr(fptr, SYS_CLASS, bat, "status")) return !0;
+	size_t readed;
 
-	return fscanf(*fptr, STATE_PATTERN, state) != 1;
+	SYSFS_FD_OR_SEEK({ return !0; }, *fd, SYS_CLASS, bat, "status");
+	EREAD({ return !0; }, readed, *fd, state, MAX_STATE);
+
+	state[--readed /* '\n' at the end */] = '\0';
+
+	return 0;
 }

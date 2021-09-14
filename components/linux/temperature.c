@@ -23,8 +23,6 @@ static const char *GOOD_NAMES[] = {
 void
 temp(char *out, const char *device, unsigned int __unused _i, void *static_ptr)
 {
-	uintmax_t temp;
-
 	DIR *	       d;
 	struct dirent *dp;
 
@@ -32,16 +30,20 @@ temp(char *out, const char *device, unsigned int __unused _i, void *static_ptr)
 	size_t	readed;
 	int	name_fd;
 	char	name[MAX_NAME];
-	FILE ** fptr = static_ptr;
+	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];
+	int *	fd = static_ptr;
 
-	if (!!*fptr) {
-		SEEK_0(*fptr, { ERRRET(out); });
+	if (*fd > 0) {
+		SEEK_0({ ERRRET(out); }, *fd);
 		goto get_temp;
 	}
 
 	if (!!device) {
-		if (sysfs_fptr(fptr, SYS_CLASS, device, TEMP_FILE))
-			ERRRET(out);
+		SYSFS_FD_OR_SEEK({ ERRRET(out); },
+				 *fd,
+				 SYS_CLASS,
+				 device,
+				 TEMP_FILE);
 		goto get_temp;
 	}
 
@@ -57,28 +59,25 @@ temp(char *out, const char *device, unsigned int __unused _i, void *static_ptr)
 		if ((name_fd = sysfs_fd(SYS_CLASS, dp->d_name, "name")) == -1)
 			continue;
 
-		readed = read(name_fd, name, sizeof(name));
-		close(name_fd);
+		EREAD(
+		    {
+			    close(name_fd);
+			    continue;
+		    },
+		    readed,
+		    name_fd,
+		    WITH_LEN(name));
 
-		if ((signed)readed == -1) {
-			warn("read fd:%d (%s/%s/name)",
-			     name_fd,
-			     SYS_CLASS,
-			     dp->d_type);
-			continue;
-		} else {
-			/* remove last new line char */
-			if (name[readed - 1] == '\n') --readed;
-			name[readed] = '\0';
-		}
+		/* remove last new line char */
+		name[--readed] = '\0';
 
 		for (i = 0; i < LEN(GOOD_NAMES); i++) {
 			if (!strncmp(name, GOOD_NAMES[i], readed)) {
-				if (sysfs_fptr(fptr,
-					       SYS_CLASS,
-					       dp->d_name,
-					       TEMP_FILE))
-					ERRRET(out);
+				SYSFS_FD_OR_SEEK({ ERRRET(out); },
+						 *fd,
+						 SYS_CLASS,
+						 dp->d_name,
+						 TEMP_FILE);
 				found = !0;
 				goto end_loop;
 			}
@@ -89,7 +88,13 @@ end_loop:
 
 	if (!!found) {
 	get_temp:
-		if (fscanf(*fptr, "%ju", &temp) != 1) ERRRET(out);
-		bprintf(out, "%ju", temp / 1000);
+		EREAD({ ERRRET(out); }, readed, *fd, WITH_LEN(buf));
+		if (readed > 4)
+			readed -= 4; /* 3 zeros and '\n' at the end */
+		else
+			buf[(readed = 1) - 1] = '0';
+
+		buf[readed] = '\0';
+		bprintf(out, "%s", buf);
 	}
 }

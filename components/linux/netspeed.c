@@ -41,13 +41,20 @@ netspeed(char *	      out,
 	 void *	      static_ptr,
 	 const char * property)
 {
-	struct netspeed_data_t *data = static_ptr;
+	struct netspeed_data_t *data	 = static_ptr;
+	uintmax_t		oldbytes = data->bytes;
+	char			buf[JU_STR_SIZE];
 
-	uintmax_t oldbytes	     = data->bytes;
+	SYSFS_FD_OR_SEEK({ ERRRET(out); },
+			 data->fd,
+			 SYS_CLASS,
+			 interface,
+			 property);
 
-	if (sysfs_fptr(&data->fptr, SYS_CLASS, interface, property)
-	    || fscanf(data->fptr, "%ju", &data->bytes) != 1 || oldbytes == 0)
-		ERRRET(out);
+	EREAD({ ERRRET(out); }, _unused, data->fd, WITH_LEN(buf));
+	SCANF({ ERRRET(out); }, 1, sscanf, buf, "%ju", &data->bytes);
+
+	if (!oldbytes) ERRRET(out);
 
 	fmt_human(out, (data->bytes - oldbytes) * 1000 / interval);
 }

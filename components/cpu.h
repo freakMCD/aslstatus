@@ -25,8 +25,8 @@ enum CPU_STATE {
 	_CPU_STATE_COUNT,
 };
 struct cpu_data_t {
-	FILE*	    fptr;
-	long double states[_CPU_STATE_COUNT];
+	int	  fd;
+	uintmax_t states[_CPU_STATE_COUNT];
 };
 #	define CPU_STATIC_SIZE sizeof(struct cpu_data_t)
 

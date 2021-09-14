@@ -8,7 +8,7 @@
 
 #if LINUX
 struct netspeed_data_t {
-	FILE*	  fptr;
+	int fd;
 	uintmax_t bytes;
 };
 #	define NETSPEED_STATIC_SIZE sizeof(struct netspeed_data_t)

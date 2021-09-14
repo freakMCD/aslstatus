@@ -1,6 +1,7 @@
-#ifndef BATTERY_ICONS_H
-#define BATTERY_ICONS_H
+#ifndef BATTERY_H
+#define BATTERY_H
 
+#include "../os.h"
 #include "../components_config.h"
 
 #ifndef BATTERY_FULL
@@ -23,4 +24,13 @@
 #	define BATTERY_REMAINING_NOT_DISCHARGING "?"
 #endif
 
-#endif /* BATTERY_ICONS_H */
+#if LINUX
+struct remaining {
+	int status, charge, current;
+};
+#	define BATTERY_REMAINING_STATIC_SIZE sizeof(struct remaining)
+#else
+#	define BATTERY_REMAINING_STATIC_SIZE 0
+#endif
+
+#endif /* BATTERY_H */

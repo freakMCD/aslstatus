@@ -43,26 +43,6 @@ bprintf(char *buf, const char *fmt, ...)
 }
 
 int
-pscanf(const char *path, const char *fmt, ...)
-{ /* path scansf */
-	int	n;
-	FILE *	fp;
-	va_list ap;
-
-	if (!(fp = fopen(path, "r"))) {
-		warn("fopen '%s'", path);
-		return -1;
-	}
-
-	va_start(ap, fmt);
-	n = vfscanf(fp, fmt, ap);
-	va_end(ap);
-
-	fclose(fp);
-	return (n == EOF) ? -1 : n;
-}
-
-int
 esnprintf(char *str, size_t size, const char *fmt, ...)
 { /* snprintf with warn about truncating */
 	va_list ap;
@@ -153,26 +133,4 @@ end:
 			if (close(fds[i]) == -1) warn("%d", fds[i]);
 
 	return *property_fd;
-}
-
-uint8_t
-sysfs_fptr(FILE **     fptr,
-	   const char *path,
-	   const char *device,
-	   const char *property)
-{
-	int fd;
-
-	if (!*fptr) {
-		if ((fd = sysfs_fd(path, device, property)) == -1) return !0;
-
-		if (!(*fptr = fdopen(fd, "r"))) {
-			warn("fdopen(%d, r)", fd);
-			return !0;
-		}
-	} else {
-		SEEK_0(*fptr, { return !0; });
-	}
-
-	return 0;
 }
