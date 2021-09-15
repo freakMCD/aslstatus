@@ -152,7 +152,7 @@ void ram_perc FUNC_ARGS;
 #define ram_perc {ram_perc, "ram_percentage", _FILE_ON_LINUX}
 
 void ram_total FUNC_ARGS;
-#define ram_total {ram_total, "ram_total", _FILE_ON_LINUX}
+#define ram_total {ram_total, "ram_total", 0}
 
 void ram_used FUNC_ARGS;
 #define ram_used {ram_used, "ram_used", _FILE_ON_LINUX}
@@ -174,7 +174,7 @@ void swap_perc FUNC_ARGS;
 #define swap_perc {swap_perc, "swap_percentage", _FILE_ON_LINUX}
 
 void swap_total FUNC_ARGS;
-#define swap_total {swap_total, "swap_total", _FILE_ON_LINUX}
+#define swap_total {swap_total, "swap_total", 0}
 
 void swap_used FUNC_ARGS;
 #define swap_used {swap_used, "swap_used", _FILE_ON_LINUX}
