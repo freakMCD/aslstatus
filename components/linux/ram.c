@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/param.h> /* MIN */
+#include <sys/sysinfo.h>
 
 #include "../../lib/util.h"
 #include "../../lib/meminfo.h"
+
+#define DEF_RAM(STRUCT, STATIC, OUT)                                          \
+	int*		   fd	  = (STATIC);                                 \
+	struct meminfo_ram STRUCT = MEMINFO_INIT_RAM;                         \
+	MEMINFO_FD({ ERRRET(OUT); }, *fd);                                    \
+	if (!get_meminfo_ram(*fd, &STRUCT)) ERRRET(OUT)
 
 static inline memory_t get_used(const struct meminfo_ram* info);
 
@@ -13,12 +20,7 @@ ram_free(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	int*		   fd	= static_ptr;
-	struct meminfo_ram info = MEMINFO_INIT_RAM;
-
-	MEMINFO_FD({ ERRRET(out); }, *fd);
-
-	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
+	DEF_RAM(info, static_ptr, out);
 
 	fmt_human(
 	    out,
@@ -32,12 +34,7 @@ ram_perc(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	int*		   fd	= static_ptr;
-	struct meminfo_ram info = MEMINFO_INIT_RAM;
-
-	MEMINFO_FD({ ERRRET(out); }, *fd);
-
-	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
+	DEF_RAM(info, static_ptr, out);
 
 	if (!info.total) ERRRET(out);
 
@@ -48,16 +45,12 @@ void
 ram_total(char*	     out,
 	  const char __unused*	_a,
 	  unsigned int __unused _i,
-	  void*			static_ptr)
+	  void __unused* _p)
 {
-	memory_t total;
-	int*	 fd = static_ptr;
+	struct sysinfo info;
+	if (!!sysinfo(&info)) ERRRET(out);
 
-	MEMINFO_FD({ ERRRET(out); }, *fd);
-
-	if (!read_meminfo(*fd, "MemTotal", &total)) ERRRET(out);
-
-	fmt_human(out, total * 1024);
+	fmt_human(out, info.totalram * info.mem_unit);
 }
 
 void
@@ -66,12 +59,7 @@ ram_used(char*	    out,
 	 unsigned int __unused _i,
 	 void*		       static_ptr)
 {
-	int*		   fd	= static_ptr;
-	struct meminfo_ram info = MEMINFO_INIT_RAM;
-
-	MEMINFO_FD({ ERRRET(out); }, *fd);
-
-	if (!get_meminfo_ram(*fd, &info)) ERRRET(out);
+	DEF_RAM(info, static_ptr, out);
 
 	fmt_human(out, get_used(&info) * 1024);
 }
