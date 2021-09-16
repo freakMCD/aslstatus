@@ -12,6 +12,12 @@
 #include "os.h"
 #include "lib/util.h"
 
+#include "components/cpu.h"
+#include "components/wifi.h"
+#include "components/battery.h"
+#include "components/netspeed.h"
+#include "components/volume/volume.h"
+
 #define FUNC_ARGS (char *, const char *, unsigned int, void *)
 
 #define END                                                                   \
@@ -46,8 +52,6 @@ struct arg_t {
 /* clang-format off */
 
 /* battery */
-#include "components/battery.h"
-
 void battery_perc FUNC_ARGS;
 #define battery_perc {battery_perc, "batt_percentage", _FILE_ON_LINUX}
 
@@ -67,8 +71,6 @@ void bspwm_ws FUNC_ARGS;
 
 
 /* cpu */
-#include "components/cpu.h"
-
 void cpu_freq FUNC_ARGS;
 #define cpu_freq {cpu_freq, "cpu_freq", _FILE_ON_LINUX}
 
@@ -130,8 +132,6 @@ void load_avg FUNC_ARGS;
 
 
 /* netspeeds */
-#include "components/netspeed.h"
-
 void netspeed_rx FUNC_ARGS;
 #define netspeed_rx {netspeed_rx, "netspeed_rx", NETSPEED_STATIC_SIZE}
 
@@ -202,17 +202,16 @@ void username FUNC_ARGS;
 
 
 /* volume */
-#include "components/volume/volume.h"
 void vol_perc FUNC_ARGS;
 #define vol_perc {vol_perc, "volume", VOLUME_STATIC_SIZE}
 
 
 /* wifi */
 void wifi_perc FUNC_ARGS;
-#define wifi_perc {wifi_perc, "wifi_percentage", 0}
+#define wifi_perc {wifi_perc, "wifi_percentage", WIFI_PERC_STATIC_SIZE}
 
 void wifi_essid FUNC_ARGS;
-#define wifi_essid {wifi_essid, "wifi_essid", 0}
+#define wifi_essid {wifi_essid, "wifi_essid", WIFI_ESSID_STATIC_SIZE}
 
 /* clang-format on */
 

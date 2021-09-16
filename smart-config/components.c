@@ -57,6 +57,8 @@ COMMON_FILE(ram, LOF_FILE);
 
 COMMON_FILE(swap, LOF_FILE);
 
+COMMON_FILE(wifi, LOF_FILE);
+
 /* battery */
 void battery_perc FUNC_ARGS { battery(); }
 
@@ -182,6 +184,6 @@ DEF(username);
 void vol_perc FUNC_ARGS { COMP_F(VOLUME, "volume"); }
 
 /* wifi */
-DEF(wifi_perc);
+void wifi_perc FUNC_ARGS { wifi(); }
 
-DEF(wifi_essid);
+void wifi_essid FUNC_ARGS { wifi(); }
