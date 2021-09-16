@@ -66,6 +66,9 @@ void battery_state FUNC_ARGS { battery(); }
 
 void battery_remaining FUNC_ARGS { battery(); }
 
+/* brightness */
+DEF(brightness);
+
 /* bspwm */
 DEF(bspwm_ws);
 

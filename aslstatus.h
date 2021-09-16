@@ -62,6 +62,9 @@ void battery_remaining FUNC_ARGS;
 #define battery_remaining \
 	{battery_remaining, "batt_remaining", BATTERY_REMAINING_STATIC_SIZE}
 
+/* brightness */
+void brightness FUNC_ARGS;
+#define brightness {brightness, "brightness", sizeof(struct {int a, b;})}
 
 #if USE_X
 /* bspwm */

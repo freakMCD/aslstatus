@@ -7,6 +7,8 @@
  *                                                     NULL on OpenBSD/FreeBSD
  * battery_remaining   battery remaining HH:MM         battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
+ * brightness          backlight display brightness    device name
+ *                                                     (intel_backlight)
  * bspwm_ws            bspwm workspaces for lemonbar   NULL
  * cpu_perc            cpu usage in percent            NULL
  * cpu_freq            cpu frequency in MHz            NULL
