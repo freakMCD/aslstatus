@@ -47,7 +47,7 @@
 	do {                                                                  \
 		uintmax_t __unused _unused;                                   \
 		if (COND(R = F(__VA_ARGS__))) {                               \
-			warn("%s: %s", __func__, #F);                         \
+			warn("%s: %s(%s)", __func__, #F, #__VA_ARGS__);       \
 			ERR                                                   \
 		}                                                             \
 	} while (0)
