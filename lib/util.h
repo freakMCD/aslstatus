@@ -14,6 +14,9 @@
  * if you are using `wifi.c` it must be at least 78 bytes
  */
 
+#define INT_STR_SIZE                                                          \
+	(10 /* max string size size of int32_t (unsigned and signed) */       \
+	 + 1 /* '\n' */)
 #define JU_STR_SIZE                                                           \
 	(20 /* max string size size of %ju (uintmax_t) */ + 1 /* '\n' */)
 
