@@ -44,6 +44,10 @@ components/volume/pulse.o: ${thread_helper}
 components/linux/ram.o: ${meminfo}
 components/linux/swap.o: ${meminfo}
 
+$(call gendeps,wifi,components/wifi.h,os.h)
+$(call all_os,wifi): ${wifi}
+
 $(call gendeps,aslstatus,aslstatus.h,\
-	${util} os.h ${battery} ${cpu} ${netspeed} components/volume/volume.h)
+	${util} os.h components/volume/volume.h \
+	${battery} ${cpu} ${netspeed} ${wifi})
 aslstatus.o: config.h ${thread_helper} ${aslstatus}
