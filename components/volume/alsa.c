@@ -62,6 +62,8 @@ vol_perc(char *	    volume,
 	alsa_data *data = static_data->data;
 
 	if (!data->ctl) {
+		if (!static_data->cleanup) static_data->cleanup = alsa_cleanup;
+
 		if (!(ctl_name = get_ctl_name(&data->sid))) ERRRET(volume);
 
 		snd_ctl_open(&data->ctl, ctl_name, SND_CTL_READONLY);
