@@ -30,6 +30,8 @@
 #define STR_SIZE(S)   (LEN(S) - 1) /* minus null byte */
 #define WITH_SSIZE(S) S, STR_SIZE(S)
 
+#define QUOTED(S) "\"" #S "\""
+
 #define LEN(S)	    (sizeof(S) / sizeof *(S))
 #define WITH_LEN(S) S, LEN(S)
 
