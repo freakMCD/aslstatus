@@ -46,4 +46,7 @@
 #define VOLUME_ALSA_MIXER_NAME "Master"
 #define VOLUME_PULSE_PROC_NAME "volume:pulse" /* PulseAudio thread name */
 
+/* wait so many milliseconds before trying to reconnect to pulse server */
+#define VOLUME_PULSE_RECONECT_TIMEOUT 5000
+
 #endif /* _COMPONENTS_CONFIG_H */

@@ -4,11 +4,13 @@
 #include <sys/sysinfo.h>
 
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 #include "../../lib/meminfo.h"
 
 #define DEF_RAM(STRUCT, STATIC, OUT)                                          \
-	int*		   fd	  = (STATIC);                                 \
+	int*		   fd	  = (STATIC)->data;                           \
 	struct meminfo_ram STRUCT = MEMINFO_INIT_RAM;                         \
+	if (!(STATIC)->cleanup) (STATIC)->cleanup = fd_cleanup;               \
 	MEMINFO_FD({ ERRRET(OUT); }, *fd);                                    \
 	if (!get_meminfo_ram(*fd, &STRUCT)) ERRRET(OUT)
 
@@ -18,9 +20,9 @@ void
 ram_free(char*	    out,
 	 const char __unused*  _a,
 	 unsigned int __unused _i,
-	 void*		       static_ptr)
+	 static_data_t*	       static_data)
 {
-	DEF_RAM(info, static_ptr, out);
+	DEF_RAM(info, static_data, out);
 
 	fmt_human(
 	    out,
@@ -32,9 +34,9 @@ void
 ram_perc(char*	    out,
 	 const char __unused*  _a,
 	 unsigned int __unused _i,
-	 void*		       static_ptr)
+	 static_data_t*	       static_data)
 {
-	DEF_RAM(info, static_ptr, out);
+	DEF_RAM(info, static_data, out);
 
 	if (!info.total) ERRRET(out);
 
@@ -57,9 +59,9 @@ void
 ram_used(char*	    out,
 	 const char __unused*  _a,
 	 unsigned int __unused _i,
-	 void*		       static_ptr)
+	 static_data_t*	       static_data)
 {
-	DEF_RAM(info, static_ptr, out);
+	DEF_RAM(info, static_data, out);
 
 	fmt_human(out, get_used(&info) * 1024);
 }

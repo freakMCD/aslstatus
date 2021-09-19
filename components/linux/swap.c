@@ -6,11 +6,13 @@
 #include <sys/sysinfo.h>
 
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 #include "../../lib/meminfo.h"
 
 #define DEF_SWAP(STRUCT, STATIC, OUT)                                         \
-	int*		    fd	   = (STATIC);                                \
+	int*		    fd	   = (STATIC)->data;                          \
 	struct meminfo_swap STRUCT = MEMINFO_INIT_SWAP;                       \
+	if (!(STATIC)->cleanup) (STATIC)->cleanup = fd_cleanup;               \
 	MEMINFO_FD({ ERRRET(OUT); }, *fd);                                    \
 	if (!get_meminfo_swap(*fd, &STRUCT)) ERRRET(OUT)
 
@@ -18,9 +20,9 @@ void
 swap_free(char*	     out,
 	  const char __unused*	_a,
 	  unsigned int __unused _i,
-	  void*			static_ptr)
+	  static_data_t*	static_data)
 {
-	DEF_SWAP(info, static_ptr, out);
+	DEF_SWAP(info, static_data, out);
 
 	fmt_human(out, info.free * 1024);
 }
@@ -29,9 +31,9 @@ void
 swap_perc(char*	     out,
 	  const char __unused*	_a,
 	  unsigned int __unused _i,
-	  void*			static_ptr)
+	  static_data_t*	static_data)
 {
-	DEF_SWAP(info, static_ptr, out);
+	DEF_SWAP(info, static_data, out);
 
 	fmt_human(out,
 		  100 * (info.total - info.free - info.cached) / info.total);
@@ -53,9 +55,9 @@ void
 swap_used(char*	     out,
 	  const char __unused*	_a,
 	  unsigned int __unused _i,
-	  void*			static_ptr)
+	  static_data_t*	static_data)
 {
-	DEF_SWAP(info, static_ptr, out);
+	DEF_SWAP(info, static_data, out);
 
 	fmt_human(out, (info.total - info.free - info.cached) * 1024);
 }

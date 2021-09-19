@@ -1,29 +1,36 @@
 #include "../lib/util.h"
+#include "../aslstatus.h"
 
 #define SYSFS_CLASS "/sys/class/backlight"
+
+static void brightness_cleanup(void *ptr);
+
+struct brightness_data {
+	int	 fd;
+	uint32_t max_brightness;
+};
 
 void
 brightness(char *		 out,
 	   const char *		 device,
 	   unsigned int __unused _i,
-	   void *		 static_ptr)
+	   static_data_t *	 static_data)
 {
-	struct {
-		int	 fd;
-		uint32_t max_brightness;
-	} *data	    = static_ptr;
+	struct brightness_data *data = static_data->data;
 
-	int  max_fd = -1;
 	char buf[INT_STR_SIZE];
+	int  max_fd = -1;
 
 	__typeof__(data->max_brightness) brightness;
+
+	if (!static_data->cleanup) static_data->cleanup = brightness_cleanup;
 
 	if (!data->max_brightness) {
 		if ((max_fd = sysfs_fd(SYSFS_CLASS, device, "max_brightness"))
 		    == -1)
 			ERRRET(out);
 		EREAD({ goto err; }, _unused, max_fd, WITH_LEN(buf));
-		close(max_fd);
+		CCLOSE(max_fd);
 
 		SCANF({ ERRRET(out); },
 		      1,
@@ -48,6 +55,12 @@ brightness(char *		 out,
 	return;
 
 err:
-	if (max_fd != -1) close(max_fd);
+	if (max_fd != -1) CCLOSE(max_fd);
 	ERRRET(out);
+}
+
+static inline void
+brightness_cleanup(void *ptr)
+{
+	CCLOSE(((struct brightness_data *)ptr)->fd);
 }

@@ -7,10 +7,11 @@
 /* header file inclusion order is important */
 
 #ifndef USE_ALSA
-#define USE_ALSA
+#	define USE_ALSA
 #endif
 #include "volume.h"
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 #include "../../components_config.h"
 
 #ifndef VOLUME_SYM
@@ -40,7 +41,54 @@ static const size_t CTL_NAME_MAX = 3 + 10 + 1;
 	1  - zero byte
 */
 
-typedef struct volume_static_data static_data;
+typedef struct volume_static_data alsa_data;
+
+static uint8_t is_muted(snd_mixer_selem_id_t **sid);
+
+static unsigned short int
+	     get_percentage(__typeof__(((alsa_data *)0)->volume) *v,
+			    snd_mixer_selem_id_t **		  sid);
+static char *get_ctl_name(snd_mixer_selem_id_t **sid);
+static void  alsa_cleanup(void *ptr);
+
+void
+vol_perc(char *	    volume,
+	 const char __unused * _a,
+	 unsigned int __unused _i,
+	 static_data_t *       static_data)
+{
+	int	   err;
+	char *	   ctl_name;
+	alsa_data *data = static_data->data;
+
+	if (!data->ctl) {
+		if (!(ctl_name = get_ctl_name(&data->sid))) ERRRET(volume);
+
+		snd_ctl_open(&data->ctl, ctl_name, SND_CTL_READONLY);
+		free(ctl_name);
+
+		err = snd_ctl_subscribe_events(data->ctl, 1);
+		if (err < 0) {
+			snd_ctl_close(data->ctl);
+			data->ctl = NULL;
+			warnx("cannot subscribe to alsa events: %s",
+			      snd_strerror(err));
+			ERRRET(volume);
+		}
+		snd_ctl_event_malloc(&data->e);
+	} else {
+		snd_ctl_read(data->ctl, data->e);
+	}
+
+	if (is_muted(&data->sid))
+		bprintf(volume, "%s", VOLUME_MUTED);
+	else
+		bprintf(volume,
+			"%s%3hu%s",
+			VOLUME_SYM,
+			get_percentage(&data->volume, &data->sid),
+			VOLUME_PERCENT);
+}
 
 static inline snd_mixer_t *
 get_mixer_elem(snd_mixer_elem_t **ret, snd_mixer_selem_id_t **sid)
@@ -105,8 +153,8 @@ is_muted(snd_mixer_selem_id_t **sid)
 }
 
 static inline unsigned short int
-get_percentage(__typeof__(((static_data *)0)->volume) *v,
-	       snd_mixer_selem_id_t **		       sid)
+get_percentage(__typeof__(((alsa_data *)0)->volume) *v,
+	       snd_mixer_selem_id_t **		     sid)
 {
 	int		  err;
 	long int	  vol;
@@ -153,41 +201,10 @@ get_ctl_name(snd_mixer_selem_id_t **sid)
 	return ctl_name;
 }
 
-void
-vol_perc(char *	    volume,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
-	 void *		       static_ptr)
+static inline void
+alsa_cleanup(void *ptr)
 {
-	int	     err;
-	char *	     ctl_name;
-	static_data *data = static_ptr;
+	snd_ctl_t *ctl = ((alsa_data *)ptr)->ctl;
 
-	if (!data->ctl) {
-		if (!(ctl_name = get_ctl_name(&data->sid))) ERRRET(volume);
-
-		snd_ctl_open(&data->ctl, ctl_name, SND_CTL_READONLY);
-		free(ctl_name);
-
-		err = snd_ctl_subscribe_events(data->ctl, 1);
-		if (err < 0) {
-			snd_ctl_close(data->ctl);
-			data->ctl = NULL;
-			warnx("cannot subscribe to alsa events: %s",
-			      snd_strerror(err));
-			ERRRET(volume);
-		}
-		snd_ctl_event_malloc(&data->e);
-	} else {
-		snd_ctl_read(data->ctl, data->e);
-	}
-
-	if (is_muted(&data->sid))
-		bprintf(volume, "%s", VOLUME_MUTED);
-	else
-		bprintf(volume,
-			"%s%3hu%s",
-			VOLUME_SYM,
-			get_percentage(&data->volume, &data->sid),
-			VOLUME_PERCENT);
+	if (!!ctl) snd_ctl_close(ctl);
 }

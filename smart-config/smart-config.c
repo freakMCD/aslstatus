@@ -1,6 +1,8 @@
 #include <stdio.h>
 
 #include "../lib/util.h"
+
+#define ASLSTATUS_H_NEED_COMP
 #include "../aslstatus.h"
 
 #include "../config.h"

@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 
 #define MAX_NAME  16
 #define TEMP_FILE "temp1_input"
@@ -21,7 +22,10 @@ static const char *GOOD_NAMES[] = {
 };
 
 void
-temp(char *out, const char *device, unsigned int __unused _i, void *static_ptr)
+temp(char *		   out,
+     const char *	   device,
+     unsigned int __unused _i,
+     static_data_t *	   static_data)
 {
 	DIR *	       d;
 	struct dirent *dp;
@@ -31,7 +35,9 @@ temp(char *out, const char *device, unsigned int __unused _i, void *static_ptr)
 	int	name_fd;
 	char	name[MAX_NAME];
 	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];
-	int *	fd = static_ptr;
+	int *	fd = static_data->data;
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (*fd > 0) {
 		SEEK_0({ ERRRET(out); }, *fd);

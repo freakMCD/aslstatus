@@ -5,45 +5,48 @@
 
 #include "../netspeed.h"
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 
 #define SYS_CLASS "/sys/class/net"
 
 #define STATISTICS(S) "statistics/" #S "_bytes"
 
-static inline void netspeed(char *	 out,
-			    const char * interface,
-			    unsigned int interval,
-			    void *	 static_ptr,
-			    const char * property);
+static void netspeed(char *	    out,
+		     const char *   interface,
+		     unsigned int   interval,
+		     static_data_t *static_data,
+		     const char *   property);
 
 void
-netspeed_rx(char *	 out,
-	    const char * interface,
-	    unsigned int interval,
-	    void *	 static_ptr)
+netspeed_rx(char *out, const char *interface, unsigned int interval, void *ptr)
 {
-	netspeed(out, interface, interval, static_ptr, STATISTICS(rx));
+	netspeed(out, interface, interval, ptr, STATISTICS(rx));
 }
 
 void
-netspeed_tx(char *	 out,
-	    const char * interface,
-	    unsigned int interval,
-	    void *	 static_ptr)
+netspeed_tx(char *out, const char *interface, unsigned int interval, void *ptr)
 {
-	netspeed(out, interface, interval, static_ptr, STATISTICS(tx));
+	netspeed(out, interface, interval, ptr, STATISTICS(tx));
 }
 
 static inline void
-netspeed(char *	      out,
-	 const char * interface,
-	 unsigned int interval,
-	 void *	      static_ptr,
-	 const char * property)
+netspeed_cleanup(void *ptr)
 {
-	struct netspeed_data_t *data	 = static_ptr;
+	CCLOSE(((struct netspeed_data_t *)ptr)->fd);
+}
+
+static inline void
+netspeed(char *		out,
+	 const char *	interface,
+	 unsigned int	interval,
+	 static_data_t *static_data,
+	 const char *	property)
+{
+	struct netspeed_data_t *data	 = static_data->data;
 	uintmax_t		oldbytes = data->bytes;
 	char			buf[JU_STR_SIZE];
+
+	if (!static_data->cleanup) static_data->cleanup = netspeed_cleanup;
 
 	SYSFS_FD_OR_SEEK({ ERRRET(out); },
 			 data->fd,

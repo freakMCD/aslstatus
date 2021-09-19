@@ -20,9 +20,10 @@ struct volume_static_data {
 #	include <pulse/pulseaudio.h>
 
 struct volume_static_data {
-	char*	  out;
-	pthread_t volume_thread;
-	uint8_t	  pulse_thread_started;
+	char*		 out;
+	pa_mainloop_api* mainloop;
+	uint8_t		 pulse_thread_started;
+	pthread_t	 volume_thread, pulse_thread;
 };
 #	define VOLUME_STATIC_SIZE sizeof(struct volume_static_data)
 

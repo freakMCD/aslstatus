@@ -35,9 +35,13 @@
 #define LEN(S)	    (sizeof(S) / sizeof *(S))
 #define WITH_LEN(S) S, LEN(S)
 
+#define MS2S(MS)  ((MS) / 1000)		 /* milliseconds to seconds */
+#define MS2NS(MS) (((MS) % 1000) * 1E6)	 /* milliseconds to nanoseconds */
+#define MS2US(MS) (((MS) % 1000) * 1000) /* milliseconds to microseconds */
+
 #define ERRRET(B)                                                             \
 	do {                                                                  \
-		(B)[0] = '\0';                                                \
+		*(B) = '\0';                                                  \
 		return;                                                       \
 	} while (0)
 
@@ -106,6 +110,13 @@
 		}                                                             \
 	} while (0)
 
+/* cleanup close */
+#define CCLOSE(FD)                                                            \
+	do {                                                                  \
+		if ((FD) > 0)                                                 \
+			if (!!close(FD)) warn("close(%d)", (FD));             \
+	} while (0)
+
 void bprintf(char *, const char *, ...);
 int  esnprintf(char *, size_t, const char *, ...);
 void fmt_human(char *, uintmax_t);
@@ -120,5 +131,7 @@ void fmt_human(char *, uintmax_t);
  *   sysfs_fd("/sys/class/power_supply", "BAT0", NULL)
  */
 int sysfs_fd(const char *, const char *, const char *);
+
+void fd_cleanup(void *ptr);
 
 #endif /* _UTIL_H */

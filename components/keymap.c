@@ -13,6 +13,7 @@
 #endif
 
 #include "../lib/util.h"
+#include "../aslstatus.h"
 #include "../components_config.h"
 
 #ifndef KEYMAP_NUMLOCK
@@ -38,13 +39,13 @@ void
 keymap(char *	  layout,
        const char __unused * _a,
        unsigned int __unused _i,
-       void *		     static_ptr)
+       static_data_t *		     static_data)
 {
 	void *ev = NULL;
 
 	struct layout state;
 
-	uint8_t *event_initialized = static_ptr;
+	uint8_t *event_initialized = static_data->data;
 
 	if (!*event_initialized) {
 		if (!init_xkb_extension(c)) {
@@ -147,7 +148,7 @@ get_layout(char *syms, uint8_t grp_num)
 	for (grp = 0; tok && grp <= grp_num; tok = strtok(NULL, "+:")) {
 		if (!valid_layout_or_variant(tok)
 		    /* ignore :2, :3, :4 (additional layout groups) */
-		    || (strlen(tok) == 1 && isdigit(tok[0])))
+		    || (strlen(tok) == 1 && isdigit(*tok)))
 			continue;
 
 		layout = tok;

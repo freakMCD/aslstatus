@@ -38,7 +38,7 @@ bprintf(char *buf, const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	if (evsnprintf(buf, BUFF_SZ, fmt, ap) < 0) buf[0] = '\0';
+	if (evsnprintf(buf, BUFF_SZ, fmt, ap) < 0) *buf = '\0';
 	va_end(ap);
 }
 
@@ -133,4 +133,10 @@ end:
 			if (close(fds[i]) == -1) warn("%d", fds[i]);
 
 	return *property_fd;
+}
+
+void
+fd_cleanup(void *ptr)
+{
+	CCLOSE(*((int *)ptr));
 }

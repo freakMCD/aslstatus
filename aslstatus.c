@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+#include <sys/time.h>
+
 #if USE_X
 #	include <xcb/xcb.h>
 #	include "X.h"
@@ -24,7 +26,9 @@
 #endif
 
 #include "arg.h"
-#include "lib/util.h"  /* you can change there segment buffer size (BUFF_SZ) */
+#include "lib/util.h" /* you can change there segment buffer size (BUFF_SZ) */
+
+#define ASLSTATUS_H_NEED_COMP
 #include "aslstatus.h" /* you can change there threads names */
 
 #define MUTEX_WRAP(MUTEX, BLOCK)                                              \
@@ -44,7 +48,6 @@
 char *	   argv0; /* for arg.h */
 static int exit_status = 0;
 
-static pthread_t       tid[ARGS_LEN];
 static pthread_t       main_thread;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -84,9 +87,67 @@ set_status(const char *status)
 }
 
 static void
-terminate(int __unused _)
+terminate(int sig)
 {
+/* wait so many milliseconds for stopping all components before killing */
+#define KILL_TIMEOUT 500
+
+/* wait so many milliseconds between processes state checking */
+#define RECHECK 10 /* need to be less then KILL_TIMEOUT */
+
+	static const struct timespec ts = {
+		.tv_sec	 = MS2S(RECHECK),
+		.tv_nsec = MS2NS(RECHECK),
+	};
+
+	size_t	       i;
+	static_data_t *static_data;
+	struct timeval timeout, cur;
+
+	if (pthread_self() != main_thread) {
+		pthread_kill(main_thread, sig);
+		return;
+	}
+
+	MUTEX_WRAP(status_mutex, { goto leave_locked; });
+leave_locked:
+
 	signal(SIGUSR1, SIG_IGN);
+
+	for (i = 0; i < ARGS_LEN; i++)
+		pthread_cancel(args[i].segment.tid);
+
+	gettimeofday(&timeout, NULL);
+	timeout.tv_sec += MS2S(KILL_TIMEOUT);
+	timeout.tv_usec += MS2US(KILL_TIMEOUT);
+
+	for (i = 0; i < ARGS_LEN; i++) {
+		for (;;) {
+			if (!!kill(args[i].segment.pid, 0)) break;
+
+			gettimeofday(&cur, NULL);
+			if (cur.tv_sec > timeout.tv_sec) {
+				goto timeout;
+			} else if (cur.tv_sec == timeout.tv_sec) {
+				if (cur.tv_usec > timeout.tv_usec) {
+				timeout:
+					warnx("%s: timeout!!!",
+					      args[i].f.name);
+
+					abort();
+				}
+			}
+
+			nanosleep(&ts, NULL);
+		}
+
+		if (!!(static_data = &args[i].segment.static_data)->data) {
+			if (!!static_data->cleanup)
+				static_data->cleanup(static_data->data);
+
+			free(static_data->data);
+		}
+	}
 
 #if USE_X
 	if (!!c) {
@@ -110,7 +171,7 @@ update_status(int __unused _)
 
 	for (i = 0; i < ARGS_LEN; i++)
 		MUTEX_WRAP(args[i].segment.mutex, {
-			if (args[i].segment.data[0]) {
+			if (*args[i].segment.data) {
 
 				if ((status_size +=
 				     strnlen(args[i].segment.data, BUFF_SZ))
@@ -137,17 +198,16 @@ update_status(int __unused _)
 static void *
 thread(void *arg_ptr)
 {
-	struct arg_t *	arg;
+	struct arg_t *	arg = arg_ptr;
 	struct timespec ts;
-	char		buf[BUFF_SZ] = { 0 };
-	void *		static_ptr   = NULL;
 
-	arg			     = arg_ptr;
-	ts.tv_sec		     = arg->interval / 1000;
-	ts.tv_nsec		     = (arg->interval % 1000) * 1E6;
+	char buf[BUFF_SZ] = { 0 };
+
+	arg->segment.pid  = gettid();
 
 	if (!!arg->f.static_size) {
-		if (!(static_ptr = calloc(arg->f.static_size, 1))) {
+		if (!(arg->segment.static_data.data =
+			  calloc(arg->f.static_size, 1))) {
 			warnx("failed to allocate %u bytes for %15s",
 			      arg->f.static_size,
 			      arg->f.name);
@@ -155,10 +215,16 @@ thread(void *arg_ptr)
 		}
 	}
 
-	do {
-		arg->f.func(buf, arg->args, arg->interval, static_ptr);
+	ts.tv_sec  = MS2S(arg->interval);
+	ts.tv_nsec = MS2NS(arg->interval);
 
-		if (!buf[0]) strncpy(buf, unknown_str, BUFF_SZ);
+	do {
+		arg->f.func(buf,
+			    arg->args,
+			    arg->interval,
+			    &arg->segment.static_data);
+
+		if (!*buf) strncpy(buf, unknown_str, BUFF_SZ);
 
 		MUTEX_WRAP(arg->segment.mutex,
 			   { bprintf(arg->segment.data, arg->fmt, buf); });
@@ -236,7 +302,7 @@ main(int argc, char *argv[])
 	signal(SIGUSR1, update_status);
 
 	for (i = 0; i < ARGS_LEN; i -= (~0L)) {
-		pthread_create(&tid[i], NULL, thread, &args[i]);
+		pthread_create(&args[i].segment.tid, NULL, thread, &args[i]);
 
 		tofree = strptr = strdup(args[i].f.name);
 		if (!strcmp(strptr, "cmd")) {
@@ -253,7 +319,7 @@ main(int argc, char *argv[])
 				 basename(token));
 			strptr = thread_name;
 		}
-		pthread_setname(tid[i], strptr);
+		pthread_setname(args[i].segment.tid, strptr);
 		free(tofree);
 	}
 

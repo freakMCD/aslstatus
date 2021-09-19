@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #include "../os.h"
+#include "../components_config.h"
 
 #if LINUX
 #	include <err.h>
@@ -9,17 +10,20 @@
 #	include <stdio.h>
 
 #	include "../lib/util.h"
+#	include "../aslstatus.h"
 #	define ENTROPY_AVAIL "/proc/sys/kernel/random/entropy_avail"
 
 void
 entropy(char*	   out,
 	const char __unused*  _a,
 	unsigned int __unused _i,
-	void*		      static_ptr)
+	static_data_t*		      static_data)
 {
 	size_t readed;
-	int*   fd = static_ptr;
+	int*   fd = static_data->data;
 	char   buf[9 /* len(str(uint32_t)) */ + 1];
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (*fd > 0) {
 		SEEK_0({ ERRRET(out); }, *fd);

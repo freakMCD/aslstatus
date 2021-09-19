@@ -16,6 +16,7 @@
 #endif
 
 #include "../lib/util.h"
+#include "../aslstatus.h"
 #include "../components_config.h"
 
 #ifndef BSPWM_FOCUSED_RESET
@@ -78,11 +79,13 @@ void
 bspwm_ws(char *	    out,
 	 const char __unused * _a,
 	 unsigned int __unused _i,
-	 void *		       static_ptr)
+	 static_data_t *       static_data)
 {
 	char *		   sp, rsp[BUFSIZ];
-	int		   nb, *fd = static_ptr;
+	int		   nb, *fd = static_data->data;
 	struct sockaddr_un sock_address;
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (!!*fd) goto run;
 
@@ -131,7 +134,7 @@ run:
 	if (poll(&poll_fd, 1, -1) > 0)
 		if (poll_fd.revents & POLLIN) {
 			if ((nb = recv(*fd, rsp, sizeof(rsp) - 1, 0)) > 0) {
-				if (rsp[0] == FAILURE_MESSAGE)
+				if (*rsp == FAILURE_MESSAGE)
 					warn("%s", rsp + 1);
 				else
 					parse_event(rsp, nb, out, BUFF_SZ);

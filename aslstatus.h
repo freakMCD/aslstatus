@@ -18,15 +18,24 @@
 #include "components/netspeed.h"
 #include "components/volume/volume.h"
 
-#define FUNC_ARGS (char *, const char *, unsigned int, void *)
+#define FUNC_ARGS (char *, const char *, unsigned int, static_data_t *)
 
 #define END                                                                   \
 	{                                                                     \
-		.data = { 0 }, .mutex = PTHREAD_MUTEX_INITIALIZER             \
+		.pid = -1, .tid = 0, .data = { 0 },                           \
+		.static_data = { .cleanup = NULL, .data = NULL },             \
+		.mutex	     = PTHREAD_MUTEX_INITIALIZER                      \
 	}
 
 #define _FILE_ON_LINUX (LINUX * sizeof(int /* fd */))
 /* if linux: sizeof(int); otherwise: 0 */
+
+typedef void (*cleanup_func_t)(void *);
+
+typedef struct static_data_t {
+	cleanup_func_t cleanup;
+	void *	       data;
+} static_data_t;
 
 typedef void(*func_t) FUNC_ARGS;
 
@@ -37,7 +46,10 @@ typedef struct func_data_t {
 } func_data_t;
 
 struct segment_t {
+	pid_t		pid;
+	pthread_t	tid;
 	char		data[BUFF_SZ];
+	static_data_t	static_data;
 	pthread_mutex_t mutex;
 };
 
@@ -49,6 +61,7 @@ struct arg_t {
 	struct segment_t   segment;
 };
 
+#ifdef ASLSTATUS_H_NEED_COMP
 /* clang-format off */
 
 /* battery */
@@ -163,7 +176,7 @@ void ram_used FUNC_ARGS;
 
 /* run_command */
 void run_command FUNC_ARGS;
-#define run_command {run_command, "cmd", 0}
+#define run_command {run_command, "cmd", sizeof(pid_t)}
 /*
  * `cmd` thread name hardcodet to be used to run shell commands
  */
@@ -217,5 +230,6 @@ void wifi_essid FUNC_ARGS;
 #define wifi_essid {wifi_essid, "wifi_essid", WIFI_ESSID_STATIC_SIZE}
 
 /* clang-format on */
+#endif /* ASLSTATUS_H_NO_COMP */
 
 #endif /* _ASLSTATUS_H */

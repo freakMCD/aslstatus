@@ -9,25 +9,27 @@
 
 #include "../battery.h"
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 
 #define MAX_STATE     13
 #define STATE_PATTERN "%" STR(MAX_STATE) "[^\n]s"
 #define SYS_CLASS     "/sys/class/power_supply"
 
-static inline uint8_t
-pick(const char *bat, int *fd, const char **arr, size_t len);
-static inline uint8_t
-get_state(char state[MAX_STATE], int *fd, const char *bat);
+static uint8_t pick(const char *bat, int *fd, const char **arr, size_t len);
+static uint8_t get_state(char state[MAX_STATE], int *fd, const char *bat);
+static void    battery_remaining_cleanup(void *ptr);
 
 void
 battery_perc(char *		   out,
 	     const char *	   bat,
 	     unsigned int __unused _i,
-	     void *		   static_ptr)
+	     static_data_t *	   static_data)
 {
 	size_t readed;
 	char   perc[4]; /* len(str(100)) + 1 */
-	int *  fd = static_ptr;
+	int *  fd = static_data->data;
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	SYSFS_FD_OR_SEEK({ ERRRET(out); }, *fd, SYS_CLASS, bat, "capacity");
 
@@ -42,9 +44,9 @@ void
 battery_state(char *		    out,
 	      const char *	    bat,
 	      unsigned int __unused _i,
-	      void *		    static_ptr)
+	      static_data_t *	    static_data)
 {
-	int *fd = static_ptr;
+	int *fd = static_data->data;
 
 	size_t i;
 	char   state[MAX_STATE];
@@ -56,6 +58,8 @@ battery_state(char *		    out,
 		{ "Discharging", BATTERY_DISCHARGING },
 		{ "Not charging", BATTERY_FULL },
 	};
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (get_state(state, fd, bat)) ERRRET(out);
 
@@ -69,9 +73,9 @@ void
 battery_remaining(char *		out,
 		  const char *		bat,
 		  unsigned int __unused _i,
-		  void *		static_ptr)
+		  static_data_t *	static_data)
 {
-	struct remaining *fds = static_ptr;
+	struct remaining *fds = static_data->data;
 
 	char	  state[MAX_STATE];
 	uintmax_t m, h, charge_now, current_now;
@@ -89,6 +93,9 @@ battery_remaining(char *		out,
 		"current_now",
 		"power_now",
 	};
+
+	if (!static_data->cleanup)
+		static_data->cleanup = battery_remaining_cleanup;
 
 	if (get_state(state, status, bat)) ERRRET(out);
 
@@ -156,4 +163,17 @@ get_state(char state[MAX_STATE], int *fd, const char *bat)
 	state[--readed /* '\n' at the end */] = '\0';
 
 	return 0;
+}
+
+static inline void
+battery_remaining_cleanup(void *ptr)
+{
+	int fds[] = {
+		((struct remaining *)ptr)->status,
+		((struct remaining *)ptr)->charge,
+		((struct remaining *)ptr)->current,
+	};
+
+	for (uint8_t i = 0; i < LEN(fds); i++)
+		CCLOSE(fds[i]);
 }

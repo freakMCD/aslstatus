@@ -6,6 +6,7 @@
 
 #include "../cpu.h"
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
 #include "../../components_config.h"
 
 /* clang-format off */
@@ -28,15 +29,19 @@
 	 + X[CPU_STATE_STEAL])
 /* clang-format on */
 
+static void cpu_perc_cleanup(void *ptr);
+
 void
 cpu_freq(char *	    out,
 	 const char __unused * _a,
 	 unsigned int __unused _i,
-	 void *		       static_ptr)
+	 static_data_t *       static_data)
 {
 	uintmax_t freq;
-	int *	  fd = static_ptr;
+	int *	  fd = static_data->data;
 	char	  buf[JU_STR_SIZE];
+
+	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	SYSFS_FD_OR_SEEK({ ERRRET(out); },
 			 *fd,
@@ -56,14 +61,16 @@ void
 cpu_perc(char *	    out,
 	 const char __unused * _a,
 	 unsigned int __unused _i,
-	 void *		       static_ptr)
+	 static_data_t *       static_data)
 {
-	struct cpu_data_t *data = static_ptr;
+	struct cpu_data_t *data = static_data->data;
 
 	char buf[STR_SIZE("cpu ") + JU_STR_SIZE * LEN(data->states)];
 
 	__typeof__(*data->states) old_states[LEN(data->states)], sum;
 	__typeof__(sum)		  tmp_sum, old_sum;
+
+	if (!static_data->cleanup) static_data->cleanup = cpu_perc_cleanup;
 
 	memcpy(old_states, data->states, sizeof(data->states));
 
@@ -100,4 +107,10 @@ cpu_perc(char *	    out,
 	tmp_sum = CPU_USED(data->states);
 
 	bprintf(out, "%hhu", (uint8_t)(100 * ABS_DEC(old_sum, tmp_sum) / sum));
+}
+
+static inline void
+cpu_perc_cleanup(void *ptr)
+{
+	CCLOSE(((struct cpu_data_t *)ptr)->fd);
 }

@@ -8,14 +8,27 @@
 
 #include "../wifi.h"
 #include "../../lib/util.h"
+#include "../../aslstatus.h"
+
+#define CLEANUP(X)                                                            \
+	static inline void wifi_##X##_cleanup(void *ptr)                      \
+	{                                                                     \
+		CCLOSE(((struct wifi_##X##_data *)ptr)->common.sock);         \
+	}                                                                     \
+	struct trailing_semicolon
+
+static void wifi_perc_cleanup(void *ptr);
+static void wifi_essid_cleanup(void *ptr);
 
 void
 wifi_perc(char *		out,
 	  const char *		interface,
 	  unsigned int __unused _i,
-	  void *		static_ptr)
+	  static_data_t *	static_data)
 {
-	struct wifi_perc_data *data = static_ptr;
+	struct wifi_perc_data *data = static_data->data;
+
+	if (!static_data->cleanup) static_data->cleanup = wifi_perc_cleanup;
 
 	if (data->common.sock <= 0) {
 		EFUNC(
@@ -57,9 +70,11 @@ void
 wifi_essid(char *		 out,
 	   const char *		 interface,
 	   unsigned int __unused _i,
-	   void *		 static_ptr)
+	   static_data_t *	 static_data)
 {
-	struct wifi_essid_data *data = static_ptr;
+	struct wifi_essid_data *data = static_data->data;
+
+	if (!static_data->cleanup) static_data->cleanup = wifi_essid_cleanup;
 
 	if (data->common.sock <= 0) {
 		EFUNC(
@@ -95,3 +110,6 @@ wifi_essid(char *		 out,
 
 	bprintf(out, "%s", data->id);
 }
+
+CLEANUP(perc);
+CLEANUP(essid);
