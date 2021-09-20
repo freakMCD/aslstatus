@@ -32,7 +32,7 @@ netspeed_tx(char *out, const char *interface, unsigned int interval, void *ptr)
 static inline void
 netspeed_cleanup(void *ptr)
 {
-	CCLOSE(((struct netspeed_data_t *)ptr)->fd);
+	eclose(((struct netspeed_data_t *)ptr)->fd);
 }
 
 static inline void
@@ -48,14 +48,12 @@ netspeed(char *		out,
 
 	if (!static_data->cleanup) static_data->cleanup = netspeed_cleanup;
 
-	SYSFS_FD_OR_SEEK({ ERRRET(out); },
-			 data->fd,
-			 SYS_CLASS,
-			 interface,
-			 property);
+	if (!sysfs_fd_or_rewind(&data->fd, SYS_CLASS, interface, property))
+		ERRRET(out);
 
-	EREAD({ ERRRET(out); }, _unused, data->fd, WITH_LEN(buf));
-	SCANF({ ERRRET(out); }, 1, sscanf, buf, "%ju", &data->bytes);
+	if (!eread(data->fd, WITH_LEN(buf))) ERRRET(out);
+
+	if (!esscanf(1, buf, "%ju", &data->bytes)) ERRRET(out);
 
 	if (!oldbytes) ERRRET(out);
 

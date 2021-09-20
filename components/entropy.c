@@ -17,16 +17,16 @@ void
 entropy(char*	   out,
 	const char __unused*  _a,
 	unsigned int __unused _i,
-	static_data_t*		      static_data)
+	static_data_t*	      static_data)
 {
-	size_t readed;
+	ssize_t readed;
 	int*   fd = static_data->data;
 	char   buf[9 /* len(str(uint32_t)) */ + 1];
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (*fd > 0) {
-		SEEK_0({ ERRRET(out); }, *fd);
+		if (!fd_rewind(*fd)) ERRRET(out);
 	} else {
 		if ((*fd = open(ENTROPY_AVAIL, O_RDONLY | O_CLOEXEC)) == -1) {
 			warn("open(%s)", ENTROPY_AVAIL);
@@ -34,7 +34,8 @@ entropy(char*	   out,
 		}
 	}
 
-	EREAD({ ERRRET(out); },readed, *fd, WITH_LEN(buf));
+	if (!eread_ret(readed, *fd, WITH_LEN(buf))) ERRRET(out);
+
 	buf[--readed /* '\n' at the end */] = '\0';
 
 	bprintf(out, "%s", buf);

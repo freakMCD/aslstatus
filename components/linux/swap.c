@@ -13,7 +13,7 @@
 	int*		    fd	   = (STATIC)->data;                          \
 	struct meminfo_swap STRUCT = MEMINFO_INIT_SWAP;                       \
 	if (!(STATIC)->cleanup) (STATIC)->cleanup = fd_cleanup;               \
-	MEMINFO_FD({ ERRRET(OUT); }, *fd);                                    \
+	if (!MEMINFO_FD(fd)) ERRRET(OUT);                                     \
 	if (!get_meminfo_swap(*fd, &STRUCT)) ERRRET(OUT)
 
 void

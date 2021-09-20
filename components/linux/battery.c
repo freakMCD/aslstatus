@@ -25,15 +25,15 @@ battery_perc(char *		   out,
 	     unsigned int __unused _i,
 	     static_data_t *	   static_data)
 {
-	size_t readed;
-	char   perc[4]; /* len(str(100)) + 1 */
-	int *  fd = static_data->data;
+	ssize_t readed;
+	char	perc[4]; /* len(str(100)) + 1 */
+	int *	fd = static_data->data;
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
-	SYSFS_FD_OR_SEEK({ ERRRET(out); }, *fd, SYS_CLASS, bat, "capacity");
+	if (!sysfs_fd_or_rewind(fd, SYS_CLASS, bat, "capacity")) ERRRET(out);
 
-	EREAD({ ERRRET(out); }, readed, *fd, WITH_LEN(perc));
+	if (!eread_ret(readed, *fd, WITH_LEN(perc))) ERRRET(out);
 
 	perc[--readed /* '\n' at the end */] = '\0';
 
@@ -61,7 +61,7 @@ battery_state(char *		    out,
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
-	if (get_state(state, fd, bat)) ERRRET(out);
+	if (!get_state(state, fd, bat)) ERRRET(out);
 
 	for (i = 0; i < LEN(map); i++)
 		if (!strcmp(map[i].state, state)) break;
@@ -77,11 +77,12 @@ battery_remaining(char *		out,
 {
 	struct remaining *fds = static_data->data;
 
+	char	  buf[JU_STR_SIZE];
 	char	  state[MAX_STATE];
 	uintmax_t m, h, charge_now, current_now;
 
-	int *status = &fds->status, *charge = &fds->charge,
-	    *current = &fds->current;
+#define RESOLVE(S, F) *F = &S->F
+	int RESOLVE(fds, status), RESOLVE(fds, charge), RESOLVE(fds, current);
 
 	double timeleft;
 
@@ -97,19 +98,19 @@ battery_remaining(char *		out,
 	if (!static_data->cleanup)
 		static_data->cleanup = battery_remaining_cleanup;
 
-	if (get_state(state, status, bat)) ERRRET(out);
+	if (!get_state(state, status, bat)) ERRRET(out);
 
-#define pick_scan(ERR, C)                                                     \
-	do {                                                                  \
-		char _buf[JU_STR_SIZE];                                       \
-		if (!pick(bat, C, C##_arr, LEN(C##_arr))) ERR;                \
-		EREAD(ERR, _unused, *C, WITH_LEN(_buf));                      \
-		SCANF(ERR, 1, sscanf, _buf, "%ju", &C##_now);                 \
-	} while (0)
+#define pick_scan(B, C)                                                       \
+	(pick(bat, C, C##_arr, LEN(C##_arr)) && eread(*C, WITH_LEN(buf))      \
+	 && esscanf(1, buf, "%ju", &C##_now))
 
 	if (!strcmp(state, "Discharging")) {
-		pick_scan({ ERRRET(out); }, charge);
-		pick_scan({ ERRRET(out); }, current);
+		do {
+			if (pick_scan(buf, charge) && pick_scan(buf, current))
+				break;
+
+			ERRRET(out);
+		} while (0);
 
 		if (!current_now) goto not_discharging;
 
@@ -132,10 +133,7 @@ pick(const char *bat, int *fd, const char **arr, size_t len)
 	uint8_t ret    = 0;
 	int	bat_fd = -1;
 
-	if (*fd > 0) {
-		SEEK_0({ return 0; }, *fd);
-		return !0;
-	}
+	if (*fd > 0) return fd_rewind(*fd);
 
 	if ((bat_fd = sysfs_fd(SYS_CLASS, bat, NULL)) == -1) return 0;
 
@@ -148,21 +146,21 @@ pick(const char *bat, int *fd, const char **arr, size_t len)
 	}
 
 end:
-	if (bat_fd != -1) close(bat_fd);
+	if (bat_fd != -1) eclose(bat_fd);
 	return ret;
 }
 
 static inline uint8_t
 get_state(char state[MAX_STATE], int *fd, const char *bat)
 {
-	size_t readed;
+	ssize_t readed;
 
-	SYSFS_FD_OR_SEEK({ return !0; }, *fd, SYS_CLASS, bat, "status");
-	EREAD({ return !0; }, readed, *fd, state, MAX_STATE);
+	if (!sysfs_fd_or_rewind(fd, SYS_CLASS, bat, "status")) return 0;
+	if (!eread_ret(readed, *fd, state, MAX_STATE)) return !0;
 
 	state[--readed /* '\n' at the end */] = '\0';
 
-	return 0;
+	return !0;
 }
 
 static inline void
@@ -175,5 +173,5 @@ battery_remaining_cleanup(void *ptr)
 	};
 
 	for (uint8_t i = 0; i < LEN(fds); i++)
-		CCLOSE(fds[i]);
+		if (!!fds[i]) eclose(fds[i]);
 }

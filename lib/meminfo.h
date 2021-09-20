@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-#define MEMINFO_FD(ERR, FD) SYSFS_FD_OR_SEEK(ERR, FD, "/", "proc", "meminfo")
+#define MEMINFO_FD(fd_ptr) sysfs_fd_or_rewind((fd_ptr), "/", "proc", "meminfo")
 
 /* clang-format off */
 #define MEMINFO_INIT_RAM_FIELDS(T, F, A, B, C, S, R)                          \

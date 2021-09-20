@@ -15,7 +15,7 @@ run_command(char *		  buf,
 	FILE *fp;
 
 	if (!(fp = popen(cmd, "re"))) {
-		warn("popen("QUOTED(%s)", "QUOTED(re)")", cmd);
+		warn("popen(" QUOTED("%s") ", " QUOTED("re") ")", cmd);
 		ERRRET(buf);
 	}
 

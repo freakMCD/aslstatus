@@ -29,25 +29,18 @@ brightness(char *		 out,
 		if ((max_fd = sysfs_fd(SYSFS_CLASS, device, "max_brightness"))
 		    == -1)
 			ERRRET(out);
-		EREAD({ goto err; }, _unused, max_fd, WITH_LEN(buf));
-		CCLOSE(max_fd);
+		if (!eread(max_fd, WITH_LEN(buf))) goto err;
 
-		SCANF({ ERRRET(out); },
-		      1,
-		      sscanf,
-		      buf,
-		      "%u",
-		      &data->max_brightness);
+		eclose(max_fd);
+
+		if (!esscanf(1, buf, "%u", &data->max_brightness)) ERRRET(out);
 	}
 
-	SYSFS_FD_OR_SEEK({ ERRRET(out); },
-			 data->fd,
-			 SYSFS_CLASS,
-			 device,
-			 "brightness");
+	if (!sysfs_fd_or_rewind(&data->fd, SYSFS_CLASS, device, "brightness"))
+		ERRRET(out);
 
-	EREAD({ ERRRET(out); }, _unused, data->fd, WITH_LEN(buf));
-	SCANF({ ERRRET(out); }, 1, sscanf, buf, "%u", &brightness);
+	if (!eread(data->fd, WITH_LEN(buf))) ERRRET(out);
+	if (!esscanf(1, buf, "%u", &brightness)) ERRRET(out);
 
 	bprintf(out,
 		"%hhu",
@@ -55,12 +48,12 @@ brightness(char *		 out,
 	return;
 
 err:
-	if (max_fd != -1) CCLOSE(max_fd);
+	if (max_fd != -1) eclose(max_fd);
 	ERRRET(out);
 }
 
 static inline void
 brightness_cleanup(void *ptr)
 {
-	CCLOSE(((struct brightness_data *)ptr)->fd);
+	eclose(((struct brightness_data *)ptr)->fd);
 }

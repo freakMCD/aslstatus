@@ -11,7 +11,7 @@
 	int*		   fd	  = (STATIC)->data;                           \
 	struct meminfo_ram STRUCT = MEMINFO_INIT_RAM;                         \
 	if (!(STATIC)->cleanup) (STATIC)->cleanup = fd_cleanup;               \
-	MEMINFO_FD({ ERRRET(OUT); }, *fd);                                    \
+	if (!MEMINFO_FD(fd)) ERRRET(OUT);                                     \
 	if (!get_meminfo_ram(*fd, &STRUCT)) ERRRET(OUT)
 
 static inline memory_t get_used(const struct meminfo_ram* info);

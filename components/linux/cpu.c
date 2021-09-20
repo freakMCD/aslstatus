@@ -43,16 +43,16 @@ cpu_freq(char *	    out,
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
-	SYSFS_FD_OR_SEEK({ ERRRET(out); },
-			 *fd,
-			 "/sys/devices/system/cpu",
-			 "cpu0",
-			 "cpufreq/scaling_cur_freq");
+	if (!sysfs_fd_or_rewind(fd,
+				"/sys/devices/system/cpu",
+				"cpu0",
+				"cpufreq/scaling_cur_freq"))
+		ERRRET(out);
 
-	EREAD({ ERRRET(out); }, _unused, *fd, WITH_LEN(buf));
+	if (!eread(*fd, WITH_LEN(buf))) ERRRET(out);
 
 	/* in kHz */
-	SCANF({ ERRRET(out); }, 1, sscanf, buf, "%ju", &freq);
+	if (!esscanf(1, buf, "%ju", &freq)) ERRRET(out);
 
 	fmt_human(out, freq * 1000);
 }
@@ -74,24 +74,23 @@ cpu_perc(char *	    out,
 
 	memcpy(old_states, data->states, sizeof(data->states));
 
-	SYSFS_FD_OR_SEEK({ ERRRET(out); }, data->fd, "/", "proc", "stat");
+	if (!sysfs_fd_or_rewind(&data->fd, "/", "proc", "stat")) ERRRET(out);
 
-	EREAD({ ERRRET(out); }, _unused, data->fd, WITH_LEN(buf));
+	if (!eread(data->fd, WITH_LEN(buf))) ERRRET(out);
 
 	/* cpu user nice system idle iowait irq softirq */
-	SCANF({ ERRRET(out); },
-	      LEN(data->states),
-	      sscanf,
-	      buf,
-	      "cpu  %ju %ju %ju %ju %ju %ju %ju %ju",
-	      &data->states[CPU_STATE_USER],
-	      &data->states[CPU_STATE_NICE],
-	      &data->states[CPU_STATE_SYSTEM],
-	      &data->states[CPU_STATE_IDLE],
-	      &data->states[CPU_STATE_IOWAIT],
-	      &data->states[CPU_STATE_IRQ],
-	      &data->states[CPU_STATE_SOFTIRQ],
-	      &data->states[CPU_STATE_STEAL]);
+	if (!esscanf(LEN(data->states),
+		     buf,
+		     "cpu  %ju %ju %ju %ju %ju %ju %ju %ju",
+		     &data->states[CPU_STATE_USER],
+		     &data->states[CPU_STATE_NICE],
+		     &data->states[CPU_STATE_SYSTEM],
+		     &data->states[CPU_STATE_IDLE],
+		     &data->states[CPU_STATE_IOWAIT],
+		     &data->states[CPU_STATE_IRQ],
+		     &data->states[CPU_STATE_SOFTIRQ],
+		     &data->states[CPU_STATE_STEAL]))
+		ERRRET(out);
 
 	if (!old_states[CPU_STATE_USER]) ERRRET(out);
 
@@ -112,5 +111,5 @@ cpu_perc(char *	    out,
 static inline void
 cpu_perc_cleanup(void *ptr)
 {
-	CCLOSE(((struct cpu_data_t *)ptr)->fd);
+	eclose(((struct cpu_data_t *)ptr)->fd);
 }

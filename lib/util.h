@@ -30,7 +30,7 @@
 #define STR_SIZE(S)   (LEN(S) - 1) /* minus null byte */
 #define WITH_SSIZE(S) S, STR_SIZE(S)
 
-#define QUOTED(S) "\"" #S "\""
+#define QUOTED(S) "\"" S "\""
 
 #define LEN(S)	    (sizeof(S) / sizeof *(S))
 #define WITH_LEN(S) S, LEN(S)
@@ -47,6 +47,7 @@
 
 /*
  * warn if function fails
+ *
  * COND	condition to test if failed
  * ERR	error block
  * R	return value, if you don't need it pass here `_unused`
@@ -61,64 +62,9 @@
 		}                                                             \
 	} while (0)
 
-/*
- * seek FD to 0
- * if error: run second arg
- * example:
- *   SEEK_0(fd, { return !0; });
- */
-#define SEEK_0(ERR, FD) EFUNC(!!, ERR, _unused, lseek, (FD), 0, SEEK_SET)
-
-/*
- * read(2) wraper to warn on error
- * ERR	error block
- * R	return value (see EFUNC define)
- * ...	args to read
- */
-#define EREAD(ERR, R, ...) EFUNC(-1 == (int), ERR, R, read, __VA_ARGS__)
-
-/* same as sysfs_fd, but seek to 0 if already opened */
-#define SYSFS_FD_OR_SEEK(ERR, FD, PATH, DEV, PROP)                            \
-	do {                                                                  \
-		if ((FD) > 0)                                                 \
-			SEEK_0(ERR, FD);                                      \
-		else if (((FD) = sysfs_fd(PATH, DEV, PROP)) == -1)            \
-			ERR                                                   \
-	} while (0)
-
-/*
- * ERR	error block
- * C	count of matches
- * F	scanf function
- * ...	args to scanf
- */
-#define SCANF(ERR, C, F, ...)                                                 \
-	do {                                                                  \
-		int _m = errno = 0;                                           \
-		if ((_m = F(__VA_ARGS__)) == (C)) {                           \
-			break;                                                \
-		} else if (errno != 0) {                                      \
-			warn("%s: %s", __func__, #F);                         \
-			ERR                                                   \
-		} else {                                                      \
-			warnx("%s: %s: matched %d of %ld",                    \
-			      __func__,                                       \
-			      #F,                                             \
-			      _m,                                             \
-			      (size_t)(C));                                   \
-			ERR                                                   \
-		}                                                             \
-	} while (0)
-
-/* cleanup close */
-#define CCLOSE(FD)                                                            \
-	do {                                                                  \
-		if ((FD) > 0)                                                 \
-			if (!!close(FD)) warn("close(%d)", (FD));             \
-	} while (0)
-
+/* buffer printf */
 void bprintf(char *, const char *, ...);
-int  esnprintf(char *, size_t, const char *, ...);
+
 void fmt_human(char *, uintmax_t);
 
 /*
@@ -130,7 +76,51 @@ void fmt_human(char *, uintmax_t);
  * then return fd of directory (/sys/class/power_supply/BAT0/)
  *   sysfs_fd("/sys/class/power_supply", "BAT0", NULL)
  */
-int sysfs_fd(const char *, const char *, const char *);
+#define sysfs_fd(path, device, property)                                      \
+	_sysfs_fd(__func__, (path), (device), (property))
+int _sysfs_fd(const char *func,
+	      const char *path,
+	      const char *device,
+	      const char *property);
+
+/* same as sysfs_fd, but rewind if already opened */
+#define sysfs_fd_or_rewind(fd_ptr, path, device, property)                    \
+	_sysfs_fd_or_rewind(__func__, (fd_ptr), (path), (device), (property))
+uint8_t _sysfs_fd_or_rewind(const char *func,
+			    int *	fd,
+			    const char *path,
+			    const char *device,
+			    const char *property);
+
+/*
+ * if function has prefix `e`: then it will print warning on error
+ * if return type is uint8_t: then 1 on success 0 on error,
+ *   otherwise return original return value from function without `e` prefix
+ */
+
+#define elseek(fd, offset, whence) _elseek(__func__, fd, offset, whence)
+off_t _elseek(const char *func, int fd, off_t offset, int whence);
+
+#define fd_rewind(fd) _fd_rewind(__func__, (fd))
+uint8_t _fd_rewind(const char *func, int fd);
+
+#define eread_ret(ret, fd, ...) _eread_macro(ret =, fd, __VA_ARGS__)
+#define eread(fd, ...)		_eread_macro(, fd, __VA_ARGS__)
+#define _eread_macro(ret, fd, ...)                                            \
+	((ret _eread(__func__, (fd), __VA_ARGS__)) != -1)
+
+ssize_t _eread(const char *func, int fd, void *buf, size_t size);
+
+#define eclose(fd) _eclose(__func__, (fd))
+uint8_t _eclose(const char *func, int fd);
+
+#define esscanf(count, str, fmt, ...)                                         \
+	_esscanf(__func__, (count), (str), (fmt), __VA_ARGS__)
+uint8_t _esscanf(const char *func,
+		 int	     count,
+		 const char *restrict str,
+		 const char *restrict fmt,
+		 ...);
 
 void fd_cleanup(void *ptr);
 

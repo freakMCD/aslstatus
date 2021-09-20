@@ -13,7 +13,7 @@
 #define CLEANUP(X)                                                            \
 	static inline void wifi_##X##_cleanup(void *ptr)                      \
 	{                                                                     \
-		CCLOSE(((struct wifi_##X##_data *)ptr)->common.sock);         \
+		eclose(((struct wifi_##X##_data *)ptr)->common.sock);         \
 	}                                                                     \
 	struct trailing_semicolon
 

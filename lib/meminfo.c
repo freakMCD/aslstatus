@@ -19,10 +19,10 @@ struct myfile {
 };
 
 struct mybuf {
-	size_t pos;
-	size_t size /* size of valid data */;
-	size_t last_nl /* last '\n' char in 0..size */;
-	char   data[READLINE_SIZE];
+	size_t	pos;
+	ssize_t size /* size of valid data */;
+	size_t	last_nl /* last '\n' char in 0..size */;
+	char	data[READLINE_SIZE];
 };
 
 enum read_line_status {
@@ -47,12 +47,12 @@ read_meminfo(int fd, const char *key, memory_t *val)
 
 	while (read_line(&file, &buf, &line) == OK) {
 		if (!strncmp(line, key, key_len)) {
-			SCANF({ return 0; },
-			      1,
-			      sscanf,
-			      line + key_len + 1,
-			      memory_t_format,
-			      val);
+			if (!esscanf(1,
+				     line + key_len + 1,
+				     memory_t_format,
+				     val))
+				return 0;
+
 			found = !0;
 			break;
 		}
@@ -71,14 +71,12 @@ read_meminfo_keys(int fd, const struct meminfo_field *info, size_t size)
 
 	while (read_line(&file, &buf, &line) == OK && readed < size) {
 		if (!strncmp(line, info[readed].key, info[readed].key_len)) {
-			SCANF({ goto end_while; },
-			      1,
-			      sscanf,
-			      line + info[readed].key_len + 1,
-			      memory_t_format,
-			      info[readed].value_ptr
+			if (!esscanf(1,
+				     line + info[readed].key_len + 1,
+				     memory_t_format,
+				     info[readed].value_ptr))
+				goto end_while;
 
-			);
 			readed++;
 		}
 	end_while:
@@ -115,7 +113,7 @@ get_meminfo_swap(int fd, struct meminfo_swap *info)
 static inline enum read_line_status
 read_line(struct myfile *file, struct mybuf *buf, char **line)
 {
-	size_t i;
+	__typeof__(buf->size) i;
 
 	if (buf->pos >= buf->last_nl) {
 	reread:
@@ -126,10 +124,8 @@ read_line(struct myfile *file, struct mybuf *buf, char **line)
 			      (file->pos -= (buf->size - buf->last_nl)),
 			      SEEK_SET);
 
-		EREAD({ return ERR; },
-		      buf->size,
-		      file->fd,
-		      WITH_LEN(buf->data));
+		if (!eread_ret(buf->size, file->fd, WITH_LEN(buf->data)))
+			return ERR;
 
 		if (!buf->size) return END;
 		file->pos += buf->size;

@@ -31,7 +31,7 @@ temp(char *		   out,
 	struct dirent *dp;
 
 	uint8_t i, found = 0;
-	size_t	readed;
+	ssize_t	readed;
 	int	name_fd;
 	char	name[MAX_NAME];
 	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];
@@ -40,16 +40,14 @@ temp(char *		   out,
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (*fd > 0) {
-		SEEK_0({ ERRRET(out); }, *fd);
+		if (!fd_rewind(*fd)) ERRRET(out);
 		goto get_temp;
 	}
 
 	if (!!device) {
-		SYSFS_FD_OR_SEEK({ ERRRET(out); },
-				 *fd,
-				 SYS_CLASS,
-				 device,
-				 TEMP_FILE);
+		if (!sysfs_fd_or_rewind(fd, SYS_CLASS, device, TEMP_FILE))
+			ERRRET(out);
+
 		goto get_temp;
 	}
 
@@ -65,25 +63,22 @@ temp(char *		   out,
 		if ((name_fd = sysfs_fd(SYS_CLASS, dp->d_name, "name")) == -1)
 			continue;
 
-		EREAD(
-		    {
-			    close(name_fd);
-			    continue;
-		    },
-		    readed,
-		    name_fd,
-		    WITH_LEN(name));
+		if (!eread_ret(readed, name_fd, WITH_LEN(name))) {
+			eclose(name_fd);
+			continue;
+		}
 
 		/* remove last new line char */
 		name[--readed] = '\0';
 
 		for (i = 0; i < LEN(GOOD_NAMES); i++) {
 			if (!strncmp(name, GOOD_NAMES[i], readed)) {
-				SYSFS_FD_OR_SEEK({ ERRRET(out); },
-						 *fd,
-						 SYS_CLASS,
-						 dp->d_name,
-						 TEMP_FILE);
+				if ((*fd = sysfs_fd(SYS_CLASS,
+						    dp->d_name,
+						    TEMP_FILE))
+				    == -1)
+					ERRRET(out);
+
 				found = !0;
 				goto end_loop;
 			}
@@ -94,7 +89,8 @@ end_loop:
 
 	if (!!found) {
 	get_temp:
-		EREAD({ ERRRET(out); }, readed, *fd, WITH_LEN(buf));
+		if (!eread_ret(readed, *fd, WITH_LEN(buf))) ERRRET(out);
+
 		if (readed > 4)
 			readed -= 4; /* 3 zeros and '\n' at the end */
 		else
