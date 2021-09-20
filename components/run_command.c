@@ -6,7 +6,7 @@
 #include "../lib/util.h"
 
 void
-run_command(char *		  buf,
+run_command(char *		  out,
 	    const char *	  cmd,
 	    unsigned int __unused _i,
 	    void __unused *_p)
@@ -16,18 +16,13 @@ run_command(char *		  buf,
 
 	if (!(fp = popen(cmd, "re"))) {
 		warn("popen(" QUOTED("%s") ", " QUOTED("re") ")", cmd);
-		ERRRET(buf);
+		ERRRET(out);
 	}
 
-	p = fgets(buf, BUFF_SZ - 1, fp);
+	p = fgets(out, BUFF_SZ - 1, fp);
 
-	EFUNC(
-	    0 > (signed),
-	    { ERRRET(buf); },
-	    _unused,
-	    pclose,
-	    fp);
+	if (pclose(fp) == -1) ERRRET(out);
 
-	if (!p) ERRRET(buf);
-	if (!!(p = strrchr(buf, '\n'))) *p = '\0';
+	if (!p) ERRRET(out);
+	if (!!(p = strrchr(out, '\n'))) *p = '\0';
 }

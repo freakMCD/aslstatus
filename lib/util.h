@@ -45,23 +45,6 @@
 		return;                                                       \
 	} while (0)
 
-/*
- * warn if function fails
- *
- * COND	condition to test if failed
- * ERR	error block
- * R	return value, if you don't need it pass here `_unused`
- * F	function
- */
-#define EFUNC(COND, ERR, R, F, ...)                                           \
-	do {                                                                  \
-		uintmax_t __unused _unused;                                   \
-		if (COND(R = F(__VA_ARGS__))) {                               \
-			warn("%s: %s(%s)", __func__, #F, #__VA_ARGS__);       \
-			ERR                                                   \
-		}                                                             \
-	} while (0)
-
 /* buffer printf */
 void bprintf(char *, const char *, ...);
 
