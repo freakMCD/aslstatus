@@ -1,11 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "../os.h"
-
-#if LINUX
-#	include <stdio.h>
-#	include <inttypes.h>
+#include <stdio.h>
+#include <inttypes.h>
 
 /*
  * see /proc/stat in `man 5 proc`
@@ -24,20 +21,10 @@ enum CPU_STATE {
 	CPU_STATE_STEAL	  = 7,
 	_CPU_STATE_COUNT,
 };
+
 struct cpu_data_t {
 	int	  fd;
 	uintmax_t states[_CPU_STATE_COUNT];
 };
-#	define CPU_STATIC_SIZE sizeof(struct cpu_data_t)
-
-#else
-#	include <sys/param.h> /* CPUSTATES */
-#	if OBSD
-#		include <inttypes.h>
-#		define CPU_STATIC_SIZE sizeof(uintmax[CPUSTATES])
-#	else
-#		define CPU_STATIC_SIZE sizeof(long[CPUSTATES])
-#	endif
-#endif
 
 #endif /* CPU_H */

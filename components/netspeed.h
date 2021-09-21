@@ -4,18 +4,10 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "../os.h"
-
-#if LINUX
-struct netspeed_data_t {
+struct netspeed_data {
 	int fd;
 	uintmax_t bytes;
 };
-#	define NETSPEED_STATIC_SIZE sizeof(struct netspeed_data_t)
-
-#else
-
-#	define NETSPEED_STATIC_SIZE sizeof(uintmax_t)
-#endif /* LINUX */
+#	define NETSPEED_STATIC_SIZE 
 
 #endif /* NETSPEED_H */

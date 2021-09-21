@@ -5,9 +5,12 @@
 smart_config = $(shell sh -- $1 $2 $3)
 
 
-_EXE    := smart-config/smart-config
-_SH     := smart-config/smart-config.sh
-_COMP_O := smart-config/components.o
+_SC     := smart-config
+_GEN    := ${_SC}/gen_comp.sed
+_EXE    := ${_SC}/smart-config
+_SH     := ${_SC}/smart-config.sh
+_COMP_C := ${_SC}/components.c
+_COMP_O := ${_COMP_C:.c=.o}
 
 SMART_CONFIG_EXE          := ${_EXE}
 SMART_CONFIG_COMPONENTS_O := ${_COMP_O}
@@ -32,3 +35,6 @@ ${_EXE}: ${SMART_CONFIG_OFILES}
 .PHONY: smart-config-clean
 smart-config-clean:
 	rm -f -- ${SMART_CONFIG_EXE} ${SMART_CONFIG_OFILES}
+
+${_COMP_C}: aslstatus.h ${_GEN}
+	sed -nf ./${_GEN} < $< > $@

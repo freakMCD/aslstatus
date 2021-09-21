@@ -1,14 +1,10 @@
+#include "brightness.h"
 #include "../lib/util.h"
 #include "../aslstatus.h"
 
 #define SYSFS_CLASS "/sys/class/backlight"
 
 static void brightness_cleanup(void *ptr);
-
-struct brightness_data {
-	int	 fd;
-	uint32_t max_brightness;
-};
 
 void
 brightness(char *	     out,

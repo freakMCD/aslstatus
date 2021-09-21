@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include "../battery.h"
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
+#include "battery.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
 
 #define MAX_STATE     13
 #define STATE_PATTERN "%" STR(MAX_STATE) "[^\n]s"

@@ -3,9 +3,9 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include "../netspeed.h"
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
+#include "netspeed.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
 
 #define SYS_CLASS "/sys/class/net"
 
@@ -32,7 +32,7 @@ netspeed_tx(char *out, const char *interface, uint32_t interval, void *ptr)
 static inline void
 netspeed_cleanup(void *ptr)
 {
-	eclose(((struct netspeed_data_t *)ptr)->fd);
+	eclose(((struct netspeed_data *)ptr)->fd);
 }
 
 static inline void
@@ -42,9 +42,9 @@ netspeed(char *		out,
 	 static_data_t *static_data,
 	 const char *	property)
 {
-	struct netspeed_data_t *data	 = static_data->data;
-	uintmax_t		oldbytes = data->bytes;
-	char			buf[JU_STR_SIZE];
+	struct netspeed_data *data     = static_data->data;
+	uintmax_t	      oldbytes = data->bytes;
+	char		      buf[JU_STR_SIZE];
 
 	if (!static_data->cleanup) static_data->cleanup = netspeed_cleanup;
 

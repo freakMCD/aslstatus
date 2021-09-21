@@ -3,9 +3,9 @@
 #include <sys/param.h> /* MIN */
 #include <sys/sysinfo.h>
 
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
-#include "../../lib/meminfo.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
+#include "../lib/meminfo.h"
 
 #define DEF_RAM(STRUCT, STATIC, OUT)                                          \
 	int*		   fd	  = (STATIC)->data;                           \

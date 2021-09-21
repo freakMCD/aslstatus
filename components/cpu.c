@@ -4,10 +4,10 @@
 #include <string.h>
 #include <sys/param.h> /* MIN, MAX */
 
-#include "../cpu.h"
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
-#include "../../components_config.h"
+#include "cpu.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
+#include "../components_config.h"
 
 /* clang-format off */
 #define CPU_SUM(X)                                                            \

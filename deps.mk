@@ -12,11 +12,10 @@ $1 := $2 $3
 $2: $3
 endef
 gendeps = $(eval $(call _gendeps,$1,$2,$3))
-all_os = $(foreach _,linux openbsd freebsd,components/${_}/${1}.o)
 
 
 $(call gendeps,components_config,components_config.h,)
-$(call gendeps,thread_helper,thread_helper.h,os.h)
+$(call gendeps,thread_helper,thread_helper.h,)
 $(call gendeps,util,lib/util.h,${components_config})
 $(call gendeps,meminfo,lib/meminfo.h,${util})
 
@@ -29,23 +28,23 @@ ${libs:.c=.o}: %.o: %.h
 ${COMPONENTS:.c=.o}: ${util} ${components_config}
 
 $(call gendeps,battery,components/battery.h,${components_config})
-$(call all_os,battery): ${battery}
+components/battery.o: ${battery}
 
-$(call gendeps,cpu,components/cpu.h,os.h)
-components/linux/cpu.o: ${cpu}
+$(call gendeps,cpu,components/cpu.h,)
+components/cpu.o: ${cpu}
 
-$(call gendeps,netspeed,components/netspeed.h,os.h)
-components/linux/netspeed.o: ${netspeed}
+$(call gendeps,netspeed,components/netspeed.h,)
+components/netspeed.o: ${netspeed}
 
 $(patsubst %.c,%.o,$(wildcard components/volume/*.c)): components/volume.h
 components/volume/pulse.o: ${thread_helper}
 
-components/linux/ram.o: ${meminfo}
-components/linux/swap.o: ${meminfo}
+components/ram.o: ${meminfo}
+components/swap.o: ${meminfo}
 
-$(call gendeps,wifi,components/wifi.h,os.h)
-$(call all_os,wifi): ${wifi}
+$(call gendeps,wifi,components/wifi.h,)
+components/wifi.o: ${wifi}
 
 $(call gendeps,aslstatus,aslstatus.h,\
-	${util} os.h components/volume.h ${battery} ${cpu} ${netspeed} ${wifi})
+	${util}  components/volume.h ${battery} ${cpu} ${netspeed} ${wifi})
 aslstatus.o: config.h ${thread_helper} ${aslstatus}

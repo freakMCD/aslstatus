@@ -6,9 +6,9 @@
 
 #include <linux/wireguard.h>
 
-#include "../wifi.h"
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
+#include "wifi.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
 
 #define CLEANUP(X)                                                            \
 	static inline void wifi_##X##_cleanup(void *ptr)                      \

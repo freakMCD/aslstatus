@@ -1,15 +1,14 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "../os.h"
 #include "../components_config.h"
+#include "../lib/util.h"
 
-#if LINUX
+#ifdef __linux__
 #	include <err.h>
 #	include <fcntl.h>
 #	include <stdint.h>
 #	include <stdio.h>
 
-#	include "../lib/util.h"
 #	include "../aslstatus.h"
 #	define ENTROPY_AVAIL "/proc/sys/kernel/random/entropy_avail"
 

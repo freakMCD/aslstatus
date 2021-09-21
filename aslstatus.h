@@ -9,7 +9,6 @@
 #	include <xcb/xcb.h>
 #endif
 
-#include "os.h"
 #include "lib/util.h"
 
 #include "components/cpu.h"
@@ -17,6 +16,7 @@
 #include "components/volume.h"
 #include "components/battery.h"
 #include "components/netspeed.h"
+#include "components/brightness.h"
 
 #define FUNC_ARGS (char *, const char *, uint32_t, static_data_t *)
 
@@ -26,9 +26,6 @@
 		.static_data = { .cleanup = NULL, .data = NULL },             \
 		.mutex	     = PTHREAD_MUTEX_INITIALIZER                      \
 	}
-
-#define _FILE_ON_LINUX (LINUX * sizeof(int /* fd */))
-/* if linux: sizeof(int); otherwise: 0 */
 
 typedef void (*cleanup_func_t)(void *);
 
@@ -66,18 +63,18 @@ struct arg_t {
 
 /* battery */
 void battery_perc FUNC_ARGS;
-#define battery_perc {battery_perc, "batt_percentage", _FILE_ON_LINUX}
+#define battery_perc {battery_perc, "batt_percentage", sizeof(int)}
 
 void battery_state FUNC_ARGS;
-#define battery_state {battery_state, "batt_state", _FILE_ON_LINUX}
+#define battery_state {battery_state, "batt_state", sizeof(int)}
 
 void battery_remaining FUNC_ARGS;
 #define battery_remaining \
-	{battery_remaining, "batt_remaining", BATTERY_REMAINING_STATIC_SIZE}
+	{battery_remaining, "batt_remaining", sizeof(struct remaining)}
 
 /* brightness */
 void brightness FUNC_ARGS;
-#define brightness {brightness, "brightness", sizeof(struct {int a, b;})}
+#define brightness {brightness, "brightness", sizeof(struct brightness_data)}
 
 #if USE_X
 /* bspwm */
@@ -88,10 +85,10 @@ void bspwm_ws FUNC_ARGS;
 
 /* cpu */
 void cpu_freq FUNC_ARGS;
-#define cpu_freq {cpu_freq, "cpu_freq", _FILE_ON_LINUX}
+#define cpu_freq {cpu_freq, "cpu_freq", sizeof(int)}
 
 void cpu_perc FUNC_ARGS;
-#define cpu_perc {cpu_perc, "cpu_percentage", CPU_STATIC_SIZE}
+#define cpu_perc {cpu_perc, "cpu_percentage", sizeof(struct cpu_data_t)}
 
 /* datetime */
 void datetime FUNC_ARGS;
@@ -114,7 +111,7 @@ void disk_used FUNC_ARGS;
 
 /* entropy */
 void entropy FUNC_ARGS;
-#define entropy {entropy, "entropy", _FILE_ON_LINUX}
+#define entropy {entropy, "entropy", sizeof(int)}
 
 
 /* hostname */
@@ -149,10 +146,10 @@ void load_avg FUNC_ARGS;
 
 /* netspeeds */
 void netspeed_rx FUNC_ARGS;
-#define netspeed_rx {netspeed_rx, "netspeed_rx", NETSPEED_STATIC_SIZE}
+#define netspeed_rx {netspeed_rx, "netspeed_rx", sizeof(struct netspeed_data)}
 
 void netspeed_tx FUNC_ARGS;
-#define netspeed_tx {netspeed_tx, "netspeed_tx", NETSPEED_STATIC_SIZE}
+#define netspeed_tx {netspeed_tx, "netspeed_tx", sizeof(struct netspeed_data)}
 
 
 /* num_files */
@@ -162,16 +159,16 @@ void num_files FUNC_ARGS;
 
 /* ram */
 void ram_free FUNC_ARGS;
-#define ram_free {ram_free, "ram_free", _FILE_ON_LINUX}
+#define ram_free {ram_free, "ram_free", sizeof(int)}
 
 void ram_perc FUNC_ARGS;
-#define ram_perc {ram_perc, "ram_percentage", _FILE_ON_LINUX}
+#define ram_perc {ram_perc, "ram_percentage", sizeof(int)}
 
 void ram_total FUNC_ARGS;
 #define ram_total {ram_total, "ram_total", 0}
 
 void ram_used FUNC_ARGS;
-#define ram_used {ram_used, "ram_used", _FILE_ON_LINUX}
+#define ram_used {ram_used, "ram_used", sizeof(int)}
 
 
 /* run_command */
@@ -184,21 +181,21 @@ void run_command FUNC_ARGS;
 
 /* swap */
 void swap_free FUNC_ARGS;
-#define swap_free {swap_free, "swap_free", _FILE_ON_LINUX}
+#define swap_free {swap_free, "swap_free", sizeof(int)}
 
 void swap_perc FUNC_ARGS;
-#define swap_perc {swap_perc, "swap_percentage", _FILE_ON_LINUX}
+#define swap_perc {swap_perc, "swap_percentage", sizeof(int)}
 
 void swap_total FUNC_ARGS;
 #define swap_total {swap_total, "swap_total", 0}
 
 void swap_used FUNC_ARGS;
-#define swap_used {swap_used, "swap_used", _FILE_ON_LINUX}
+#define swap_used {swap_used, "swap_used", sizeof(int)}
 
 
 /* temperature */
 void temp FUNC_ARGS;
-#define temp {temp, "temperature", _FILE_ON_LINUX}
+#define temp {temp, "temperature", sizeof(int)}
 
 
 /* uptime */
@@ -224,10 +221,10 @@ void vol_perc FUNC_ARGS;
 
 /* wifi */
 void wifi_perc FUNC_ARGS;
-#define wifi_perc {wifi_perc, "wifi_percentage", WIFI_PERC_STATIC_SIZE}
+#define wifi_perc {wifi_perc, "wifi_percentage", sizeof(struct wifi_perc_data)}
 
 void wifi_essid FUNC_ARGS;
-#define wifi_essid {wifi_essid, "wifi_essid", WIFI_ESSID_STATIC_SIZE}
+#define wifi_essid {wifi_essid, "wifi_essid", sizeof(struct wifi_essid_data)}
 
 /* clang-format on */
 #endif /* ASLSTATUS_H_NO_COMP */

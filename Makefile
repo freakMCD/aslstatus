@@ -4,17 +4,12 @@ include config.mk
 
 
 ifeq (${COMPONENTS},)
-GLOB := $(shell case "$$(uname -s)" in \
-		([Ff]ree[Bb][Ss][Dd]*) echo freebsd;;\
-		([Oo]pen[Bb][Ss][Dd]*) echo openbsd;;\
-		([Ll]inux*) echo linux;; esac)
-COMPONENTS := $(wildcard components/*.c \
-	      $(foreach _,${GLOB},components/${_}/*.c))
+COMPONENTS := $(wildcard components/*.c)
 COMPONENTS += $(wildcard lib/*.c)
 
 A_ALSA_C  := components/volume/alsa.c
-A_DEF_C   := components/volume/default.c
 A_PULSE_C := components/volume/pulse.c
+A_DEF_C   := components/volume/default.c
 endif # COMPONENTS
 
 OBJ = ${COMPONENTS:.c=.o}

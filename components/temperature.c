@@ -7,8 +7,8 @@
 #include <limits.h>
 #include <unistd.h>
 
-#include "../../lib/util.h"
-#include "../../aslstatus.h"
+#include "../lib/util.h"
+#include "../aslstatus.h"
 
 #define MAX_NAME  16
 #define TEMP_FILE "temp1_input"
