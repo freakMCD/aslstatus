@@ -35,6 +35,7 @@ entropy(char*	   out,
 			ERRRET(out);
 	}
 
+	/* read from file and save size of readed data */
 	if (!eread_ret(readed, *fd, WITH_LEN(buf))) ERRRET(out);
 
 	buf[--readed /* '\n' at the end */] = '\0';
