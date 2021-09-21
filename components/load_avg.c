@@ -7,8 +7,8 @@
 
 void
 load_avg(char *	    out,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
+	 const char __unused *_a,
+	 uint32_t __unused    _i,
 	 void __unused *_p)
 {
 	double avgs[3];

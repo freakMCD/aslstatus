@@ -6,9 +6,9 @@
 #include "../lib/util.h"
 
 void
-run_command(char *		  out,
-	    const char *	  cmd,
-	    unsigned int __unused _i,
+run_command(char *	      out,
+	    const char *      cmd,
+	    uint32_t __unused _i,
 	    void __unused *_p)
 {
 	char *p;

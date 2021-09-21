@@ -37,9 +37,9 @@ static uint8_t get_layout_struct(xcb_connection_t *, struct layout *);
 
 void
 keymap(char *	  layout,
-       const char __unused * _a,
-       unsigned int __unused _i,
-       static_data_t *		     static_data)
+       const char __unused *_a,
+       uint32_t __unused    _i,
+       static_data_t *	    static_data)
 {
 	void *ev = NULL;
 

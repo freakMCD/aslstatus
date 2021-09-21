@@ -5,8 +5,8 @@
 
 #define FUNC_ARGS                                                             \
 	(char __unused* _o,                                                   \
-	 const char __unused*  _a,                                            \
-	 unsigned int __unused _i,                                            \
+	 const char __unused* _a,                                             \
+	 uint32_t __unused    _i,                                             \
 	 void __unused* _p)
 
 #define TRAILING_SEMICOLON(...) struct trailing_semicolon

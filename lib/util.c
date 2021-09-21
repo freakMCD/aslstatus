@@ -45,9 +45,9 @@ bprintf(char *buf, const char *fmt, ...)
 void
 fmt_human(char *out, uintmax_t num)
 {
-	double	     scaled;
-	unsigned int i;
-	const char * prefix[] =
+	uint8_t	    i;
+	double	    scaled;
+	const char *prefix[] =
 #if FMT_HUMAN_NUMFMT == NUMFMT_IEC
 	{ "",
 	  "Ki",

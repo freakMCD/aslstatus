@@ -13,18 +13,18 @@
 
 static void netspeed(char *	    out,
 		     const char *   interface,
-		     unsigned int   interval,
+		     uint32_t	    interval,
 		     static_data_t *static_data,
 		     const char *   property);
 
 void
-netspeed_rx(char *out, const char *interface, unsigned int interval, void *ptr)
+netspeed_rx(char *out, const char *interface, uint32_t interval, void *ptr)
 {
 	netspeed(out, interface, interval, ptr, STATISTICS(rx));
 }
 
 void
-netspeed_tx(char *out, const char *interface, unsigned int interval, void *ptr)
+netspeed_tx(char *out, const char *interface, uint32_t interval, void *ptr)
 {
 	netspeed(out, interface, interval, ptr, STATISTICS(tx));
 }
@@ -38,7 +38,7 @@ netspeed_cleanup(void *ptr)
 static inline void
 netspeed(char *		out,
 	 const char *	interface,
-	 unsigned int	interval,
+	 uint32_t	interval,
 	 static_data_t *static_data,
 	 const char *	property)
 {

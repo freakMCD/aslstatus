@@ -18,9 +18,9 @@ static inline memory_t get_used(const struct meminfo_ram* info);
 
 void
 ram_free(char*	    out,
-	 const char __unused*  _a,
-	 unsigned int __unused _i,
-	 static_data_t*	       static_data)
+	 const char __unused* _a,
+	 uint32_t __unused    _i,
+	 static_data_t*	      static_data)
 {
 	DEF_RAM(info, static_data, out);
 
@@ -32,21 +32,23 @@ ram_free(char*	    out,
 
 void
 ram_perc(char*	    out,
-	 const char __unused*  _a,
-	 unsigned int __unused _i,
-	 static_data_t*	       static_data)
+	 const char __unused* _a,
+	 uint32_t __unused    _i,
+	 static_data_t*	      static_data)
 {
 	DEF_RAM(info, static_data, out);
 
 	if (!info.total) ERRRET(out);
 
-	bprintf(out, "%hhu", (uint8_t)(100 * get_used(&info) / info.total));
+	bprintf(out,
+		"%" PRIperc,
+		(percent_t)(100 * get_used(&info) / info.total));
 }
 
 void
 ram_total(char*	     out,
-	  const char __unused*	_a,
-	  unsigned int __unused _i,
+	  const char __unused* _a,
+	  uint32_t __unused    _i,
 	  void __unused* _p)
 {
 	struct sysinfo info;
@@ -57,9 +59,9 @@ ram_total(char*	     out,
 
 void
 ram_used(char*	    out,
-	 const char __unused*  _a,
-	 unsigned int __unused _i,
-	 static_data_t*	       static_data)
+	 const char __unused* _a,
+	 uint32_t __unused    _i,
+	 static_data_t*	      static_data)
 {
 	DEF_RAM(info, static_data, out);
 

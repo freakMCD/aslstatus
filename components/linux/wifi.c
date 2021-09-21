@@ -36,10 +36,10 @@ static void wifi_perc_cleanup(void *ptr);
 static void wifi_essid_cleanup(void *ptr);
 
 void
-wifi_perc(char *		out,
-	  const char *		interface,
-	  unsigned int __unused _i,
-	  static_data_t *	static_data)
+wifi_perc(char *	    out,
+	  const char *	    interface,
+	  uint32_t __unused _i,
+	  static_data_t *   static_data)
 {
 	struct wifi_perc_data *data = static_data->data;
 
@@ -62,16 +62,16 @@ wifi_perc(char *		out,
 	}
 
 	bprintf(out,
-		"%hhu",
-		(uint8_t)((float)data->stat.qual.qual / (70 /* max RSSI */)
-			  * 100));
+		"%" PRIperc,
+		(percent_t)((float)data->stat.qual.qual / (70 /* max RSSI */)
+			    * 100));
 }
 
 void
-wifi_essid(char *		 out,
-	   const char *		 interface,
-	   unsigned int __unused _i,
-	   static_data_t *	 static_data)
+wifi_essid(char *	     out,
+	   const char *	     interface,
+	   uint32_t __unused _i,
+	   static_data_t *   static_data)
 {
 	struct wifi_essid_data *data = static_data->data;
 

@@ -6,10 +6,7 @@
 #include "../lib/util.h"
 
 void
-datetime(char *		       out,
-	 const char *	       fmt,
-	 unsigned int __unused _i,
-	 void __unused *_p)
+datetime(char *out, const char *fmt, uint32_t __unused _i, void __unused *_p)
 {
 	time_t t;
 

@@ -3,17 +3,16 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "../lib/util.h"
 
 void
-num_files(char *		out,
-	  const char *		path,
-	  unsigned int __unused _i,
-	  void __unused *_p)
+num_files(char *out, const char *path, uint32_t __unused _i, void __unused *_p)
 {
-	DIR *	       fd;
-	unsigned int   num;
+	DIR *  fd;
+	size_t num;
+
 	struct dirent *dp;
 
 	if (!(fd = opendir(path))) {
@@ -29,5 +28,5 @@ num_files(char *		out,
 	}
 
 	closedir(fd);
-	bprintf(out, "%u", num);
+	bprintf(out, "%" PRIu64, num);
 }

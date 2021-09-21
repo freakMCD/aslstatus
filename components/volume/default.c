@@ -94,10 +94,7 @@ vol_perc(char *out, const char *card)
 #	include <sys/soundcard.h>
 
 void
-vol_perc(char *		       out,
-	 const char *	       card,
-	 unsigned int __unused _i,
-	 void __unused *_p)
+vol_perc(char *out, const char *card, uint32_t __unused _i, void __unused *_p)
 {
 	size_t i;
 	int    v, afd, devmask;

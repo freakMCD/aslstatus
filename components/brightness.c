@@ -11,10 +11,10 @@ struct brightness_data {
 };
 
 void
-brightness(char *		 out,
-	   const char *		 device,
-	   unsigned int __unused _i,
-	   static_data_t *	 static_data)
+brightness(char *	     out,
+	   const char *	     device,
+	   uint32_t __unused _i,
+	   static_data_t *   static_data)
 {
 	struct brightness_data *data = static_data->data;
 

@@ -42,9 +42,9 @@ static void  pulse_cleanup(void *ptr);
 
 void
 vol_perc(char *	    volume,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
-	 static_data_t *       static_data)
+	 const char __unused *_a,
+	 uint32_t __unused    _i,
+	 static_data_t *      static_data)
 {
 	struct volume_static_data *  data = static_data->data;
 	static const struct timespec ts	  = {
@@ -101,11 +101,11 @@ sink_info_callback(pa_context __unused *_c,
 		bprintf(data->out, "%s", VOLUME_MUTED);
 	else
 		bprintf(data->out,
-			"%s%3hhu%s",
+			"%s%" PRIperc "%s",
 			VOLUME_SYM,
-			(pa_volume_t)((pa_cvolume_avg(&(i->volume)) * 100
-				       + (pa_volume_t)PA_VOLUME_NORM / 2)
-				      / (pa_volume_t)PA_VOLUME_NORM),
+			(percent_t)((pa_cvolume_avg(&(i->volume)) * 100
+				     + (pa_volume_t)PA_VOLUME_NORM / 2)
+				    / (pa_volume_t)PA_VOLUME_NORM),
 			VOLUME_PERCENT);
 
 	pthread_kill(data->volume_thread, SIGUSR1);

@@ -18,7 +18,7 @@
 #include "components/netspeed.h"
 #include "components/volume/volume.h"
 
-#define FUNC_ARGS (char *, const char *, unsigned int, static_data_t *)
+#define FUNC_ARGS (char *, const char *, uint32_t, static_data_t *)
 
 #define END                                                                   \
 	{                                                                     \
@@ -40,9 +40,9 @@ typedef struct static_data_t {
 typedef void(*func_t) FUNC_ARGS;
 
 typedef struct func_data_t {
-	func_t	     func;
-	const char   name[16];
-	unsigned int static_size;
+	func_t	   func;
+	const char name[16];
+	size_t	   static_size;
 } func_data_t;
 
 struct segment_t {
@@ -54,11 +54,11 @@ struct segment_t {
 };
 
 struct arg_t {
-	const func_data_t  f;
-	const char *	   fmt;
-	const char *	   args;
-	const unsigned int interval;
-	struct segment_t   segment;
+	const func_data_t f;
+	const char *	  fmt;
+	const char *	  args;
+	const uint32_t	  interval;
+	struct segment_t  segment;
 };
 
 #ifdef ASLSTATUS_H_NEED_COMP

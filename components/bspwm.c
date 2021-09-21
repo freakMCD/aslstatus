@@ -77,9 +77,9 @@ static void parse_event(const char *, size_t, char *, size_t);
 
 void
 bspwm_ws(char *	    out,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
-	 static_data_t *       static_data)
+	 const char __unused *_a,
+	 uint32_t __unused    _i,
+	 static_data_t *      static_data)
 {
 	char *		   sp, rsp[BUFSIZ];
 	int		   nb, *fd = static_data->data;

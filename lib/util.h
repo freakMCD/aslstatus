@@ -4,9 +4,10 @@
 #include <err.h>   /* warn */
 #include <stdio.h> /* fseek */
 #include <errno.h>
-#include <unistd.h> /* lseek */
-#include <stdint.h> /* uintmax_t, uint8_t */
-#include <stdarg.h> /* ... */
+#include <unistd.h>   /* lseek */
+#include <stdint.h>   /* uintmax_t, uint8_t */
+#include <stdarg.h>   /* ... */
+#include <inttypes.h> /* PRI* */
 
 #define BUFF_SZ 96
 /*
@@ -44,6 +45,9 @@
 		*(B) = '\0';                                                  \
 		return;                                                       \
 	} while (0)
+
+typedef uint8_t percent_t;
+#define PRIperc "3" PRIu8
 
 /* buffer printf */
 void bprintf(char *, const char *, ...);

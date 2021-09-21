@@ -2,6 +2,7 @@
 #define MEMINFO_H
 
 #include <stdio.h>
+#include <inttypes.h>
 
 #include "util.h"
 
@@ -45,8 +46,8 @@
 	}
 /* clang-format on */
 
-#define memory_t_format "%8lu"
-typedef unsigned long int memory_t;
+#define memory_t_format "%8" PRIu64
+typedef uint64_t memory_t;
 
 struct meminfo_field {
 	const char *key;

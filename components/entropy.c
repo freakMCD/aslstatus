@@ -15,13 +15,13 @@
 
 void
 entropy(char*	   out,
-	const char __unused*  _a,
-	unsigned int __unused _i,
-	static_data_t*	      static_data)
+	const char __unused* _a,
+	uint32_t __unused    _i,
+	static_data_t*	     static_data)
 {
 	ssize_t readed;
-	int*   fd = static_data->data;
-	char   buf[9 /* len(str(uint32_t)) */ + 1];
+	int*	fd = static_data->data;
+	char	buf[9 /* len(str(uint32_t)) */ + 1];
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
@@ -49,8 +49,8 @@ entropy(char*	   out,
 
 void
 entropy(char *	   out,
-	const char __unused * _a,
-	unsigned int __unused _i,
+	const char __unused *_a,
+	uint32_t __unused    _i,
 	void __unused *_p)
 {
 	bprintf(out, "%s", ENTROPY_INFINITY);

@@ -51,19 +51,13 @@ ip(char *out, const char *interface, sa_family_t sa_family)
 }
 
 void
-ipv4(char *		   out,
-     const char *	   interface,
-     unsigned int __unused _i,
-     void __unused *_p)
+ipv4(char *out, const char *interface, uint32_t __unused _i, void __unused *_p)
 {
 	ip(out, interface, AF_INET);
 }
 
 void
-ipv6(char *		   out,
-     const char *	   interface,
-     unsigned int __unused _i,
-     void __unused *_p)
+ipv6(char *out, const char *interface, uint32_t __unused _i, void __unused *_p)
 {
 	ip(out, interface, AF_INET6);
 }

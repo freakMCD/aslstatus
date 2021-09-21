@@ -22,16 +22,16 @@ static const char *GOOD_NAMES[] = {
 };
 
 void
-temp(char *		   out,
-     const char *	   device,
-     unsigned int __unused _i,
-     static_data_t *	   static_data)
+temp(char *	       out,
+     const char *      device,
+     uint32_t __unused _i,
+     static_data_t *   static_data)
 {
 	DIR *	       d;
 	struct dirent *dp;
 
 	uint8_t i, found = 0;
-	ssize_t	readed;
+	ssize_t readed;
 	int	name_fd;
 	char	name[MAX_NAME];
 	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];

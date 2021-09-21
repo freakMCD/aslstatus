@@ -33,9 +33,9 @@ static void cpu_perc_cleanup(void *ptr);
 
 void
 cpu_freq(char *	    out,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
-	 static_data_t *       static_data)
+	 const char __unused *_a,
+	 uint32_t __unused    _i,
+	 static_data_t *      static_data)
 {
 	uintmax_t freq;
 	int *	  fd = static_data->data;
@@ -59,9 +59,9 @@ cpu_freq(char *	    out,
 
 void
 cpu_perc(char *	    out,
-	 const char __unused * _a,
-	 unsigned int __unused _i,
-	 static_data_t *       static_data)
+	 const char __unused *_a,
+	 uint32_t __unused    _i,
+	 static_data_t *      static_data)
 {
 	struct cpu_data_t *data = static_data->data;
 
@@ -105,7 +105,9 @@ cpu_perc(char *	    out,
 	old_sum = CPU_USED(old_states);
 	tmp_sum = CPU_USED(data->states);
 
-	bprintf(out, "%hhu", (uint8_t)(100 * ABS_DEC(old_sum, tmp_sum) / sum));
+	bprintf(out,
+		"%" PRIperc,
+		(percent_t)(100 * ABS_DEC(old_sum, tmp_sum) / sum));
 }
 
 static inline void

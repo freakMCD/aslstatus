@@ -10,7 +10,7 @@
 int
 main(void)
 {
-	unsigned int i;
+	uint8_t i;
 
 	puts("file:../lib/util.c"); /* every component needs util */
 

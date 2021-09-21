@@ -18,9 +18,9 @@
 
 void
 swap_free(char*	     out,
-	  const char __unused*	_a,
-	  unsigned int __unused _i,
-	  static_data_t*	static_data)
+	  const char __unused* _a,
+	  uint32_t __unused    _i,
+	  static_data_t*       static_data)
 {
 	DEF_SWAP(info, static_data, out);
 
@@ -29,20 +29,22 @@ swap_free(char*	     out,
 
 void
 swap_perc(char*	     out,
-	  const char __unused*	_a,
-	  unsigned int __unused _i,
-	  static_data_t*	static_data)
+	  const char __unused* _a,
+	  uint32_t __unused    _i,
+	  static_data_t*       static_data)
 {
 	DEF_SWAP(info, static_data, out);
 
-	fmt_human(out,
-		  100 * (info.total - info.free - info.cached) / info.total);
+	bprintf(out,
+		"%" PRIperc,
+		(percent_t)(100 * (info.total - info.free - info.cached)
+			    / info.total));
 }
 
 void
 swap_total(char*      out,
-	   const char __unused*	 _a,
-	   unsigned int __unused _i,
+	   const char __unused* _a,
+	   uint32_t __unused	_i,
 	   void __unused* _p)
 {
 	struct sysinfo info;
@@ -53,9 +55,9 @@ swap_total(char*      out,
 
 void
 swap_used(char*	     out,
-	  const char __unused*	_a,
-	  unsigned int __unused _i,
-	  static_data_t*	static_data)
+	  const char __unused* _a,
+	  uint32_t __unused    _i,
+	  static_data_t*       static_data)
 {
 	DEF_SWAP(info, static_data, out);
 
