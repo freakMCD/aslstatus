@@ -86,6 +86,10 @@ uint8_t _sysfs_fd_or_rewind(const char *func,
  *   otherwise return original return value from function without `e` prefix
  */
 
+#define eopen(ret_fd, path, flags)                                            \
+	((ret_fd = _eopen(__func__, path, flags, #flags)) != -1)
+int _eopen(const char *func, const char *path, int flags, const char *sflags);
+
 #define elseek(fd, offset, whence) _elseek(__func__, fd, offset, whence)
 off_t _elseek(const char *func, int fd, off_t offset, int whence);
 

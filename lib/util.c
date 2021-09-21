@@ -94,13 +94,8 @@ _sysfs_fd(const char *func,
 	static const int  DIR_FLAGS	= (O_RDONLY | O_CLOEXEC | O_DIRECTORY);
 	static const char S_DIR_FLAGS[] = "O_RDONLY | O_CLOEXEC | O_DIRECTORY";
 
-	if ((*path_fd = open(path, DIR_FLAGS)) == -1) {
-		warn("%s: open(" QUOTED("%s") ", %s)",
-		     func,
-		     path,
-		     S_DIR_FLAGS);
+	if ((*path_fd = _eopen(func, path, DIR_FLAGS, S_DIR_FLAGS)) == -1)
 		goto end;
-	}
 
 	if ((*device_fd = openat(*path_fd, device, DIR_FLAGS)) == -1) {
 		warn(
@@ -151,6 +146,17 @@ _sysfs_fd_or_rewind(const char *func,
 	if ((*fd = _sysfs_fd(func, path, device, property)) != -1) return !0;
 
 	return 0;
+}
+
+int
+_eopen(const char *func, const char *path, int flags, const char *sflags)
+{
+	int fd;
+
+	if ((fd = open(path, flags)) == -1)
+		warn("%s: open(" QUOTED("%s") ", %s)", func, path, sflags);
+
+	return fd;
 }
 
 off_t
