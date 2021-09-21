@@ -1,11 +1,13 @@
 # components
+`config.h`:
 ```c
+/* ... */
+
 static struct arg_t args[] = {
 
 { function, "format %s", arg, interval, END },
 
 }
-
 ```
 * `functons` list is described under [components info](#components-info)
   * subheaders is functions names
@@ -14,6 +16,36 @@ static struct arg_t args[] = {
 * `interval` is non-negative integer
   * will wait so many milliseconds before retrieving new info from component
 * every component must ends with `END`
+
+### manual updating
+to update component without waiting `interval`
+just send USR1 signal to thread which you want to update
+
+#### helper script
+
+`aslstatus-update`:
+```sh
+#!/bin/sh --
+# deps:
+#   pstree from `psmisc`
+#   pidof  from `procps`
+set -ue
+
+alias tree='pstree -tp "$(pidof aslstatus)"'
+case "${1:?}" in
+-l) tree;;
+[0-9]*) kill -USR1 "${1}";;
+*) kill -USR1 "$(tree | sed -n "s/.*{${1}}(\([0-9]\+\))/\1/p")"
+esac
+```
+#### usage
+```sh
+aslstatus-update -l        # list threads
+
+# update component
+aslstatus-update datetime  # by name
+aslstatus-update 1488      # by pid
+```
 
 # components info
 
