@@ -120,9 +120,11 @@ leave_locked:
 	gettimeofday(&timeout, NULL);
 	timeout.tv_sec += MS2S(KILL_TIMEOUT);
 	timeout.tv_usec += MS2US(KILL_TIMEOUT);
+	/* wait until `timeout` and then abort() */
 
 	for (i = 0; i < ARGS_LEN; i++) {
 		for (;;) {
+			/* check if component terminated */
 			if (!!kill(args[i].segment.pid, 0)) break;
 
 			gettimeofday(&cur, NULL);
@@ -141,6 +143,7 @@ leave_locked:
 			nanosleep(&ts, NULL);
 		}
 
+		/* call segments cleanup and free static data */
 		if (!!(static_data = &args[i].segment.static_data)->data) {
 			if (!!static_data->cleanup)
 				static_data->cleanup(static_data->data);
@@ -179,7 +182,8 @@ update_status(int __unused _)
 					warnx(
 					    "total status length are too "
 					    "big and exceed `MAXLEN`");
-					terminate((exit_status = !0));
+					exit_status = !0;
+					terminate(0);
 				}
 				strcat(status, args[i].segment.data);
 			}
@@ -206,6 +210,7 @@ thread(void *arg_ptr)
 	arg->segment.pid  = gettid();
 
 	if (!!arg->f.static_size) {
+		/* allocate memory for static data if needed */
 		if (!(arg->segment.static_data.data =
 			  calloc(arg->f.static_size, 1))) {
 			warnx("failed to allocate %u bytes for %15s",
