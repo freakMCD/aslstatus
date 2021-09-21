@@ -158,8 +158,11 @@ leave_locked:
 
 		xcb_flush(c);
 		xcb_disconnect(c);
-	}
+	} else
 #endif
+	{
+		putchar('\n');
+	}
 
 	exit(exit_status);
 }
