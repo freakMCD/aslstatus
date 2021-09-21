@@ -9,11 +9,7 @@
 #include <stdarg.h>   /* ... */
 #include <inttypes.h> /* PRI* */
 
-#define BUFF_SZ 96
-/*
- * buffer size for one commponent
- * if you are using `wifi.c` it must be at least 78 bytes
- */
+#define BUFF_SZ 96 /* buffer size for one commponent */
 
 #define INT_STR_SIZE                                                          \
 	(10 /* max string size size of int32_t (unsigned and signed) */       \
@@ -25,6 +21,11 @@
 #define typeof_field(S, F) __typeof__(((S *)0)->F)
 #define TWICE(V)	   V, V
 
+/*
+ * #define X SOMETHING
+ * STR(X)
+ *   => "SOMETHING"
+ */
 #define STRINGIFY_AUX(X) #X
 #define STR(X)		 STRINGIFY_AUX(X)
 
