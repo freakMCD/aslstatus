@@ -83,7 +83,7 @@ aslstatus-update 1488      # by pid
 * interval: can be `0`
 * read events from `bspwm` socket
 * can be configured from [components_config.h](#components_config)
-<!-- TODO: more info about bspwm -->
+* see also [wiki/BSPWM](BSPWM.md)
 
 ---
 
