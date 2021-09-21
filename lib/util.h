@@ -29,6 +29,8 @@
 #define STRINGIFY_AUX(X) #X
 #define STR(X)		 STRINGIFY_AUX(X)
 
+#define WITH_STR(X) X, #X
+
 #define STR_SIZE(S)   (LEN(S) - 1) /* minus null byte */
 #define WITH_SSIZE(S) S, STR_SIZE(S)
 
