@@ -20,17 +20,19 @@ entropy(char*	   out,
 {
 	ssize_t readed;
 	int*	fd = static_data->data;
-	char	buf[9 /* len(str(uint32_t)) */ + 1];
+	char	buf[INT_STR_SIZE];
 
+	/* if `static_data` contain only `fd`
+	 * then you can use `fd_cleanup` function from util.h */
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
 	if (*fd > 0) {
+		/* if file already opened then rewind */
 		if (!fd_rewind(*fd)) ERRRET(out);
 	} else {
-		if ((*fd = open(ENTROPY_AVAIL, O_RDONLY | O_CLOEXEC)) == -1) {
-			warn("open(%s)", ENTROPY_AVAIL);
+		/* open file */
+		if (!eopen(*fd, ENTROPY_AVAIL, O_RDONLY | O_CLOEXEC))
 			ERRRET(out);
-		}
 	}
 
 	if (!eread_ret(readed, *fd, WITH_LEN(buf))) ERRRET(out);
