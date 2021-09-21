@@ -91,37 +91,27 @@ _sysfs_fd(const char *func,
 	int  fds[3]  = { -1, -1, -1 };
 	int *path_fd = &fds[0], *device_fd = &fds[1], *property_fd = &fds[2];
 
-	static const int  DIR_FLAGS	= (O_RDONLY | O_CLOEXEC | O_DIRECTORY);
-	static const char S_DIR_FLAGS[] = "O_RDONLY | O_CLOEXEC | O_DIRECTORY";
-
-	if ((*path_fd = _eopen(func, path, DIR_FLAGS, S_DIR_FLAGS)) == -1)
+	if ((*path_fd = _eopen(func,
+			       path,
+			       WITH_STR(O_RDONLY | O_CLOEXEC | O_DIRECTORY)))
+	    == -1)
 		goto end;
 
-	if ((*device_fd = openat(*path_fd, device, DIR_FLAGS)) == -1) {
-		warn(
-		    "%s: openat(fd:%d " QUOTED("%s") ", " QUOTED("%s") ", %s)",
-		    func,
-		    *path_fd,
-		    path,
-		    device,
-		    S_DIR_FLAGS);
+	if ((*device_fd =
+		 _eopenat(func,
+			  *path_fd,
+			  device,
+			  WITH_STR(O_RDONLY | O_CLOEXEC | O_DIRECTORY)))
+	    == -1)
 		goto end;
-	}
 
 	if (!!property) {
-		if ((*property_fd =
-			 openat(*device_fd, property, O_RDONLY | O_CLOEXEC))
-		    == -1) {
-			warn("%s: openat(fd:%d " QUOTED("%s/%s") ", " QUOTED(
-				 "%s") ", %s)",
-			     func,
-			     *device_fd,
-			     path,
-			     device,
-			     property,
-			     "O_RDONLY | O_CLOEXEC");
+		if ((*property_fd = _eopenat(func,
+					     *device_fd,
+					     property,
+					     WITH_STR(O_RDONLY | O_CLOEXEC)))
+		    == -1)
 			goto end;
-		}
 	} else {
 		*property_fd = *device_fd;
 		*device_fd   = -1;
@@ -157,6 +147,22 @@ _eopen(const char *func, const char *path, int flags, const char *sflags)
 		warn("%s: open(" QUOTED("%s") ", %s)", func, path, sflags);
 
 	return fd;
+}
+
+int
+_eopenat(
+    const char *func, int fd, const char *path, int flags, const char *sflags)
+{
+	int new_fd;
+
+	if ((new_fd = openat(fd, path, flags)) == -1)
+		warn("%s: openat(%d, " QUOTED("%s") ", %s)",
+		     func,
+		     fd,
+		     path,
+		     sflags);
+
+	return new_fd;
 }
 
 off_t
