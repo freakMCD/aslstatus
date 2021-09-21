@@ -7,7 +7,21 @@ for all other questions, feel free to ask in matrix
 [#aslstatus:matrix.org](https://matrix.to/#/#aslstatus:matrix.org)
 
 ---
-![demo](https://i.ibb.co/r5PYRj8/Demo.gif)
+### demo
+
+<details><summary>bspwm & lemonbar</summary>
+![bspwm demo](https://i.ibb.co/3SRSkTP/lemonbar-with-aslstatus.gif)
+</details>
+
+<details><summary>dwm</summary>
+![dwm demo](https://i.ibb.co/r5PYRj8/Demo.gif)
+</details>
+
+<details><summary>dvtm</summary>
+[![dvtm asciicast](https://asciinema.org/a/437217.svg)](https://asciinema.org/a/437217)
+</details>
+
+
 
 ---
 # instalation
