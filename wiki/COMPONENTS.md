@@ -1,24 +1,43 @@
-# battery
+# components
+```c
+static struct arg_t args[] = {
+
+{ function, "format %s", arg, interval, END },
+
+}
+
+```
+* `functons` list is described under [components info](#components-info)
+  * subheaders is functions names
+* in `format` will be placed string with component return, so there should be only one `%s`
+* `arg` to component can by `"string"` or `NULL`
+* `interval` is non-negative integer
+  * will wait so many milliseconds before retrieving new info from component
+* every component must ends with `END`
+
+# components info
+
+## battery
 * arg: battery name
   * example: `BAT0`
 * info from `/sys/class/power_supply/${arg}`
 
-## battery_perc
+### battery_perc
 **battery percentage**
 * info from `/sys/class/power_supply/${arg}/capacity`
 
-## battery_state
+### battery_state
 **battery charging state**
 * can be configured from [components_config.h](#components_config)
 * info from `/sys/class/power_supply/${arg}/status`
 
-## battery_remaining
+### battery_remaining
 **battery remaining HH:MM**
 * can be configured from [components_config.h](#components_config)
 
 ---
 
-# brightness
+## brightness
 **backlight display brightness**
 * arg: device name
   * example: `intel_backlight`
@@ -26,7 +45,7 @@
 
 ---
 
-# bspwm_ws
+## bspwm_ws
 **[bspwm](https://github.com/baskerville/bspwm) workspaces (for lemonbar?)**
 * arg: `NULL`
 * interval: can be `0`
@@ -36,46 +55,46 @@
 
 ---
 
-# cpu
+## cpu
 * arg: `NULL`
 * linux:
   * reads info from first line of `/proc/stat` (see: `man 5 proc`)
 
-## cpu_perc
+### cpu_perc
 **cpu usage in percent**
   
-## cpu_freq
+### cpu_freq
 **cpu frequency**
 
 ---
 
-# datetime
+## datetime
 **date and time**
 * arg: datetime format (see: `man 3 strftime`)
   * example: `%F %T`
 
 ---
 
-# disk
+## disk
 * arg: mountpoint (see: `man 8 findmnt`)
   * example: `/`, `/home`, `/media`, ...
 * reads info from `statfs` syscall (see: `man 2 statfs` and `man 3 statvfs`)
 
-## disk_free
+### disk_free
 **free disk space**
 
-## disk_perc
+### disk_perc
 **disk usage in percent**
 
-## disk_total
+### disk_total
 **total disk space**
 
-## disk_used
+### disk_used
 **used disk space**
 
 ---
 
-# entropy
+## entropy
 **available entropy**
 * arg: `NULL`
 * bsd: 
@@ -86,7 +105,7 @@
 
 ---
 
-# hostname
+## hostname
 **name of current host**
 * arg: `NULL`
 * interval: can be `ONCE`
@@ -94,19 +113,19 @@
 
 ---
 
-# ip
+## ip
 * arg: interface name
   * example: `eth0`
 
-## ipv4
+### ipv4
 **IPv4 address**
 
-## ipv6
+### ipv6
 **IPv6 address**
 
 ---
 
-# kernel_release
+## kernel_release
 **operating system release level**
 * arg: `NULL`
 * same as `uname -r`
@@ -114,7 +133,7 @@
 
 ---
 
-# keymap
+## keymap
 **layout of current keymap**
 * arg: `NULL`
 * interval: can be `0`
@@ -125,7 +144,7 @@
 
 ---
 
-# load_avg
+## load_avg
 **load average**
 * arg: `NULL`
 * in format: `%.2f %.2f %.2f`
@@ -133,62 +152,62 @@
 
 ---
 
-# netspeed
+## netspeed
 * number of bytes transmitted per `interval`
 * arg: interface name
   * example: `wlan0`
 * info from `/sys/class/net/${arg}/statistics/{r,t}x_bytes`
 
-## netspeed_rx
+### netspeed_rx
 **receive network speed**
 
-## netspeed_tx
+### netspeed_tx
 **transfer network speed**
 
 ---
 
-# num_files
+## num_files
 **number of files in a directory**
 * arg: path
   * example: `/home/user/Mail/Inbox/cur`
 
 ---
 
-# memory info
+## memory info
 * `ram` and `swap`
 * arg: `NULL`
 * info from `/proc/meminfo`
   * same as in `htop`, `top`, `free`
 
-## ram_free
+### ram_free
 **free memory**
 
-## ram_perc
+### ram_perc
 **memory usage in percent**
 
-## ram_total
+### ram_total
 **total memory size**
 * info from `sysinfo` syscall (see: `man 2 sysinfo`)
 
-## ram_used
+### ram_used
 **used memory**
 
-## swap_free
+### swap_free
 **free swap**
 
-## swap_perc
+### swap_perc
 **swap usage in percent**
 
-## swap_total
+### swap_total
 **total swap size**
 * info from `sysinfo` syscall (see: `man 2 sysinfo`)
 
-## swap_used
+### swap_used
 **used swap**
 
 ---
 
-# run_command
+## run_command
 **display output of custom shell command**
 * arg: command
   * example: `curl -s -- 'wttr.in/?format=1'`
@@ -196,7 +215,7 @@
 
 ---
 
-# temp
+## temp
 **temperature in degree celsius**
 * arg: `NULL` or thermal zone
   * example: `hwmon0`, `hwmon1`, ...
@@ -206,31 +225,31 @@
 
 ---
 
-# uptime
+## uptime
 **system uptime**
 * arg: `NULL`
 * reads info from `clock_gettime` (see: `man 2 clock_gettime`)
 
 ---
 
-# user
+## user
 * arg: `NULL`
 * interval: can be `ONCE`
 
-## uid
+### uid
 **UID of current user**
 
-## gid
+### gid
 **GID of current user**
 
-## username
+### username
 **username of current user**
 
 <!-- add more info -->
 
 ---
 
-# vol_perc
+## vol_perc
 **volume in percent**
 * alsa:
   * needs to be build with `AUDIO=ALSA`
@@ -245,16 +264,16 @@
 
 ---
 
-# wifi
+## wifi
 * arg: interface name
   * example: `wlan0`
 * reads info from `ioctl` syscall (see: `man 2 ioctl` and `linux/wireguard.h`)
 
-## wifi_perc
+### wifi_perc
 **WiFi signal in percent**
 * from: `SIOCGIWSTATS` `ioctl`
 
-## wifi_essid
+### wifi_essid
 **WiFi ESSID**
 * from: `SIOCGIWESSID` `ioctl`
 
