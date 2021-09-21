@@ -172,7 +172,8 @@ aslstatus-update 1488      # by pid
 * can be configured from [components_config.h](#components_config)
 * read events from `Xorg`
 * needs to be build with `X=1` and `XKB=1`
-<!-- TODO: add more info -->
+* keymap will be displayed as 2 char string (`en`, `de`, `ru`, ...)
+* with caps lock it will be uppercase (`EN`, `DE`, `RU`, ...)
 
 ---
 
