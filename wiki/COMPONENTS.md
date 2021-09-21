@@ -278,8 +278,6 @@ aslstatus-update 1488      # by pid
 ### username
 **username of current user**
 
-<!-- add more info -->
-
 ---
 
 ## vol_perc
