@@ -12,7 +12,7 @@
 #ifndef USE_PULSE
 #	define USE_PULSE
 #endif
-#include "volume.h"
+#include "../volume.h"
 #include "../../lib/util.h"
 #include "../../aslstatus.h"
 #include "../../components_config.h"

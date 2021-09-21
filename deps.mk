@@ -37,8 +37,7 @@ components/linux/cpu.o: ${cpu}
 $(call gendeps,netspeed,components/netspeed.h,os.h)
 components/linux/netspeed.o: ${netspeed}
 
-$(patsubst %.c,%.o,$(wildcard components/volume/*.c)): \
-	components/volume/volume.h
+$(patsubst %.c,%.o,$(wildcard components/volume/*.c)): components/volume.h
 components/volume/pulse.o: ${thread_helper}
 
 components/linux/ram.o: ${meminfo}
@@ -48,6 +47,5 @@ $(call gendeps,wifi,components/wifi.h,os.h)
 $(call all_os,wifi): ${wifi}
 
 $(call gendeps,aslstatus,aslstatus.h,\
-	${util} os.h components/volume/volume.h \
-	${battery} ${cpu} ${netspeed} ${wifi})
+	${util} os.h components/volume.h ${battery} ${cpu} ${netspeed} ${wifi})
 aslstatus.o: config.h ${thread_helper} ${aslstatus}

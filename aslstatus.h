@@ -14,9 +14,9 @@
 
 #include "components/cpu.h"
 #include "components/wifi.h"
+#include "components/volume.h"
 #include "components/battery.h"
 #include "components/netspeed.h"
-#include "components/volume/volume.h"
 
 #define FUNC_ARGS (char *, const char *, uint32_t, static_data_t *)
 

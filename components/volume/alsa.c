@@ -9,7 +9,7 @@
 #ifndef USE_ALSA
 #	define USE_ALSA
 #endif
-#include "volume.h"
+#include "../volume.h"
 #include "../../lib/util.h"
 #include "../../aslstatus.h"
 #include "../../components_config.h"
