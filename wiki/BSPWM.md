@@ -31,3 +31,6 @@ aslstatus -s | lemonbar
 
 ## runit :)
 [X/service/bar](https://notabug.org/dm9pZCAq/dotfiles/src/master/.local/X/sv/bar)
+
+---
+see also [wiki/COMPONENTS](COMPONENTS.md#bspwm_ws)
