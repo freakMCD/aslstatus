@@ -4,7 +4,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-#include <linux/wireguard.h>
+#include <linux/wireless.h>
 
 #include "wifi.h"
 #include "../lib/util.h"
