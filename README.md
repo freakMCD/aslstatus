@@ -4,7 +4,7 @@
 if you found any issues report it here
 
 for all other questions, feel free to ask in matrix
-[#aslstatus:matrix.org](https://matrix.to/#/#aslstatus:matrix.org)
+[#aslstatus:anontier.nl](https://matrix.to/#/#aslstatus:anontier.nl)
 
 ---
 ### demo
