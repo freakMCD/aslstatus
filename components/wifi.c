@@ -102,9 +102,10 @@ static inline uint8_t
 _eioctl(const char *func, int fd, int req, const char *str_req, void *arg)
 {
 	uint8_t ret;
+	static const char msg[] = "you are probably not connected to wifi";
 
 	if (!(ret = (ioctl(fd, req, arg) != -1)))
-		warn("%s: ioctl(%d, %s, %p)", func, fd, str_req, arg);
+		warn("%s: %s: ioctl(%d, %s, %p)", func, msg, fd, str_req, arg);
 
 	return ret;
 }
