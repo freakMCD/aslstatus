@@ -199,7 +199,9 @@ get_ctl_name(snd_mixer_selem_id_t **sid)
 static inline void
 alsa_cleanup(void *ptr)
 {
-	snd_ctl_t *ctl = ((alsa_data *)ptr)->ctl;
+	alsa_data *data = ptr;
 
-	if (!!ctl) snd_ctl_close(ctl);
+	if (!!data->ctl) snd_ctl_close(data->ctl);
+	if (!!data->e) snd_ctl_event_free(data->e);
+	if (!!data->sid) snd_mixer_selem_id_free(data->sid);
 }
