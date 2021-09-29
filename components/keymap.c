@@ -48,22 +48,22 @@ keymap(char *	  layout,
 	uint8_t *event_initialized = static_data->data;
 
 	if (!*event_initialized) {
-		if (!init_xkb_extension(c)) {
+		if (!init_xkb_extension(X_CONNECTION)) {
 			warnx("xcb: failed to initialize xkb extension");
 			ERRRET(layout);
 		}
-		init_events(c);
+		init_events(X_CONNECTION);
 
 		*event_initialized = !0;
 	} else {
-		if (!(ev = xcb_wait_for_event(c))) {
+		if (!(ev = xcb_wait_for_event(X_CONNECTION))) {
 			warnx("xcb: failed to get xkb event");
 			ERRRET(layout);
 		}
 		free(ev);
 	}
 
-	if (!!get_layout_struct(c, &state)) ERRRET(layout);
+	if (!!get_layout_struct(X_CONNECTION, &state)) ERRRET(layout);
 
 	if (state.lock_mask & CAPS) {
 		SAFE_ASSIGN(state.group[0], toupper(state.group[0]));

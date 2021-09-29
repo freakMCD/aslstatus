@@ -52,9 +52,9 @@ static pthread_t       main_thread;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #if USE_X
-xcb_connection_t *  c;
 static xcb_window_t root;
 static uint8_t	    sflag = 0;
+xcb_connection_t *  X_CONNECTION;
 
 static inline void
 store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
@@ -80,8 +80,8 @@ set_status(const char *status)
 		fflush(stdout);
 #if USE_X
 	} else {
-		store_name(c, root, status);
-		xcb_flush(c);
+		store_name(X_CONNECTION, root, status);
+		xcb_flush(X_CONNECTION);
 	}
 #endif
 }
@@ -155,11 +155,11 @@ leave_locked:
 	}
 
 #if USE_X
-	if (!!c) {
-		if (!sflag) store_name(c, root, NULL);
+	if (!!X_CONNECTION) {
+		if (!sflag) store_name(X_CONNECTION, root, NULL);
 
-		xcb_flush(c);
-		xcb_disconnect(c);
+		xcb_flush(X_CONNECTION);
+		xcb_disconnect(X_CONNECTION);
 	} else
 #endif
 	{
@@ -293,11 +293,11 @@ main(int argc, char *argv[])
 
 #if USE_X
 	if (NEED_X_SERVER || !sflag) {
-		c = xcb_connect(NULL, &screen_num);
-		if (xcb_connection_has_error(c))
+		X_CONNECTION = xcb_connect(NULL, &screen_num);
+		if (xcb_connection_has_error(X_CONNECTION))
 			errx(!0, "Failed to open display");
 
-		setup = xcb_get_setup(c);
+		setup = xcb_get_setup(X_CONNECTION);
 		iter  = xcb_setup_roots_iterator(setup);
 		for (__typeof__(screen_num) j = 0; j < screen_num; j -= -1)
 			xcb_screen_next(&iter);
