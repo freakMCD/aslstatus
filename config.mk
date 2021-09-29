@@ -9,7 +9,9 @@ MANPREFIX := ${PREFIX}/share/man
 
 #- flags -#
 CPPFLAGS += -D_DEFAULT_SOURCE -DVERSION='"${VERSION}"'
-CFLAGS   += -std=c99 -pedantic -Wall -Wextra
+CFLAGS   += -std=c99 
+WARNINGS += -pedantic -Wall -Wextra \
+	    -Wshadow -Wfloat-equal -Wconversion -Wuninitialized
 
 #- linker -#
 pkgconf   = $(shell pkg-config --libs $1)

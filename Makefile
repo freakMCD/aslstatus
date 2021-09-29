@@ -94,7 +94,7 @@ config.o: config.h
 	arch="$$(uname -m)" && $(LD) -m "elf_$${arch}" -r -b binary -o $@ $<
 
 %.o: %.c
-	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
+	$(CC) -o $@ -c $< ${CFLAGS} ${WARNINGS} ${CPPFLAGS}
 
 aslstatus: aslstatus.o config.o ${OBJ}
 	$(CC) -o $@ $(call LINK_FLAGS,$^)
