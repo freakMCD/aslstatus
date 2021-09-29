@@ -18,6 +18,8 @@ SMART_CONFIG_COMPONENTS_O := ${_COMP_O}
 SMART_CONFIG_OFILES := ${_EXE}.o ${_COMP_O}
 SMART_CONFIG_DEPS   := ${_EXE} ${_SH}
 
+SMART_CONFIG_FILTER := man install clean uninstall
+
 ${_COMP_O}: lib/util.h
 ${_EXE}.o: lib/util.h aslstatus.h config.h
 
@@ -27,7 +29,7 @@ smart-conf: ${SMART_CONFIG_DEPS}
 	$(eval export SMART_CONFIG=0)
 	$(eval export COMPONENTS=$(addprefix components/,\
 		$(call smart_config,./${_SH},./${_EXE},./components)))
-	@+$(MAKE) $(MAKECMDGOALS)
+	@+$(MAKE) $(filter-out ${SMART_CONFIG_FILTER},$(MAKECMDGOALS))
 
 ${_EXE}: ${SMART_CONFIG_OFILES}
 	$(CC) -o $@ $^ ${LDFLAGS} ${CFLAGS} -Wno-lto-type-mismatch
