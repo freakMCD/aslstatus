@@ -234,9 +234,17 @@ get_layout_struct(xcb_connection_t *c, struct layout *ret)
 	ret->group[2]  = '\0';
 
 	ret->lock_mask = 0;
-	ret->lock_mask |=
-	    CAPS * !!(state_reply->lockedMods & XCB_MOD_MASK_LOCK);
-	ret->lock_mask |= NUM * !!(state_reply->lockedMods & XCB_MOD_MASK_2);
+	/*
+	 * LM - Lock Mask
+	 * MM - Mod Mask
+	 */
+#	define check_mask(LM, MM)                                            \
+		(__typeof__(ret->lock_mask))((LM)                             \
+					     * !!(state_reply->lockedMods     \
+						  & (MM)))
+
+	ret->lock_mask |= check_mask(CAPS, XCB_MOD_MASK_LOCK);
+	ret->lock_mask |= check_mask(NUM, XCB_MOD_MASK_2);
 
 end:
 	free(atom_name);
