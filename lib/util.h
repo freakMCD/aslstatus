@@ -39,6 +39,8 @@
 #define LEN(S)	    (sizeof(S) / sizeof *(S))
 #define WITH_LEN(S) S, LEN(S)
 
+#define SAFE_ASSIGN(TO, FROM) ((TO) = (__typeof__((TO)))(FROM))
+
 #define MS2S(MS)  ((MS) / 1000)		 /* milliseconds to seconds */
 #define MS2NS(MS) (((MS) % 1000) * 1E6)	 /* milliseconds to nanoseconds */
 #define MS2US(MS) (((MS) % 1000) * 1000) /* milliseconds to microseconds */
@@ -103,10 +105,10 @@ off_t _elseek(const char *func, int fd, off_t offset, int whence);
 #define fd_rewind(fd) _fd_rewind(__func__, (fd))
 uint8_t _fd_rewind(const char *func, int fd);
 
-#define eread_ret(ret, fd, ...) _eread_macro(ret =, fd, __VA_ARGS__)
+#define eread_ret(ret, fd, ...) _eread_macro(ret = (size_t), fd, __VA_ARGS__)
 #define eread(fd, ...)		_eread_macro(, fd, __VA_ARGS__)
 #define _eread_macro(ret, fd, ...)                                            \
-	((ret _eread(__func__, (fd), __VA_ARGS__)) != -1)
+	((ssize_t)(ret _eread(__func__, (fd), __VA_ARGS__)) != -1)
 
 ssize_t _eread(const char *func, int fd, void *buf, size_t size);
 

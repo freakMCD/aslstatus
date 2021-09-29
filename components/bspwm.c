@@ -133,11 +133,15 @@ bspwm_ws(char *	    out,
 run:
 	if (poll(&poll_fd, 1, -1) > 0)
 		if (poll_fd.revents & POLLIN) {
-			if ((nb = recv(*fd, rsp, sizeof(rsp) - 1, 0)) > 0) {
+			if (SAFE_ASSIGN(nb, recv(*fd, rsp, sizeof(rsp) - 1, 0))
+			    > 0) {
 				if (*rsp == FAILURE_MESSAGE)
 					warn("%s", rsp + 1);
 				else
-					parse_event(rsp, nb, out, BUFF_SZ);
+					parse_event(rsp,
+						    (size_t)nb,
+						    out,
+						    BUFF_SZ);
 			} else {
 				ERRRET(out);
 			}
@@ -150,7 +154,7 @@ parse_event(const char *event, size_t size, char *out, size_t out_size)
 	size_t	i, j;
 	uint8_t is_desktop = 0, is_focused = 0;
 
-	for (i = j = 0; i < size && j < out_size; i -= -1) {
+	for (i = j = 0; i < size && j < out_size; i++) {
 		if (event[i] == ':') {
 			switch (event[i + 1]) {
 			case 'o':

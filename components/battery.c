@@ -25,9 +25,9 @@ battery_perc(char *	       out,
 	     uint32_t __unused _i,
 	     static_data_t *   static_data)
 {
-	ssize_t readed;
-	char	perc[4]; /* len(str(100)) + 1 */
-	int *	fd = static_data->data;
+	size_t readed;
+	char   perc[4]; /* len(str(100)) + 1 */
+	int *  fd = static_data->data;
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
@@ -115,8 +115,8 @@ battery_remaining(char *	    out,
 		if (!current_now) goto not_discharging;
 
 		timeleft = (double)charge_now / (double)current_now;
-		h	 = timeleft;
-		m	 = (timeleft - (double)h) * 60;
+		SAFE_ASSIGN(h, timeleft);
+		SAFE_ASSIGN(m, (timeleft - (double)h) * 60);
 
 		bprintf(out, "%juh %jum", h, m);
 		return;
@@ -153,7 +153,7 @@ end:
 static inline uint8_t
 get_state(char state[MAX_STATE], int *fd, const char *bat)
 {
-	ssize_t readed;
+	size_t readed;
 
 	if (!sysfs_fd_or_rewind(fd, SYS_CLASS, bat, "status")) return 0;
 	if (!eread_ret(readed, *fd, state, MAX_STATE)) return !0;

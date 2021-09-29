@@ -66,8 +66,8 @@ keymap(char *	  layout,
 	if (!!get_layout_struct(c, &state)) ERRRET(layout);
 
 	if (state.lock_mask & CAPS) {
-		state.group[0] = toupper(state.group[0]);
-		state.group[1] = toupper(state.group[1]);
+		SAFE_ASSIGN(state.group[0], toupper(state.group[0]));
+		SAFE_ASSIGN(state.group[1], toupper(state.group[1]));
 	}
 
 	bprintf(layout,

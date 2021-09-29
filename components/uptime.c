@@ -31,8 +31,8 @@ uptime(char *	  out,
 		ERRRET(out);
 	}
 
-	h = uptime.tv_sec / 3600;
-	m = uptime.tv_sec % 3600 / 60;
+	SAFE_ASSIGN(h, uptime.tv_sec / 3600);
+	SAFE_ASSIGN(m, uptime.tv_sec % 3600 / 60);
 
 	bprintf(out, "%juh %jum", h, m);
 }

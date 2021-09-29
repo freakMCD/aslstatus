@@ -19,10 +19,10 @@ struct myfile {
 };
 
 struct mybuf {
-	size_t	pos;
-	ssize_t size /* size of valid data */;
-	size_t	last_nl /* last '\n' char in 0..size */;
-	char	data[READLINE_SIZE];
+	size_t pos;
+	size_t size /* size of valid data */;
+	size_t last_nl /* last '\n' char in 0..size */;
+	char   data[READLINE_SIZE];
 };
 
 enum read_line_status {
@@ -121,7 +121,7 @@ read_line(struct myfile *file, struct mybuf *buf, char **line)
 
 		if (!!buf->last_nl)
 			lseek(file->fd,
-			      (file->pos -= (buf->size - buf->last_nl)),
+			      (off_t)(file->pos -= (buf->size - buf->last_nl)),
 			      SEEK_SET);
 
 		if (!eread_ret(buf->size, file->fd, WITH_LEN(buf->data)))

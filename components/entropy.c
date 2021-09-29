@@ -18,9 +18,9 @@ entropy(char*	   out,
 	uint32_t __unused    _i,
 	static_data_t*	     static_data)
 {
-	ssize_t readed;
-	int*	fd = static_data->data;
-	char	buf[INT_STR_SIZE];
+	size_t readed;
+	int*   fd = static_data->data;
+	char   buf[INT_STR_SIZE];
 
 	/* if `static_data` contain only `fd`
 	 * then you can use `fd_cleanup` function from util.h */

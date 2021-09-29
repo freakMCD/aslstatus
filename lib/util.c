@@ -73,7 +73,8 @@ fmt_human(char *out, uintmax_t num)
 #endif
 	;
 
-	scaled = num;
+	SAFE_ASSIGN(scaled, num);
+
 	for (i = 0; i < LEN(prefix) && scaled >= FMT_HUMAN_NUMFMT; i++)
 		scaled /= FMT_HUMAN_NUMFMT;
 

@@ -31,7 +31,7 @@ temp(char *	       out,
 	struct dirent *dp;
 
 	uint8_t i, found = 0;
-	ssize_t readed;
+	size_t readed;
 	int	name_fd;
 	char	name[MAX_NAME];
 	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];

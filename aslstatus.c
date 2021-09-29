@@ -35,13 +35,13 @@
 	do {                                                                  \
 		uint8_t __lock_ret;                                           \
 		do {                                                          \
-			if (!(__lock_ret = pthread_mutex_trylock(&(MUTEX))))  \
+			if (!SAFE_ASSIGN(__lock_ret,                          \
+					 pthread_mutex_trylock(&(MUTEX))))    \
 				BLOCK                                         \
 		} while (__lock_ret);                                         \
 		pthread_mutex_unlock(&(MUTEX));                               \
 	} while (0)
 
-#undef MIN
 #include "config.h"
 #define ARGS_LEN LEN(args)
 
@@ -65,7 +65,7 @@ store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
 			    XCB_ATOM_WM_NAME,
 			    XCB_ATOM_STRING,
 			    8, /* format: 8-bit char array */
-			    name ? strnlen(name, MAXLEN) : 0,
+			    (uint32_t)(name ? strnlen(name, MAXLEN) : 0),
 			    name);
 }
 #endif
@@ -96,8 +96,10 @@ terminate(int sig)
 #define RECHECK 10 /* need to be less then KILL_TIMEOUT */
 
 	static const struct timespec ts = {
-		.tv_sec	 = MS2S(RECHECK),
-		.tv_nsec = MS2NS(RECHECK),
+		.tv_sec =
+		    (typeof_field(struct timespec, tv_sec))(MS2S(RECHECK)),
+		.tv_nsec =
+		    (typeof_field(struct timespec, tv_nsec))(MS2NS(RECHECK)),
 	};
 
 	size_t	       i;
@@ -223,8 +225,8 @@ thread(void *arg_ptr)
 		}
 	}
 
-	ts.tv_sec  = MS2S(arg->interval);
-	ts.tv_nsec = MS2NS(arg->interval);
+	SAFE_ASSIGN(ts.tv_sec, MS2S(arg->interval));
+	SAFE_ASSIGN(ts.tv_nsec, MS2NS(arg->interval));
 
 	do {
 		arg->f.func(buf,
@@ -253,7 +255,7 @@ main(int argc, char *argv[])
 	char *tofree;
 	char  thread_name[16];
 #if USE_X
-	int		      screen_num;
+	int		      screen_num = 0;
 	const xcb_setup_t *   setup;
 	xcb_screen_iterator_t iter;
 #endif
