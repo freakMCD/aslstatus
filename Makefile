@@ -87,6 +87,7 @@ LINK_FLAGS = ${1} ${LDFLAGS} ${LDLIBS} ${CFLAGS}
 endif
 
 include deps.mk
+include build.mk
 
 aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 

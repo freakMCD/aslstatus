@@ -27,10 +27,10 @@ smart-conf: ${SMART_CONFIG_DEPS}
 	$(eval export SMART_CONFIG=0)
 	$(eval export COMPONENTS=$(addprefix components/,\
 		$(call smart_config,./${_SH},./${_EXE},./components)))
-	@+$(MAKE)
+	@+$(MAKE) $(MAKECMDGOALS)
 
 ${_EXE}: ${SMART_CONFIG_OFILES}
-	$(CC) -o $@ $^ ${LDFLAGS} ${CFLAGS}
+	$(CC) -o $@ $^ ${LDFLAGS} ${CFLAGS} -Wno-lto-type-mismatch
 
 .PHONY: smart-config-clean
 smart-config-clean:
