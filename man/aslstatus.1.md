@@ -29,6 +29,10 @@ By defaul if compiled with *X=1*, outputs to *WM_NAME*,
 
 : Show version
 
+`-d`
+
+: Dump config to stdout
+
 `-s`
 
 : If compiled with *X=1*, outputs to *stdout*

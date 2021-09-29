@@ -90,10 +90,13 @@ include deps.mk
 
 aslstatus.o: CPPFLAGS += $(NEED_X_SERVER)
 
+config.o: config.h
+	arch="$$(uname -m)" && $(LD) -m "elf_$${arch}" -r -b binary -o $@ $<
+
 %.o: %.c
 	$(CC) -o $@ -c $< ${CFLAGS} ${CPPFLAGS}
 
-aslstatus: aslstatus.o ${OBJ}
+aslstatus: aslstatus.o config.o ${OBJ}
 	$(CC) -o $@ $(call LINK_FLAGS,$^)
 
 man/aslstatus.1: man/aslstatus.1.md
@@ -116,7 +119,7 @@ ifeq (${SMART_CONFIG},1)
 clean: smart-config-clean
 endif
 clean:
-	rm -f aslstatus aslstatus.o \
+	rm -f aslstatus aslstatus.o config.o \
 		$(wildcard lib/*.o components/*.o components/*/*.o)
 
 .PHONY: uninstall

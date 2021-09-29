@@ -51,6 +51,9 @@ static int exit_status = 0;
 static pthread_t       main_thread;
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+extern const char _binary_config_h_start[];
+extern const char _binary_config_h_end[];
+
 #if USE_X
 static xcb_window_t root;
 static uint8_t	    sflag = 0;
@@ -254,6 +257,10 @@ main(int argc, char *argv[])
 	char *strptr;
 	char *tofree;
 	char  thread_name[16];
+
+	const char * config = _binary_config_h_start;
+	const size_t config_size =
+	    (size_t)(_binary_config_h_end - _binary_config_h_start);
 #if USE_X
 	int		      screen_num = 0;
 	const xcb_setup_t *   setup;
@@ -270,6 +277,7 @@ main(int argc, char *argv[])
 	    "\n\noptions:\n"
 	    "\t-h\tShow this help\n"
 	    "\t-v\tShow version\n"
+	    "\t-d\tDump config to stdout\n"
 #if USE_X
 	    "\t-s\tWrite to `stdout` instead of `WM_NAME`\n"
 #endif
@@ -279,13 +287,19 @@ main(int argc, char *argv[])
 	{
 	case 'h':
 		errx(0, "%s", usage);
+
 	case 'v':
 		errx(0, "%s", VERSION);
+
+	case 'd':
+		return write(STDOUT_FILENO, config, config_size) == -1;
+
 #if USE_X
 	case 's':
 		sflag = !0;
 		break;
 #endif
+
 	default:
 		errx(!0, "%s", usage);
 	}
