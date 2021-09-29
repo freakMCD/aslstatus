@@ -1,8 +1,10 @@
-DEBUG_CFLAGS  := -ggdb -g3 -O0
-DEBUG_LDFLAGS := -fsanitize-address-use-after-scope \
-		 -fsanitize=leak -fsanitize=undefined \
-		 -fno-omit-frame-pointer -fno-optimize-sibling-calls \
-		 -fsanitize=address,undefined,pointer-subtract,pointer-compare
+SANITIZE := -fsanitize-address-use-after-scope \
+	    -fsanitize=leak -fsanitize=undefined \
+	    -fno-omit-frame-pointer -fno-optimize-sibling-calls \
+	    -fsanitize=address,undefined,pointer-subtract,pointer-compare
+
+DEBUG_CFLAGS  := -ggdb -g3 -O0 ${SANITIZE}
+DEBUG_LDFLAGS := ${SANITIZE}
 
 RELEASE_CFLAGS   := -march=native -O3 -flto -fPIC -fPIE \
 		    -freciprocal-math -fstack-protector-strong \
