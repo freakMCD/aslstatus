@@ -175,7 +175,7 @@ void ram_used FUNC_ARGS;
 void run_command FUNC_ARGS;
 #define run_command {run_command, "cmd", sizeof(pid_t)}
 /*
- * `cmd` thread name hardcodet to be used to run shell commands
+ * `cmd` thread name hardcoded to be used to run shell commands
  */
 
 
