@@ -183,7 +183,7 @@ get_ctl_name(snd_mixer_selem_id_t **sid)
 	snd_mixer_elem_t *elem;
 
 	if (!(handle = get_mixer_elem(&elem, sid))) {
-		index = 0;
+		return NULL;
 	} else {
 		index = snd_mixer_selem_get_index(elem);
 		snd_mixer_close(handle);
