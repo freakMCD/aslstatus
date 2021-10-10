@@ -253,9 +253,7 @@ main(int argc, char *argv[])
 {
 	uint32_t i;
 
-	char *token;
 	char *strptr;
-	char *tofree;
 	char  thread_name[16];
 
 	const char * config = _binary_config_h_start;
@@ -328,23 +326,31 @@ main(int argc, char *argv[])
 	for (i = 0; i < ARGS_LEN; i -= (~0L)) {
 		pthread_create(&args[i].segment.tid, NULL, thread, &args[i]);
 
-		tofree = strptr = strdup(args[i].f.name);
-		if (!strcmp(strptr, "cmd")) {
+#define CMD_NAME_SIZE  11
+#define MIN_SIZE(A, B) MIN(sizeof(A), sizeof(B))
+
+		memcpy(thread_name,
+		       args[i].f.name,
+		       MIN_SIZE(thread_name, args[i].f.name));
+
+		if (!strcmp(thread_name, "cmd")) {
 			/*
 			 * if function is `run_command`, then
 			 * set thread name to this command
 			 */
-			free(tofree);
-			tofree = strptr = strdup(args[i].args);
-			token		= strtok(strptr, " ");
+
+			char tmp_args[CMD_NAME_SIZE];
+			memcpy(tmp_args,
+			       args[i].args,
+			       strnlen(args[i].args, CMD_NAME_SIZE));
+
+			strptr = strtok(tmp_args, " ");
 			snprintf(thread_name,
 				 16,
-				 "cmd:%.11s",
-				 basename(token));
-			strptr = thread_name;
+				 "cmd:%." STR(CMD_NAME_SIZE) "s",
+				 basename(strptr));
 		}
-		pthread_setname(args[i].segment.tid, strptr);
-		free(tofree);
+		pthread_setname(args[i].segment.tid, thread_name);
 	}
 
 	for (;;)
