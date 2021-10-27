@@ -11,6 +11,7 @@
 #include <inttypes.h>
 
 #include <sys/time.h>
+#include <sys/param.h>
 
 #if USE_X
 #	include <xcb/xcb.h>
