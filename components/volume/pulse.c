@@ -41,12 +41,12 @@ static void *mainloop_thread(void *);
 static void  pulse_cleanup(void *ptr);
 
 void
-vol_perc(char *	    volume,
+vol_perc(char		      *volume,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 static_data_t *      static_data)
+	 static_data_t       *static_data)
 {
-	struct volume_static_data *  data = static_data->data;
+	struct volume_static_data	  *data = static_data->data;
 	static const struct timespec ts	  = {
 		  .tv_sec  = MS2S(VOLUME_PULSE_RECONECT_TIMEOUT),
 		  .tv_nsec = MS2NS(VOLUME_PULSE_RECONECT_TIMEOUT),
@@ -89,9 +89,9 @@ quit(int ret, pa_mainloop_api *mainloop)
 
 static void
 sink_info_callback(pa_context __unused *_c,
-		   const pa_sink_info * i,
+		   const pa_sink_info  *i,
 		   int __unused		_is_last,
-		   void *		userdata)
+		   void		*userdata)
 {
 	struct volume_static_data *data = userdata;
 
@@ -112,10 +112,10 @@ sink_info_callback(pa_context __unused *_c,
 }
 
 static void
-subscribe_callback(pa_context *			c,
+subscribe_callback(pa_context		      *c,
 		   pa_subscription_event_type_t type,
 		   uint32_t			idx,
-		   void *			userdata)
+		   void			*userdata)
 {
 	switch (type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
 	case PA_SUBSCRIPTION_EVENT_SINK:
@@ -173,9 +173,9 @@ context_state_callback(pa_context *c, void *userdata)
 void *
 mainloop_thread(void *userdata)
 {
-	pa_mainloop *		   m;
+	pa_mainloop		    *m;
 	int			   ret	   = 1;
-	pa_context *		   context = NULL;
+	pa_context		   *context = NULL;
 	struct volume_static_data *data	   = userdata;
 
 	if (!(m = pa_mainloop_new())) {

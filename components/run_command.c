@@ -6,10 +6,10 @@
 #include "../lib/util.h"
 
 void
-run_command(char *	      out,
-	    const char *      cmd,
+run_command(char		 *out,
+	    const char       *cmd,
 	    uint32_t __unused _i,
-	    void __unused *_p)
+	    void __unused	  *_p)
 {
 	char *p;
 	FILE *fp;

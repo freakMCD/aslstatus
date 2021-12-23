@@ -8,28 +8,28 @@
 #include "../lib/util.h"
 
 void
-gid(char *     out,
+gid(char		 *out,
     const char __unused *_a,
     uint32_t __unused	 _i,
-    void __unused *_p)
+    void __unused	  *_p)
 {
 	bprintf(out, "%u", getgid());
 }
 
 void
-uid(char *     out,
+uid(char		 *out,
     const char __unused *_a,
     uint32_t __unused	 _i,
-    void __unused *_p)
+    void __unused	  *_p)
 {
 	bprintf(out, "%u", getuid());
 }
 
 void
-username(char *	    out,
+username(char		      *out,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 void __unused *_p)
+	 void __unused       *_p)
 {
 	struct passwd *pw;
 

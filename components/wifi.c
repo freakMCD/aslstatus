@@ -18,8 +18,11 @@
 	struct trailing_semicolon
 
 #define eioctl(fd, req, arg) _eioctl(__func__, (fd), (req), #req, arg)
-static uint8_t
-_eioctl(const char *func, int fd, int req, const char *str_req, void *arg);
+static uint8_t _eioctl(const char	  *func,
+		       int		 fd,
+		       unsigned long int req,
+		       const char	  *str_req,
+		       void		    *arg);
 
 #define esocket(socket, ...)                                                  \
 	((socket = _esocket(__func__, #__VA_ARGS__, __VA_ARGS__)) != -1)
@@ -36,10 +39,10 @@ static void wifi_perc_cleanup(void *ptr);
 static void wifi_essid_cleanup(void *ptr);
 
 void
-wifi_perc(char *	    out,
-	  const char *	    interface,
+wifi_perc(char	       *out,
+	  const char	     *interface,
 	  uint32_t __unused _i,
-	  static_data_t *   static_data)
+	  static_data_t	*static_data)
 {
 	struct wifi_perc_data *data = static_data->data;
 
@@ -68,10 +71,10 @@ wifi_perc(char *	    out,
 }
 
 void
-wifi_essid(char *	     out,
-	   const char *	     interface,
+wifi_essid(char		*out,
+	   const char	      *interface,
 	   uint32_t __unused _i,
-	   static_data_t *   static_data)
+	   static_data_t	 *static_data)
 {
 	struct wifi_essid_data *data = static_data->data;
 
@@ -99,9 +102,13 @@ wifi_essid(char *	     out,
 }
 
 static inline uint8_t
-_eioctl(const char *func, int fd, int req, const char *str_req, void *arg)
+_eioctl(const char	   *func,
+	int		  fd,
+	unsigned long int req,
+	const char	   *str_req,
+	void	     *arg)
 {
-	uint8_t ret;
+	uint8_t		  ret;
 	static const char msg[] = "you are probably not connected to wifi";
 
 	if (!(ret = (ioctl(fd, req, arg) != -1)))

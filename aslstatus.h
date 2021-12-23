@@ -31,7 +31,7 @@ typedef void (*cleanup_func_t)(void *);
 
 typedef struct static_data_t {
 	cleanup_func_t cleanup;
-	void *	       data;
+	void	     *data;
 } static_data_t;
 
 typedef void(*func_t) FUNC_ARGS;
@@ -52,8 +52,8 @@ struct segment_t {
 
 struct arg_t {
 	const func_data_t f;
-	const char *	  fmt;
-	const char *	  args;
+	const char	   *fmt;
+	const char	   *args;
 	const uint32_t	  interval;
 	struct segment_t  segment;
 };

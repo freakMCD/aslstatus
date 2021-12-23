@@ -11,11 +11,11 @@
 
 #define STATISTICS(S) "statistics/" #S "_bytes"
 
-static void netspeed(char *	    out,
-		     const char *   interface,
+static void netspeed(char	  *out,
+		     const char	*interface,
 		     uint32_t	    interval,
 		     static_data_t *static_data,
-		     const char *   property);
+		     const char	*property);
 
 void
 netspeed_rx(char *out, const char *interface, uint32_t interval, void *ptr)
@@ -36,11 +36,11 @@ netspeed_cleanup(void *ptr)
 }
 
 static inline void
-netspeed(char *		out,
-	 const char *	interface,
+netspeed(char	      *out,
+	 const char    *interface,
 	 uint32_t	interval,
 	 static_data_t *static_data,
-	 const char *	property)
+	 const char    *property)
 {
 	struct netspeed_data *data     = static_data->data;
 	uintmax_t	      oldbytes = data->bytes;

@@ -32,13 +32,13 @@
 static void cpu_perc_cleanup(void *ptr);
 
 void
-cpu_freq(char *	    out,
+cpu_freq(char		      *out,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 static_data_t *      static_data)
+	 static_data_t       *static_data)
 {
 	uintmax_t freq;
-	int *	  fd = static_data->data;
+	int	    *fd = static_data->data;
 	char	  buf[JU_STR_SIZE];
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
@@ -58,10 +58,10 @@ cpu_freq(char *	    out,
 }
 
 void
-cpu_perc(char *	    out,
+cpu_perc(char		      *out,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 static_data_t *      static_data)
+	 static_data_t       *static_data)
 {
 	struct cpu_data_t *data = static_data->data;
 

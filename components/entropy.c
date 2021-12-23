@@ -13,7 +13,7 @@
 #	define ENTROPY_AVAIL "/proc/sys/kernel/random/entropy_avail"
 
 void
-entropy(char*	   out,
+entropy(char*		     out,
 	const char __unused* _a,
 	uint32_t __unused    _i,
 	static_data_t*	     static_data)
@@ -50,10 +50,10 @@ entropy(char*	   out,
 #	endif
 
 void
-entropy(char *	   out,
+entropy(char		     *out,
 	const char __unused *_a,
 	uint32_t __unused    _i,
-	void __unused *_p)
+	void __unused	      *_p)
 {
 	bprintf(out, "%s", ENTROPY_INFINITY);
 }

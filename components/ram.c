@@ -17,7 +17,7 @@
 static inline memory_t get_used(const struct meminfo_ram* info);
 
 void
-ram_free(char*	    out,
+ram_free(char*		      out,
 	 const char __unused* _a,
 	 uint32_t __unused    _i,
 	 static_data_t*	      static_data)
@@ -31,7 +31,7 @@ ram_free(char*	    out,
 }
 
 void
-ram_perc(char*	    out,
+ram_perc(char*		      out,
 	 const char __unused* _a,
 	 uint32_t __unused    _i,
 	 static_data_t*	      static_data)
@@ -46,10 +46,10 @@ ram_perc(char*	    out,
 }
 
 void
-ram_total(char*	     out,
+ram_total(char*		       out,
 	  const char __unused* _a,
 	  uint32_t __unused    _i,
-	  void __unused* _p)
+	  void __unused*       _p)
 {
 	struct sysinfo info;
 	if (!!sysinfo(&info)) ERRRET(out);
@@ -58,7 +58,7 @@ ram_total(char*	     out,
 }
 
 void
-ram_used(char*	    out,
+ram_used(char*		      out,
 	 const char __unused* _a,
 	 uint32_t __unused    _i,
 	 static_data_t*	      static_data)

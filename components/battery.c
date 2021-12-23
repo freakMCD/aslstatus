@@ -20,14 +20,14 @@ static uint8_t get_state(char state[MAX_STATE], int *fd, const char *bat);
 static void    battery_remaining_cleanup(void *ptr);
 
 void
-battery_perc(char *	       out,
-	     const char *      bat,
+battery_perc(char		  *out,
+	     const char	*bat,
 	     uint32_t __unused _i,
-	     static_data_t *   static_data)
+	     static_data_t	   *static_data)
 {
 	size_t readed;
 	char   perc[4]; /* len(str(100)) + 1 */
-	int *  fd = static_data->data;
+	int   *fd = static_data->data;
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 
@@ -41,10 +41,10 @@ battery_perc(char *	       out,
 }
 
 void
-battery_state(char *		out,
-	      const char *	bat,
+battery_state(char		   *out,
+	      const char	 *bat,
 	      uint32_t __unused _i,
-	      static_data_t *	static_data)
+	      static_data_t    *static_data)
 {
 	int *fd = static_data->data;
 
@@ -70,10 +70,10 @@ battery_state(char *		out,
 }
 
 void
-battery_remaining(char *	    out,
-		  const char *	    bat,
+battery_remaining(char	       *out,
+		  const char	     *bat,
 		  uint32_t __unused _i,
-		  static_data_t *   static_data)
+		  static_data_t	*static_data)
 {
 	struct remaining *fds = static_data->data;
 

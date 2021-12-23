@@ -22,20 +22,20 @@ static const char *GOOD_NAMES[] = {
 };
 
 void
-temp(char *	       out,
-     const char *      device,
+temp(char		  *out,
+     const char	*device,
      uint32_t __unused _i,
-     static_data_t *   static_data)
+     static_data_t	   *static_data)
 {
-	DIR *	       d;
+	DIR	    *d;
 	struct dirent *dp;
 
 	uint8_t i, found = 0;
-	size_t readed;
+	size_t	readed;
 	int	name_fd;
 	char	name[MAX_NAME];
 	char	buf[JU_STR_SIZE + 3 /* zeros at the end */];
-	int *	fd = static_data->data;
+	int    *fd = static_data->data;
 
 	if (!static_data->cleanup) static_data->cleanup = fd_cleanup;
 

@@ -42,17 +42,17 @@ static uint8_t is_muted(snd_mixer_selem_id_t **sid);
 
 static percent_t get_percentage(typeof_field(alsa_data, volume) * v,
 				snd_mixer_selem_id_t **sid);
-static char *	 get_ctl_name(snd_mixer_selem_id_t **sid);
+static char	    *get_ctl_name(snd_mixer_selem_id_t **sid);
 static void	 alsa_cleanup(void *ptr);
 
 void
-vol_perc(char *	    volume,
+vol_perc(char		      *volume,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 static_data_t *      static_data)
+	 static_data_t       *static_data)
 {
 	int	   err;
-	char *	   ctl_name;
+	char	     *ctl_name;
 	alsa_data *data = static_data->data;
 
 	if (!data->ctl) {
@@ -137,7 +137,7 @@ static inline uint8_t
 is_muted(snd_mixer_selem_id_t **sid)
 {
 	int		  psw;
-	snd_mixer_t *	  handle;
+	snd_mixer_t	    *handle;
 	snd_mixer_elem_t *elem;
 
 	if (!(handle = get_mixer_elem(&elem, sid))) return 0;
@@ -153,7 +153,7 @@ get_percentage(typeof_field(alsa_data, volume) * v, snd_mixer_selem_id_t **sid)
 {
 	int		  err;
 	long int	  vol;
-	snd_mixer_t *	  handle;
+	snd_mixer_t	    *handle;
 	snd_mixer_elem_t *elem;
 
 	if (!(handle = get_mixer_elem(&elem, sid))) return 0;
@@ -177,9 +177,9 @@ static inline char *
 get_ctl_name(snd_mixer_selem_id_t **sid)
 /* after using return must be freed */
 {
-	char *		  ctl_name;
+	char	     *ctl_name;
 	uint32_t	  index;
-	snd_mixer_t *	  handle;
+	snd_mixer_t	    *handle;
 	snd_mixer_elem_t *elem;
 
 	if (!(handle = get_mixer_elem(&elem, sid))) {

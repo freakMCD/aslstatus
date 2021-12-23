@@ -7,10 +7,10 @@
 static void brightness_cleanup(void *ptr);
 
 void
-brightness(char *	     out,
-	   const char *	     device,
+brightness(char		*out,
+	   const char	      *device,
 	   uint32_t __unused _i,
-	   static_data_t *   static_data)
+	   static_data_t	 *static_data)
 {
 	/*
 	 * `static_data_t` used to have static data per thread

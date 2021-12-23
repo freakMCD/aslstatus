@@ -18,10 +18,10 @@
 #endif
 
 void
-uptime(char *	  out,
+uptime(char		    *out,
        const char __unused *_a,
        uint32_t __unused    _i,
-       void __unused *_p)
+       void __unused	     *_p)
 {
 	uintmax_t	h, m;
 	struct timespec uptime;

@@ -36,10 +36,10 @@ disk_perc(char *out, const char *path, uint32_t __unused _i, void __unused *_p)
 }
 
 void
-disk_total(char *	     out,
-	   const char *	     path,
+disk_total(char		*out,
+	   const char	      *path,
 	   uint32_t __unused _i,
-	   void __unused *_p)
+	   void __unused	 *_p)
 {
 	struct statvfs fs;
 

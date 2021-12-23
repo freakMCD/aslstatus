@@ -46,7 +46,8 @@
 #include "config.h"
 #define ARGS_LEN LEN(args)
 
-char *	   argv0; /* for arg.h */
+char *argv0; /* for arg.h */
+
 static int exit_status = 0;
 
 static pthread_t       main_thread;
@@ -58,7 +59,7 @@ extern const char _binary_config_h_end[];
 #if USE_X
 static xcb_window_t root;
 static uint8_t	    sflag = 0;
-xcb_connection_t *  X_CONNECTION;
+xcb_connection_t	 *X_CONNECTION;
 
 static inline void
 store_name(xcb_connection_t *c, xcb_window_t win, const char *name)
@@ -211,7 +212,7 @@ update_status(int __unused _)
 static void *
 thread(void *arg_ptr)
 {
-	struct arg_t *	arg = arg_ptr;
+	struct arg_t   *arg = arg_ptr;
 	struct timespec ts;
 
 	char buf[BUFF_SZ] = { 0 };
@@ -222,7 +223,7 @@ thread(void *arg_ptr)
 		/* allocate memory for static data if needed */
 		if (!(arg->segment.static_data.data =
 			  calloc(arg->f.static_size, 1))) {
-			warnx("failed to allocate %u bytes for %15s",
+			warnx("failed to allocate %lu bytes for %15s",
 			      arg->f.static_size,
 			      arg->f.name);
 			return NULL;
@@ -257,12 +258,12 @@ main(int argc, char *argv[])
 	char *strptr;
 	char  thread_name[16];
 
-	const char * config = _binary_config_h_start;
+	const char  *config = _binary_config_h_start;
 	const size_t config_size =
 	    (size_t)(_binary_config_h_end - _binary_config_h_start);
 #if USE_X
 	int		      screen_num = 0;
-	const xcb_setup_t *   setup;
+	const xcb_setup_t	  *setup;
 	xcb_screen_iterator_t iter;
 #endif
 

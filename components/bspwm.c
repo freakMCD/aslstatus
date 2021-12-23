@@ -76,12 +76,12 @@
 static void parse_event(const char *, size_t, char *, size_t);
 
 void
-bspwm_ws(char *	    out,
+bspwm_ws(char		      *out,
 	 const char __unused *_a,
 	 uint32_t __unused    _i,
-	 static_data_t *      static_data)
+	 static_data_t       *static_data)
 {
-	char *		   sp, rsp[BUFSIZ];
+	char		     *sp, rsp[BUFSIZ];
 	int		   nb, *fd = static_data->data;
 	struct sockaddr_un sock_address;
 

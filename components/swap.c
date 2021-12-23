@@ -17,7 +17,7 @@
 	if (!get_meminfo_swap(*fd, &STRUCT)) ERRRET(OUT)
 
 void
-swap_free(char*	     out,
+swap_free(char*		       out,
 	  const char __unused* _a,
 	  uint32_t __unused    _i,
 	  static_data_t*       static_data)
@@ -28,7 +28,7 @@ swap_free(char*	     out,
 }
 
 void
-swap_perc(char*	     out,
+swap_perc(char*		       out,
 	  const char __unused* _a,
 	  uint32_t __unused    _i,
 	  static_data_t*       static_data)
@@ -42,10 +42,10 @@ swap_perc(char*	     out,
 }
 
 void
-swap_total(char*      out,
+swap_total(char*		out,
 	   const char __unused* _a,
 	   uint32_t __unused	_i,
-	   void __unused* _p)
+	   void __unused*	_p)
 {
 	struct sysinfo info;
 	if (!!sysinfo(&info)) ERRRET(out);
@@ -54,7 +54,7 @@ swap_total(char*      out,
 }
 
 void
-swap_used(char*	     out,
+swap_used(char*		       out,
 	  const char __unused* _a,
 	  uint32_t __unused    _i,
 	  static_data_t*       static_data)

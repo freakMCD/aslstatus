@@ -10,7 +10,7 @@ struct volume_static_data {
 		long int min, max;
 	} volume;
 	snd_ctl_event_t *e;
-	snd_ctl_t *	 ctl;
+	snd_ctl_t	  *ctl;
 };
 #	define VOLUME_STATIC_SIZE sizeof(struct volume_static_data)
 

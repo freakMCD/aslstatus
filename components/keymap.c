@@ -36,10 +36,10 @@ static uint8_t init_xkb_extension(xcb_connection_t *);
 static uint8_t get_layout_struct(xcb_connection_t *, struct layout *);
 
 void
-keymap(char *	  layout,
+keymap(char		    *layout,
        const char __unused *_a,
        uint32_t __unused    _i,
-       static_data_t *	    static_data)
+       static_data_t	     *static_data)
 {
 	void *ev = NULL;
 
@@ -176,7 +176,7 @@ get_layout_struct(xcb_connection_t *c, struct layout *ret)
 			}                                                     \
 		} while (0)
 
-	char *	layout;
+	char   *layout;
 	uint8_t error = 0;
 
 	xcb_xkb_get_names_value_list_t names;

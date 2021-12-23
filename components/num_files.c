@@ -10,7 +10,7 @@
 void
 num_files(char *out, const char *path, uint32_t __unused _i, void __unused *_p)
 {
-	DIR *  fd;
+	DIR   *fd;
 	size_t num;
 
 	struct dirent *dp;

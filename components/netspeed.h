@@ -5,9 +5,9 @@
 #include <inttypes.h>
 
 struct netspeed_data {
-	int fd;
+	int	  fd;
 	uintmax_t bytes;
 };
-#	define NETSPEED_STATIC_SIZE 
+#define NETSPEED_STATIC_SIZE
 
 #endif /* NETSPEED_H */

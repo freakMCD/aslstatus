@@ -23,7 +23,7 @@ vol_perc(char *out, const char *card, uint32_t __unused _i, void __unused *_p)
 {
 	size_t i;
 	int    v, afd, devmask;
-	char * vnames[] = SOUND_DEVICE_NAMES;
+	char  *vnames[] = SOUND_DEVICE_NAMES;
 
 	if ((afd = open(card, O_RDONLY | O_NONBLOCK)) < 0) {
 		warn("open '%s'", card);
