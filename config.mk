@@ -18,7 +18,7 @@ pkgconf   = $(shell pkg-config --libs $1)
 
 LDLIBS  := -lpthread -pthread
 LDALSA   = $(call pkgconf,alsa)  # -lasound
-LDPULSE  = $(call pkgconf,--static libpulse)  # -lpulse -L/usr/lib/pulseaudio
+LDPULSE  = $(call pkgconf,libpulse) -L/usr/lib/pulseaudio
 
 LDXCB     = $(call pkgconf,xcb)  # -lxcb
 LDXCB_XKB = $(call pkgconf,xcb-xkb)  # -lxcb-xkb

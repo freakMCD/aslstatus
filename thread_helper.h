@@ -6,6 +6,6 @@
 #endif
 #include <pthread.h>
 
-__typeof__(pthread_setname_np)(*pthread_setname) = pthread_setname_np;
+#define pthread_setname(...) pthread_setname_np(__VA_ARGS__)
 
 #endif /* _THREAD_HELPER_H */
