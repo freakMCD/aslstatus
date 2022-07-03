@@ -52,7 +52,7 @@
 	} while (0)
 
 typedef uint8_t percent_t;
-#define PRIperc "3" PRIu8
+#define PRIperc PRIu8
 
 /* buffer printf */
 void bprintf(char *, const char *, ...);
