@@ -16,7 +16,7 @@ OBJ = ${COMPONENTS:.c=.o}
 
 X     ?= 1
 XKB   ?= 1
-AUDIO ?= ALSA
+AUDIO ?= 
 
 # components that needs running X server
 NEED_X_SERVER_COM := keymap
